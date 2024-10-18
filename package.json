@@ -2,7 +2,9 @@
   "name": "@hospital/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "dev:db-local-start": "docker compose -f docker-compose-local.yml up -d db"
+  },
   "private": true,
   "dependencies": {
     "@google-cloud/logging-winston": "^6.0.0",

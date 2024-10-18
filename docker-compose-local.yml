@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  db:
+    image: 'postgres'
+    container_name: hospital_db
+    environment:
+      POSTGRES_PASSWORD: 'hellowWorld123'
+      POSTGRES_USER: '9povSurvey'
+      POSTGRES_DB: '9povSurveyDb'
+    volumes:
+      - hospital_db:/var/lib/postgresql/data
+    ports:
+      - '4321:5432'
+
+volumes:
+  hospital_db:
