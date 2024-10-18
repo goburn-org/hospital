@@ -1,7 +1,6 @@
-import { createLogger, format, transports } from "winston";
+import { createLogger, format, Logger, LoggerOptions, transports } from "winston";
 import "winston-daily-rotate-file";
 import { NODE_ENV } from "../env";
-import { Logger, LoggerOptions } from "../../../node_modules/winston/index";
 import { LoggingWinston } from "@google-cloud/logging-winston";
 
 const { combine, timestamp, json } = format;
