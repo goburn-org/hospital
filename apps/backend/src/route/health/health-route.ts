@@ -1,16 +1,16 @@
-import { Router } from "express";
-import { errorHandler } from "../../middleware/error-middleware";
-import { dbClient } from "../../prisma";
+import { Router } from 'express';
+import { errorHandler } from '../../middleware/error-middleware';
+import { dbClient } from '../../prisma';
 
 const healthRoute = Router();
-const baseVersion = "/v1";
-const baseRoute = "/health";
+const baseVersion = '/v1';
+const baseRoute = '/health';
 
 const isDbOk = async () => {
   try {
     await dbClient.user.findFirst();
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -20,10 +20,10 @@ healthRoute.get(
   errorHandler(async (req, res) => {
     const isDbConnected = await isDbOk();
     res.send({
-      status: "ok",
+      status: 'ok',
       db: isDbConnected,
     });
-  })
+  }),
 );
 
 export default [healthRoute];

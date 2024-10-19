@@ -1,0 +1,11 @@
+{
+  "json.format.enable": true,
+  "cSpell.words": ["Datepicker", "Firestore", "pincode", "Vithura"],
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  }
+}

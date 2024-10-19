@@ -1,9 +1,7 @@
-import NxWelcome from './nx-welcome';
-
 export function App() {
   return (
     <div>
-      <NxWelcome title="frontend" />
+      <h1 className="text-2xl bg-primary">test</h1>
     </div>
   );
 }
