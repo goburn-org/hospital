@@ -1,21 +1,20 @@
 export const ProjectName = 'Apollo Health';
-const UserRoute = '/user';
+const UserRoute = '/ut';
+const DashboardRoute = '/dashboard';
+const Inventory = '/inventory';
 const New = 'new';
 const Edit = 'edit';
 const View = 'view';
 const SurveyRoute = 'survey';
-const Inventory = '/inventory';
 const CustomerRoute = 'customer';
-const DashboardRoute = '/dashboard';
-const CoachRoute = `coach`;
-const TemplateRoute = `/template`;
 const PaymentRoute = `payment`;
+const Department = 'department';
+const Role = 'role';
+const User = 'user';
 
 export const routerConfig = {
   UserRoute,
   New,
-  CoachRoute,
-  TemplateRoute,
   Edit,
   View,
   SurveyRoute,
@@ -23,6 +22,9 @@ export const routerConfig = {
   CustomerRoute,
   DashboardRoute,
   PaymentRoute,
+  Department,
+  Role,
+  User,
 };
 
 export const TypingSpeed = 700;

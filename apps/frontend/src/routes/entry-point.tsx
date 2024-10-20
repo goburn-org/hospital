@@ -1,8 +1,10 @@
 import { Outlet } from 'react-router-dom';
 import { Header } from '../component/header';
 import { Sidebar } from '../component/sidebar';
+import { useRedirectIfNotAuthenticated } from '../component/user-query';
 
 export function Component() {
+  useRedirectIfNotAuthenticated();
   return (
     <div>
       <Sidebar />

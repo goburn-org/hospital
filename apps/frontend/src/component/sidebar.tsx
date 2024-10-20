@@ -83,8 +83,8 @@ const MobileSidebar = ({
               />
             </div>
             <nav className="flex flex-1 flex-col">
-              <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                <li>
+              <ul className="flex flex-1 flex-col gap-y-7">
+                <ul>
                   {navigation.map((item) => (
                     <li key={item.name}>
                       <Link
@@ -113,7 +113,7 @@ const MobileSidebar = ({
                       </Link>
                     </li>
                   ))}
-                </li>
+                </ul>
                 <li className="mt-auto">
                   <Link
                     to="#"
@@ -148,7 +148,7 @@ const DesktopSidebar = () => {
       </div>
       <nav className="flex flex-1 flex-col">
         <ul className="flex flex-1 flex-col gap-y-7">
-          <li>
+          <ul>
             {navigation.map((item) => (
               <li key={item.name}>
                 <Link
@@ -172,7 +172,7 @@ const DesktopSidebar = () => {
                 </Link>
               </li>
             ))}
-          </li>
+          </ul>
           <li className="mt-auto">
             <Link
               to="#"

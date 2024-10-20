@@ -18,3 +18,9 @@ export class HttpError extends Error {
     this.extra = extra;
   }
 }
+
+export class UnauthorizedError extends HttpError {
+  constructor() {
+    super('Login to continue', 401);
+  }
+}

@@ -1,6 +1,5 @@
 {
   "extends": "../../tsconfig.base.json",
-  "files": [],
   "include": [],
   "composite": true,
   "references": [
@@ -12,6 +11,8 @@
     }
   ],
   "compilerOptions": {
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "strict": true
+  },
+  "files": []
 }

@@ -1,19 +1,41 @@
 import { NextFunction, Request, Response } from 'express';
-import { apiLogger } from '../logger/logger-service';
+import { setAuthUser, useAuthUser } from '../provider/async-context';
+import { userService } from '../service/user-service';
+import { logger } from '../logger/logger-service';
 
-export const authMiddleware = async (
+export const setUserContext = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
-  console.log('AuthMiddleware');
   const token = req.headers.authorization
     ? req.headers.authorization.split(' ')[1]
     : null;
   if (token == null) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    next();
+    return;
   }
-  apiLogger.log('AuthMiddleware', `Token: ${token}`);
+  const user = await userService.validateByToken(token);
+  if (user) {
+    setAuthUser(user);
+  }
+  next();
+  return;
+};
+
+export const authMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  console.log('AuthMiddleware');
+  try {
+    useAuthUser();
+  } catch (e) {
+    logger.error('Unauthorized', e);
+    res.status(401).send({ message: 'Unauthorized' });
+    return;
+  }
   next();
   return;
 };

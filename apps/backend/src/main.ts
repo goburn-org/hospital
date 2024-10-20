@@ -4,6 +4,7 @@ import Routes from './route';
 import { apiLoggerMiddleware } from './middleware/logger-middleware';
 import multer from 'multer';
 import { errorMiddleware } from './middleware/error-middleware';
+import { setUserContext } from './middleware/auth-middleware';
 
 const MAX_FILE_SIZE = 1024 * 1024 * 50; // 50MB
 
@@ -18,6 +19,7 @@ const multerMid = multer({
   },
 });
 app.use(multerMid.single('file'));
+app.use(setUserContext);
 
 app.get('/', (req, res) => {
   res.send('ready');

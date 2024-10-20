@@ -9,7 +9,7 @@ const baseRoute = '/health';
 const isDbOk = async () => {
   try {
     await dbClient.user.findFirst();
-    return true;
+    return false;
   } catch {
     return false;
   }

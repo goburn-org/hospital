@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .btn-primary {
-  @apply flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-center text-base font-semibold text-white shadow-sm transition-all duration-300 hover:bg-red-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-950;
+  @apply flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-center text-base font-semibold text-white shadow-sm transition-all duration-300 hover:bg-violet-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-950;
 }
 
 .sidebar-nav-selected {
@@ -15,11 +15,11 @@
 }
 
 .btn-outline {
-  @apply flex items-center gap-2 rounded-md border border-primary px-3 py-2 text-center text-base font-semibold text-primary shadow-sm transition-all duration-300 hover:bg-red-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-950;
+  @apply flex items-center gap-2 rounded-md border border-primary px-3 py-2 text-center text-base font-semibold text-primary shadow-sm transition-all duration-300 hover:bg-violet-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-950;
 }
 
 .btn-text {
-  @apply flex items-center gap-2 rounded-md px-3 py-2 text-center text-base font-semibold text-primary transition-all duration-300 hover:text-red-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-950;
+  @apply flex items-center gap-2 rounded-md px-3 py-2 text-center text-base font-semibold text-primary transition-all duration-300 hover:text-violet-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-950;
 }
 
 .btn-text-secondary {
