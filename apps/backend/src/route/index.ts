@@ -1,5 +1,6 @@
 import authRoute from './auth/auth-route';
+import departmentRoute from './department/department-route';
 import healthRoute from './health/health-route';
-import roleRoute from './role/role-route';
+import route from './role/role-route';
 
-export default [...healthRoute, ...roleRoute, ...authRoute];
+export default [...healthRoute, ...route, ...authRoute, ...departmentRoute];

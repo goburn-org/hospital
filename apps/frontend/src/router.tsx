@@ -22,6 +22,31 @@ export const router = createBrowserRouter(
               path={routerConfig.New}
               lazy={() => import('./routes/role/new')}
             />
+            <Route
+              path={`${routerConfig.View}/:id`}
+              lazy={() => import('./routes/role/view')}
+            />
+            <Route
+              path={`${routerConfig.Edit}/:id`}
+              lazy={() => import('./routes/role/edit')}
+            />
+          </Route>
+          <Route
+            path={routerConfig.Department}
+            lazy={() => import('./routes/department/department')}
+          >
+            <Route
+              path={routerConfig.New}
+              lazy={() => import('./routes/department/new')}
+            />
+            <Route
+              path={`${routerConfig.View}/:id`}
+              lazy={() => import('./routes/department/view')}
+            />
+            <Route
+              path={`${routerConfig.Edit}/:id`}
+              lazy={() => import('./routes/department/edit')}
+            />
           </Route>
         </Route>
       </Route>

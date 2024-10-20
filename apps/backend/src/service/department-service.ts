@@ -1,31 +1,31 @@
 import {
   PaginatedResponse,
   PaginateParamsWithSort,
-  UpdateRoleInput,
+  UpdateDepartmentInput,
 } from '@hospital/shared';
-import { Prisma, Role } from '@prisma/client';
+import { Department, Prisma } from '@prisma/client';
 import { dbClient } from '../prisma';
 import { useAuthUser } from '../provider/async-context';
 
-class RoleService {
-  create(role: Prisma.RoleUncheckedCreateInput) {
+class DepartmentService {
+  create(data: Prisma.DepartmentUncheckedCreateInput) {
     const user = useAuthUser();
-    return dbClient.role.create({
+    return dbClient.department.create({
       data: {
-        ...role,
+        ...data,
         updatedBy: user.id,
       },
     });
   }
 
-  update(role: UpdateRoleInput) {
+  update(data: UpdateDepartmentInput) {
     const user = useAuthUser();
-    return dbClient.role.update({
+    return dbClient.department.update({
       where: {
-        id: role.id,
+        id: data.id,
       },
       data: {
-        ...role,
+        ...data,
         updatedBy: user.id,
       },
     });
@@ -37,9 +37,9 @@ class RoleService {
   }: {
     hospitalId: number;
     options: PaginateParamsWithSort;
-  }): Promise<PaginatedResponse<Role>> {
+  }): Promise<PaginatedResponse<Department>> {
     const { paginate, sort } = options;
-    const data = await dbClient.role.findMany({
+    const data = await dbClient.department.findMany({
       where: {
         hospitalId,
       },
@@ -51,7 +51,7 @@ class RoleService {
       take: paginate.limit,
       skip: paginate.limit * (paginate.page - 1),
     });
-    const total = await dbClient.role.count({
+    const total = await dbClient.department.count({
       where: {
         hospitalId,
       },
@@ -67,7 +67,7 @@ class RoleService {
   }
 
   getById(id: number) {
-    return dbClient.role.findUnique({
+    return dbClient.department.findUnique({
       where: {
         id,
       },
@@ -75,4 +75,4 @@ class RoleService {
   }
 }
 
-export const roleService = new RoleService();
+export const departmentService = new DepartmentService();

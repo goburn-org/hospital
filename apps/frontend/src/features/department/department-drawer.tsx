@@ -10,21 +10,27 @@ import {
 import { classNames } from '../../utils/classNames';
 import { routerConfig } from '../../utils/constants';
 import { useEsc } from '../../utils/use-esc';
-import { CreateRoleInput, createRoleSchema } from '@hospital/shared';
-import { useCreateRoleMutation, useUpdateRoleMutation } from './use-role-query';
+import {
+  CreateDepartmentInput,
+  createDepartmentSchema,
+} from '@hospital/shared';
+import {
+  useCreateDepartmentMutation,
+  useUpdateDepartmentMutation,
+} from './use-department-query';
 
-export const RoleDrawer = ({
+export const DepartmentDrawer = ({
   defaultValues,
   mode,
-  roleId,
+  departmentId,
 }: {
-  defaultValues?: CreateRoleInput;
+  defaultValues?: CreateDepartmentInput;
   mode: 'create' | 'edit' | 'view';
-  roleId?: string;
+  departmentId?: string;
 }) => {
   const navigate = useNavigate();
-  const formProvider = useForm<CreateRoleInput>({
-    resolver: zodResolver(createRoleSchema),
+  const formProvider = useForm<CreateDepartmentInput>({
+    resolver: zodResolver(createDepartmentSchema),
     defaultValues,
   });
   useEsc(() => {
@@ -37,7 +43,7 @@ export const RoleDrawer = ({
     <div className="w-[500px]">
       <div className="flex items-center justify-between">
         <h1 className="mb-2 text-2xl font-semibold capitalize text-gray-400">
-          {mode} Role
+          {mode} Department
         </h1>
         <button
           type="button"
@@ -54,25 +60,17 @@ export const RoleDrawer = ({
       </div>
       <FormModeProvider
         mode={editable ? FormMode.Editable : FormMode.ReadOnly}
-        oldId={roleId}
+        oldId={departmentId}
       >
         <FormProvider {...formProvider}>
           <form className="flex max-h-[90vh] flex-col gap-12">
             <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div className="sm:col-span-6">
-                <FormInput<CreateRoleInput>
+                <FormInput<CreateDepartmentInput>
                   autoComplete="off"
-                  id="roleName"
-                  labelName="Role Name"
-                  placeholder="eg. Admin"
-                />
-              </div>
-              <div className="sm:col-span-6">
-                <FormInput<CreateRoleInput>
-                  autoComplete="off"
-                  id="description"
-                  labelName="Role Description"
-                  placeholder="eg. Manages all the things"
+                  id="name"
+                  labelName="Department Name"
+                  placeholder="eg. Front Office"
                 />
               </div>
             </div>
@@ -95,7 +93,7 @@ const ViewFooter = () => {
         type="button"
         className="btn-text btn-text-secondary"
         onClick={() => {
-          const path = `../../${routerConfig.Role}/${routerConfig.Edit}/${id}`;
+          const path = `../../${routerConfig.Department}/${routerConfig.Edit}/${id}`;
           navigate(path, {
             replace: true,
           });
@@ -119,15 +117,15 @@ const ViewFooter = () => {
 };
 
 const CreateFooter = () => {
-  const formProvider = useFormContext<CreateRoleInput>();
-  const { mutateAsync } = useCreateRoleMutation({
+  const formProvider = useFormContext<CreateDepartmentInput>();
+  const { mutateAsync } = useCreateDepartmentMutation({
     onError: (err) => {
       if (err instanceof Error) {
-        formProvider.setError('roleName', {
+        formProvider.setError('name', {
           message: err.message,
         });
       }
-      formProvider.setError('roleName', {
+      formProvider.setError('name', {
         message: String(err),
       });
     },
@@ -198,8 +196,8 @@ const CreateFooter = () => {
 const EditFooter = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const formProvider = useFormContext<CreateRoleInput>();
-  const { mutateAsync } = useUpdateRoleMutation({
+  const formProvider = useFormContext<CreateDepartmentInput>();
+  const { mutateAsync } = useUpdateDepartmentMutation({
     onSuccess: () => {
       navigate('..', {
         replace: true,

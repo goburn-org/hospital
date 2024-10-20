@@ -1,6 +1,6 @@
-import { Role } from '@prisma/client';
+import { Department } from '@prisma/client';
 import { CustomTable } from '../../component/table';
-import { useRoleQuery } from './use-role-query';
+import { useDepartmentQuery } from './use-department-query';
 import {
   MRT_ColumnDef,
   MRT_PaginationState,
@@ -15,7 +15,7 @@ import { useParam } from '../../utils/use-param';
 import { useDebounce } from '../../utils/use-debounce';
 import { toPagination, toSortField } from '../../utils/sort-transform';
 
-export const RoleTable = () => {
+export const DepartmentTable = () => {
   const { param, updateParam } = useParam<'q'>();
   const search = param.q;
   const _search = useDebounce(search, TypingSpeed);
@@ -24,22 +24,22 @@ export const RoleTable = () => {
     pageIndex: 0,
     pageSize: 10,
   });
-  const { data, isLoading, isError, isRefetching } = useRoleQuery({
+  const { data, isLoading, isError, isRefetching } = useDepartmentQuery({
     paginate: toPagination(pagination),
     sort: toSortField(sorting),
     search: _search,
   });
-  const columns = useMemo<MRT_ColumnDef<Role>[]>(
+  const columns = useMemo<MRT_ColumnDef<Department>[]>(
     () => [
       {
-        accessorKey: 'roleName',
-        header: 'Role Name',
+        accessorKey: 'name',
+        header: 'Department Name',
         enableSorting: true,
         Header() {
           return (
-            <Tooltip title={`Total Roles ${data?.meta.total}`}>
+            <Tooltip title={`Total Departments ${data?.meta.total}`}>
               <div className="flex items-center gap-2">
-                <span>Role Name</span>
+                <span>Department Name</span>
                 <span className="text-sm text-gray-500">
                   ({data?.meta.total})
                 </span>
