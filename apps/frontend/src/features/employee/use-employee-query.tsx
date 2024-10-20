@@ -1,9 +1,9 @@
 import {
-  CreateDepartmentInput,
-  Department,
+  CreateEmployeeInput,
   PaginatedResponse,
   PaginateParamsWithSort,
-  UpdateDepartmentInput,
+  UpdateEmployeeInput,
+  User,
 } from '@hospital/shared';
 import {
   QueryOptions,
@@ -14,52 +14,41 @@ import {
 } from '@tanstack/react-query';
 import { HttpService } from '../../utils/http';
 
-const queryKey = ['department'];
+const queryKey = ['employee'];
 
-export const useDepartmentQuery = (
+export const useEmployeeQuery = (
   queryParams: PaginateParamsWithSort,
-  options?: QueryOptions<PaginatedResponse<Department>>,
+  options?: QueryOptions<PaginatedResponse<User>>,
 ) => {
   return useQuery({
     ...(options || {}),
     queryKey: [...queryKey, queryParams],
     queryFn: () =>
-      HttpService.get<PaginatedResponse<Department>>('/v1/department', {
+      HttpService.get<PaginatedResponse<User>>('/v1/employee', {
         params: queryParams,
       }),
   });
 };
 
-export const useAllDepartmentQuery = (
-  options?: QueryOptions<PaginatedResponse<Department>>,
-) => {
-  return useQuery({
-    ...(options || {}),
-    queryKey: [...queryKey, 'all'],
-    queryFn: () =>
-      HttpService.get<PaginatedResponse<Department>>('/v1/departments'),
-  });
-};
-
-export const useDepartmentByIdQuery = (
+export const useEmployeeByIdQuery = (
   id: string,
-  options?: QueryOptions<Department>,
+  options?: QueryOptions<User>,
 ) => {
   return useQuery({
     ...(options || {}),
     queryKey: [...queryKey, id],
-    queryFn: () => HttpService.get<Department>(`/v1/department/${id}`),
+    queryFn: () => HttpService.get<User>(`/v1/employee/${id}`),
   });
 };
 
-export const useCreateDepartmentMutation = (
-  options?: UseMutationOptions<Department, unknown, CreateDepartmentInput>,
+export const useCreateEmployeeMutation = (
+  options?: UseMutationOptions<User, unknown, CreateEmployeeInput>,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     ...(options || {}),
-    mutationFn: (data: CreateDepartmentInput) =>
-      HttpService.post<Department>('/v1/department', data),
+    mutationFn: (data: CreateEmployeeInput) =>
+      HttpService.post<User>('/v1/employee', data),
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
         predicate(query) {
@@ -71,14 +60,14 @@ export const useCreateDepartmentMutation = (
   });
 };
 
-export const useUpdateDepartmentMutation = (
-  options?: UseMutationOptions<Department, unknown, UpdateDepartmentInput>,
+export const useUpdateEmployeeMutation = (
+  options?: UseMutationOptions<User, unknown, UpdateEmployeeInput>,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     ...(options || {}),
-    mutationFn: (data: UpdateDepartmentInput) =>
-      HttpService.put<Department>(`/v1/department/${data.id}`, data),
+    mutationFn: (data: UpdateEmployeeInput) =>
+      HttpService.put<User>(`/v1/employee/${data.id}`, data),
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
         predicate(query) {

@@ -57,6 +57,18 @@ route.get(
 );
 
 route.get(
+  `${baseVersion}/departments`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const user = useAuthUser();
+    const data = await departmentService.getAll({
+      hospitalId: user.hospitalId,
+    });
+    return res.send(data);
+  }),
+);
+
+route.get(
   `${baseVersion}${baseRoute}/:id`,
   authMiddleware,
   errorHandler(async (req, res) => {

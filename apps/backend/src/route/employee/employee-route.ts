@@ -1,27 +1,24 @@
 import {
-  createRoleSchema,
+  createEmployeeSchema,
   ensure,
+  updateEmployeeSchema,
   validatePaginateParamsWithSort,
 } from '@hospital/shared';
 import { Router } from 'express';
 import { authMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
 import { useAuthUser } from '../../provider/async-context';
-import { roleService } from '../../service/role-service';
+import { employeeService } from '../../service/employee-service';
 
 const route = Router();
 const baseVersion = '/v1';
-const baseRoute = '/role';
+const baseRoute = '/employee';
 
 route.post(
   `${baseVersion}${baseRoute}`,
   errorHandler(async (req, res) => {
-    const body = createRoleSchema.parse(req.body);
-    const user = useAuthUser();
-    const data = await roleService.create({
-      ...body,
-      hospitalId: user.hospitalId,
-    });
+    const body = createEmployeeSchema.parse(req.body);
+    const data = await employeeService.create(body);
     res.send(data);
   }),
 );
@@ -30,9 +27,8 @@ route.put(
   `${baseVersion}${baseRoute}/:id`,
   authMiddleware,
   errorHandler(async (req, res) => {
-    const body = createRoleSchema.parse(req.body);
-    const id = Number(req.params.id);
-    const data = await roleService.update({ ...body, id });
+    const body = updateEmployeeSchema.parse(req.body);
+    const data = await employeeService.update({ ...body, id: req.params.id });
     res.send(data);
   }),
 );
@@ -42,9 +38,8 @@ route.get(
   authMiddleware,
   errorHandler(async (req, res) => {
     const user = useAuthUser();
-    console.log('req.query', req.query);
     ensure(validatePaginateParamsWithSort(req.query), 'Invalid sort params');
-    const data = await roleService.getAll({
+    const data = await employeeService.getAll({
       hospitalId: user.hospitalId,
       options: {
         paginate: req.query.paginate,
@@ -57,23 +52,10 @@ route.get(
 );
 
 route.get(
-  `${baseVersion}/roles`,
-  authMiddleware,
-  errorHandler(async (req, res) => {
-    const user = useAuthUser();
-    const data = await roleService.getAll({
-      hospitalId: user.hospitalId,
-    });
-    return res.send(data);
-  }),
-);
-
-route.get(
   `${baseVersion}${baseRoute}/:id`,
   authMiddleware,
   errorHandler(async (req, res) => {
-    const id = Number(req.params.id);
-    const data = await roleService.getById(id);
+    const data = await employeeService.getById(req.params.id);
     return res.send(data);
   }),
 );

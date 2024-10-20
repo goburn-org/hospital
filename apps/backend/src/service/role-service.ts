@@ -36,9 +36,9 @@ class RoleService {
     options,
   }: {
     hospitalId: number;
-    options: PaginateParamsWithSort;
+    options?: PaginateParamsWithSort;
   }): Promise<PaginatedResponse<Role>> {
-    const { paginate, sort } = options;
+    const { paginate, sort } = options || {};
     const data = await dbClient.role.findMany({
       where: {
         hospitalId,
@@ -48,8 +48,8 @@ class RoleService {
             [sort.field]: sort.order,
           }
         : undefined,
-      take: paginate.limit,
-      skip: paginate.limit * (paginate.page - 1),
+      take: paginate ? paginate.limit : undefined,
+      skip: paginate ? paginate.limit * (paginate.page - 1) : undefined,
     });
     const total = await dbClient.role.count({
       where: {
@@ -60,8 +60,8 @@ class RoleService {
       data,
       meta: {
         total,
-        page: paginate.page,
-        limit: paginate.limit,
+        page: paginate?.page ?? 1,
+        limit: paginate?.limit ?? total,
       },
     };
   }

@@ -10,7 +10,7 @@ const CustomerRoute = 'customer';
 const PaymentRoute = `payment`;
 const Department = 'department';
 const Role = 'role';
-const User = 'user';
+const Employee = 'employee';
 
 export const routerConfig = {
   UserRoute,
@@ -24,7 +24,7 @@ export const routerConfig = {
   PaymentRoute,
   Department,
   Role,
-  User,
+  Employee,
 };
 
 export const TypingSpeed = 700;

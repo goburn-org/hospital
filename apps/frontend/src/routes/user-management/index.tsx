@@ -12,10 +12,10 @@ export const Component = () => {
     <div className="flex flex-col gap-8 px-4 sm:px-6">
       <div className="">
         <Tabs
-          defaultTab={routerConfig.User}
+          defaultTab={routerConfig.Employee}
           tabs={[
             {
-              href: routerConfig.User,
+              href: routerConfig.Employee,
               icon: UserIcon,
               name: 'User',
             },

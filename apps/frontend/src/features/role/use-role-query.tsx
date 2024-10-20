@@ -30,6 +30,16 @@ export const useRoleQuery = (
   });
 };
 
+export const useAllRoleQuery = (
+  options?: QueryOptions<PaginatedResponse<Role>>,
+) => {
+  return useQuery({
+    ...(options || {}),
+    queryKey: [...queryKey, 'all'],
+    queryFn: () => HttpService.get<PaginatedResponse<Role>>('/v1/roles'),
+  });
+};
+
 export const useRoleByIdQuery = (id: string, options?: QueryOptions<Role>) => {
   return useQuery({
     ...(options || {}),

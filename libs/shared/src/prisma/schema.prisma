@@ -26,6 +26,8 @@ model Department {
   hospitalId Int
   Hospital   Hospital @relation(fields: [hospitalId], references: [id])
   User       User[]
+  roleId     Int
+  Role       Role     @relation(fields: [roleId], references: [id])
 
   updatedBy String?
   createdAt DateTime @default(now())
@@ -72,9 +74,10 @@ model Role {
   hospitalId  Int
   Hospital    Hospital         @relation(fields: [hospitalId], references: [id])
 
-  updatedBy String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedBy  String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Department Department[]
 
   @@unique([roleName, hospitalId])
 }
@@ -88,6 +91,8 @@ model UserRole {
 
   updatedBy String?
   createdAt DateTime @default(now())
+
+  @@unique([userId, roleId])
 }
 
 model Permission {

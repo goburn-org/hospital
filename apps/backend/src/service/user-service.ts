@@ -13,7 +13,7 @@ import bcrypt from 'bcrypt';
 
 class UserService {
   async createUser(
-    user: Prisma.UserCreateInput,
+    user: Prisma.UserUncheckedCreateInput,
     password: string,
   ): Promise<User> {
     const reqUser = useAuthUser();
@@ -24,6 +24,28 @@ class UserService {
       },
     });
     this.upsertPassword(res, password);
+    return res;
+  }
+
+  async updateUser(
+    user: Prisma.UserUncheckedCreateInput & {
+      id: string;
+    },
+    password?: string,
+  ): Promise<User> {
+    const reqUser = useAuthUser();
+    const res = await dbClient.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        ...user,
+        updatedBy: reqUser.id,
+      },
+    });
+    if (password) {
+      this.upsertPassword(res, password);
+    }
     return res;
   }
 

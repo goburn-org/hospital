@@ -19,12 +19,16 @@ export const FormInput = <T extends FieldValues = FieldValues>({
   id,
   autoComplete,
   type,
+  isRequired,
+  disabled,
 }: {
   labelName: string;
   placeholder: string;
   id: Path<T>;
   autoComplete: HTMLInputAutoCompleteAttribute;
   type?: HTMLInputTypeAttribute;
+  isRequired?: boolean;
+  disabled?: boolean;
 }) => {
   const { setValue, formState, control } = useFormContext<T>();
   const isReadOnly = useFormMode() === FormMode.ReadOnly;
@@ -34,7 +38,7 @@ export const FormInput = <T extends FieldValues = FieldValues>({
         htmlFor={id}
         className="block text-base font-medium leading-6 text-gray-900"
       >
-        {labelName}
+        {labelName} {isRequired && <span className="text-red-500">*</span>}
       </label>
       <div>
         <Controller
@@ -44,7 +48,7 @@ export const FormInput = <T extends FieldValues = FieldValues>({
             <input
               id={id}
               type={type}
-              disabled={isReadOnly}
+              disabled={isReadOnly || disabled}
               autoComplete={autoComplete}
               className={classNames(
                 getNestedValue(formState.errors, id)
