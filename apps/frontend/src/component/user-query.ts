@@ -8,7 +8,11 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { LoginResponse, UserLoginInput } from '@hospital/shared';
+import {
+  LoginResponse,
+  UserLoginInput,
+  UserWithRolesAndDepartment,
+} from '@hospital/shared';
 import { useEffect } from 'react';
 
 const userQueryKey = ['user'];
@@ -25,7 +29,8 @@ export const useUserQuery = () => {
         }
         HttpService.updateToken(token);
         apiTokenStorage.setToken(token);
-        const user = await HttpService.get<User>('v1/auth');
+        const user =
+          await HttpService.get<UserWithRolesAndDepartment>('v1/auth');
         return user;
       } catch (e) {
         HttpService.updateToken('');

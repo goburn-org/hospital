@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from 'react';
 import { apiTokenStorage } from '../provider/auth/auth-util';
 import { useNavigate } from 'react-router-dom';
 import { HttpService } from '../utils/http';
+import { useUserQuery } from './user-query';
 
 const placeHolders = [
   'Search...',
@@ -26,6 +27,7 @@ const placeHolders = [
 export const Header = () => {
   const { param, updateParam, removeParam } = useParam<'q' | 'status'>();
   const navigate = useNavigate();
+  const { data: user } = useUserQuery();
   const search = param.q;
   const updateSearch = (value: string) => {
     if (value === '') {
@@ -121,13 +123,13 @@ export const Header = () => {
 
                 <span className="flex 2xl:items-center">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary p-5 text-base font-bold text-white">
-                    C
+                    {user?.name[0].toUpperCase()}
                   </span>
                   <span
                     aria-hidden="true"
-                    className="ml-4 text-sm font-semibold leading-6 text-gray-900"
+                    className="ml-4 text-sm font-semibold leading-6 text-gray-900 whitespace-nowrap"
                   >
-                    Chandrakumar
+                    {user?.name}
                   </span>
                   <ChevronDownIcon
                     aria-hidden="true"
@@ -141,8 +143,8 @@ export const Header = () => {
               >
                 <MenuItem>
                   <button className="btn-text btn-text-secondary !items-center !justify-center !text-center">
-                    <span className="text-gray-400">Your Role:</span>
-                    Admin
+                    <span className="text-gray-400">Department:</span>
+                    {user?.Department?.name}
                   </button>
                 </MenuItem>
                 <span className="h-1 w-2/3 self-center rounded-3xl bg-gray-200"></span>
