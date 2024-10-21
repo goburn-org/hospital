@@ -76,6 +76,10 @@ class EmployeeService {
       where: {
         hospitalId,
       },
+      include: {
+        Department: true,
+        UserRole: true,
+      },
       orderBy: sort
         ? {
             [sort.field]: sort.order,

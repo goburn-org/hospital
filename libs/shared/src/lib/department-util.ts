@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 export const createDepartmentSchema = z.object({
@@ -11,3 +12,9 @@ export const updateDepartmentSchema = createDepartmentSchema.extend({
 
 export type CreateDepartmentInput = z.infer<typeof createDepartmentSchema>;
 export type UpdateDepartmentInput = z.infer<typeof updateDepartmentSchema>;
+
+export type DepartmentResponse = Prisma.DepartmentGetPayload<{
+  include: {
+    Role: true;
+  };
+}>;

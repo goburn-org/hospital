@@ -1,4 +1,3 @@
-import { Department } from '@prisma/client';
 import { CustomTable } from '../../component/table';
 import { useDepartmentQuery } from './use-department-query';
 import {
@@ -14,6 +13,7 @@ import { routerConfig, TypingSpeed } from '../../utils/constants';
 import { useParam } from '../../utils/use-param';
 import { useDebounce } from '../../utils/use-debounce';
 import { toPagination, toSortField } from '../../utils/sort-transform';
+import { DepartmentResponse } from '@hospital/shared';
 
 export const DepartmentTable = () => {
   const { param, updateParam } = useParam<'q'>();
@@ -29,7 +29,7 @@ export const DepartmentTable = () => {
     sort: toSortField(sorting),
     search: _search,
   });
-  const columns = useMemo<MRT_ColumnDef<Department>[]>(
+  const columns = useMemo<MRT_ColumnDef<DepartmentResponse>[]>(
     () => [
       {
         accessorKey: 'name',
@@ -61,8 +61,9 @@ export const DepartmentTable = () => {
         },
       },
       {
-        accessorKey: 'description',
-        header: 'Description',
+        accessorKey: 'roleId',
+        header: 'Role',
+        accessorFn: (row) => row.Role?.roleName,
       },
     ],
     [data?.meta.total],

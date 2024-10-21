@@ -14,10 +14,14 @@ model Hospital {
   Department   Department[]
   User         User[]
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  Role       Role[]
-  Permission Permission[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  Role          Role[]
+  Permission    Permission[]
+  Vendor        Vendor[]
+  Product       Product[]
+  ProductIntent ProductIntent[]
+  IntentTrack   IntentTrack[]
 }
 
 model Department {
@@ -29,9 +33,10 @@ model Department {
   roleId     Int
   Role       Role     @relation(fields: [roleId], references: [id])
 
-  updatedBy String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedBy         String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  ProductDepartment ProductDepartment[]
 }
 
 model User {
@@ -66,13 +71,14 @@ model UserLogin {
 }
 
 model Role {
-  id          Int              @id @default(autoincrement())
-  roleName    String
-  description String? // Optional role description
-  roleUsers   UserRole[] // Relationship to users
-  permissions RolePermission[] // Relationship to permissions
-  hospitalId  Int
-  Hospital    Hospital         @relation(fields: [hospitalId], references: [id])
+  id           Int              @id @default(autoincrement())
+  roleName     String
+  description  String? // Optional role description
+  roleUsers    UserRole[] // Relationship to users
+  permissions  RolePermission[] // Relationship to permissions
+  hospitalId   Int
+  Hospital     Hospital         @relation(fields: [hospitalId], references: [id])
+  isSuperAdmin Boolean?         @default(false)
 
   updatedBy  String?
   createdAt  DateTime     @default(now())
@@ -114,6 +120,102 @@ model RolePermission {
   roleId       Int
   permission   Permission @relation(fields: [permissionId], references: [id])
   permissionId Int
+
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Vendor {
+  id          String   @id @default(uuid())
+  name        String
+  phoneNumber String
+  email       String
+  address     String
+  gstNumber   String
+  branchName  String
+  hospitalId  Int
+  Hospital    Hospital @relation(fields: [hospitalId], references: [id])
+
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id           String @id @default(uuid())
+  name         String
+  sku          String
+  hsnCode      String
+  genericName  String
+  brandName    String
+  manufacturer String
+  dosageForm   String
+  strength     String
+  purchaseRate Float
+  saleRate     Float
+  mrp          Float
+  maxDiscount  Float
+
+  hospitalId Int
+  Hospital   Hospital @relation(fields: [hospitalId], references: [id])
+
+  updatedBy         String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  ProductIntent     ProductIntent[]
+  ProductDepartment ProductDepartment[]
+}
+
+model ProductDepartment {
+  id           Int        @id @default(autoincrement())
+  productId    String
+  Product      Product    @relation(fields: [productId], references: [id])
+  departmentId Int
+  Department   Department @relation(fields: [departmentId], references: [id])
+
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, departmentId])
+}
+
+model IntentTrack {
+  id            Int             @id @default(autoincrement())
+  hospitalId    Int
+  Hospital      Hospital        @relation(fields: [hospitalId], references: [id])
+  statusId      Int
+  IntentStatus  IntentStatus    @relation(fields: [statusId], references: [id])
+  color         String
+  updatedBy     String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  ProductIntent ProductIntent[]
+}
+
+model IntentStatus {
+  id     Int           @id @default(autoincrement())
+  name   String
+  tracks IntentTrack[]
+
+  updatedBy     String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  ProductIntent ProductIntent[]
+}
+
+model ProductIntent {
+  id        String       @id @default(uuid())
+  productId String
+  Product   Product      @relation(fields: [productId], references: [id])
+  intentId  Int
+  Intent    IntentStatus @relation(fields: [intentId], references: [id])
+  trackId   Int
+  Track     IntentTrack  @relation(fields: [trackId], references: [id])
+
+  hospitalId Int
+  Hospital   Hospital @relation(fields: [hospitalId], references: [id])
 
   updatedBy String?
   createdAt DateTime @default(now())

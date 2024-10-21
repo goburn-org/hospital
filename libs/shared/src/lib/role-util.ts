@@ -9,5 +9,7 @@ export const updateRoleSchema = createRoleSchema.extend({
   id: z.number(),
 });
 
-export type CreateRoleInput = z.infer<typeof createRoleSchema>;
+export type CreateRoleInput = z.infer<typeof createRoleSchema> & {
+  isSuperAdmin?: boolean;
+};
 export type UpdateRoleInput = z.infer<typeof updateRoleSchema>;

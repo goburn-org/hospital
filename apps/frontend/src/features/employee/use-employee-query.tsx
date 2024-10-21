@@ -4,6 +4,7 @@ import {
   PaginateParamsWithSort,
   UpdateEmployeeInput,
   User,
+  UserWithRolesAndDepartment,
 } from '@hospital/shared';
 import {
   QueryOptions,
@@ -18,15 +19,18 @@ const queryKey = ['employee'];
 
 export const useEmployeeQuery = (
   queryParams: PaginateParamsWithSort,
-  options?: QueryOptions<PaginatedResponse<User>>,
+  options?: QueryOptions<PaginatedResponse<UserWithRolesAndDepartment>>,
 ) => {
   return useQuery({
     ...(options || {}),
     queryKey: [...queryKey, queryParams],
     queryFn: () =>
-      HttpService.get<PaginatedResponse<User>>('/v1/employee', {
-        params: queryParams,
-      }),
+      HttpService.get<PaginatedResponse<UserWithRolesAndDepartment>>(
+        '/v1/employee',
+        {
+          params: queryParams,
+        },
+      ),
   });
 };
 
@@ -37,18 +41,23 @@ export const useEmployeeByIdQuery = (
   return useQuery({
     ...(options || {}),
     queryKey: [...queryKey, id],
-    queryFn: () => HttpService.get<User>(`/v1/employee/${id}`),
+    queryFn: () =>
+      HttpService.get<UserWithRolesAndDepartment>(`/v1/employee/${id}`),
   });
 };
 
 export const useCreateEmployeeMutation = (
-  options?: UseMutationOptions<User, unknown, CreateEmployeeInput>,
+  options?: UseMutationOptions<
+    UserWithRolesAndDepartment,
+    unknown,
+    CreateEmployeeInput
+  >,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     ...(options || {}),
     mutationFn: (data: CreateEmployeeInput) =>
-      HttpService.post<User>('/v1/employee', data),
+      HttpService.post<UserWithRolesAndDepartment>('/v1/employee', data),
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
         predicate(query) {
@@ -61,13 +70,20 @@ export const useCreateEmployeeMutation = (
 };
 
 export const useUpdateEmployeeMutation = (
-  options?: UseMutationOptions<User, unknown, UpdateEmployeeInput>,
+  options?: UseMutationOptions<
+    UserWithRolesAndDepartment,
+    unknown,
+    UpdateEmployeeInput
+  >,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
     ...(options || {}),
     mutationFn: (data: UpdateEmployeeInput) =>
-      HttpService.put<User>(`/v1/employee/${data.id}`, data),
+      HttpService.put<UserWithRolesAndDepartment>(
+        `/v1/employee/${data.id}`,
+        data,
+      ),
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
         predicate(query) {

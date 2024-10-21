@@ -1,15 +1,8 @@
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  CreateEmployeeInput,
-  createEmployeeSchema,
-  UpdateEmployeeInput,
-  updateEmployeeSchema,
-} from '@hospital/shared';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
-import { FormSelect } from '../../component/form/form-select';
 import {
   FormMode,
   FormModeProvider,
@@ -17,30 +10,27 @@ import {
 import { classNames } from '../../utils/classNames';
 import { routerConfig } from '../../utils/constants';
 import { useEsc } from '../../utils/use-esc';
-import { useAllDepartmentQuery } from '../department/use-department-query';
-import {
-  useCreateEmployeeMutation,
-  useUpdateEmployeeMutation,
-} from './use-employee-query';
+import { CreateProductInput, createProductSchema } from '@hospital/shared';
+import { FormSelect } from '../../component/form/form-select';
 import { useAllRoleQuery } from '../role/use-role-query';
+import {
+  useCreateProductMutation,
+  useUpdateProductMutation,
+} from './use-product-query';
 
-export const EmployeeDrawer = ({
+export const ProductDrawer = ({
   defaultValues,
   mode,
   departmentId,
 }: {
-  defaultValues?: CreateEmployeeInput | UpdateEmployeeInput;
+  defaultValues?: CreateProductInput;
   mode: 'create' | 'edit' | 'view';
   departmentId?: string;
 }) => {
   const navigate = useNavigate();
-  const { data: department, isLoading: isDepartmentLoading } =
-    useAllDepartmentQuery();
   const { data: roles, isLoading: isRoleLoading } = useAllRoleQuery();
-  const formProvider = useForm<CreateEmployeeInput>({
-    resolver: zodResolver(
-      mode === 'create' ? createEmployeeSchema : updateEmployeeSchema,
-    ),
+  const formProvider = useForm<CreateProductInput>({
+    resolver: zodResolver(createProductSchema),
     defaultValues,
   });
   useEsc(() => {
@@ -50,10 +40,10 @@ export const EmployeeDrawer = ({
   });
   const editable = mode !== 'view';
   return (
-    <div className="w-[750px]">
+    <div className="w-[500px]">
       <div className="flex items-center justify-between">
         <h1 className="mb-2 text-2xl font-semibold capitalize text-gray-400">
-          {mode} Employee
+          {mode} Product
         </h1>
         <button
           type="button"
@@ -75,77 +65,23 @@ export const EmployeeDrawer = ({
         <FormProvider {...formProvider}>
           <form className="flex max-h-[90vh] flex-col gap-12">
             <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div className="sm:col-span-3">
-                <FormInput<CreateEmployeeInput>
+              <div className="sm:col-span-6">
+                <FormInput<CreateProductInput>
                   isRequired
                   autoComplete="off"
                   id="name"
-                  labelName="Name"
-                  placeholder="eg. John Doe"
+                  labelName="Department Name"
+                  placeholder="eg. Front Office"
                 />
               </div>
-              <div className="sm:col-span-3">
-                <FormInput<CreateEmployeeInput>
+              <div className="sm:col-span-6">
+                <FormSelect<CreateProductInput>
                   isRequired
-                  disabled={mode !== 'create'}
-                  autoComplete="off"
-                  id="email"
-                  labelName="Email"
-                  placeholder="eg. abc@example.com"
-                />
-              </div>
-              <div className="sm:col-span-4">
-                <FormInput<CreateEmployeeInput>
-                  isRequired
-                  autoComplete="off"
-                  id="phoneNumber"
-                  labelName="Phone Number"
-                  placeholder="eg. 1234567890"
-                />
-              </div>
-              <div className="sm:col-span-3">
-                <FormInput<CreateEmployeeInput>
-                  isRequired
-                  autoComplete="off"
-                  id="password.newPassword"
-                  labelName="New Password"
-                  placeholder="eg. ********"
-                />
-              </div>
-              <div className="sm:col-span-3">
-                <FormInput<CreateEmployeeInput>
-                  isRequired
-                  autoComplete="off"
-                  id="password.confirmPassword"
-                  labelName="Confirm Password"
-                  placeholder="eg. ********"
-                />
-                {formProvider.watch('password.newPassword') !==
-                  formProvider.watch('password.confirmPassword') && (
-                  <span className="text-sm text-red-500">
-                    Passwords do not match
-                  </span>
-                )}
-              </div>
-              <div className="sm:col-span-3">
-                <FormSelect<CreateEmployeeInput>
-                  isRequired
-                  id="department"
-                  labelName="Department"
-                  options={department?.data.map((d) => ({
-                    label: d.name,
-                    id: d.id,
-                  }))}
-                  isLoading={isDepartmentLoading}
-                />
-              </div>
-              <div className="sm:col-span-3">
-                <FormSelect<CreateEmployeeInput>
-                  id="roles"
+                  id="brandName"
                   labelName="Role"
                   options={roles?.data.map((d) => ({
                     label: d.roleName,
-                    id: String(d.id),
+                    id: d.id,
                   }))}
                   isLoading={isRoleLoading}
                 />
@@ -170,7 +106,7 @@ const ViewFooter = () => {
         type="button"
         className="btn-text btn-text-secondary"
         onClick={() => {
-          const path = `../../${routerConfig.Employee}/${routerConfig.Edit}/${id}`;
+          const path = `../../${routerConfig.Department}/${routerConfig.Edit}/${id}`;
           navigate(path, {
             replace: true,
           });
@@ -194,8 +130,8 @@ const ViewFooter = () => {
 };
 
 const CreateFooter = () => {
-  const formProvider = useFormContext<CreateEmployeeInput>();
-  const { mutateAsync } = useCreateEmployeeMutation({
+  const formProvider = useFormContext<CreateProductInput>();
+  const { mutateAsync } = useCreateProductMutation({
     onError: (err) => {
       if (err instanceof Error) {
         formProvider.setError('name', {
@@ -273,8 +209,8 @@ const CreateFooter = () => {
 const EditFooter = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const formProvider = useFormContext<CreateEmployeeInput>();
-  const { mutateAsync } = useUpdateEmployeeMutation({
+  const formProvider = useFormContext<CreateProductInput>();
+  const { mutateAsync } = useUpdateProductMutation({
     onSuccess: () => {
       navigate('..', {
         replace: true,

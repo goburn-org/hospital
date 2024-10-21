@@ -52,6 +52,9 @@ export const RoleDrawer = ({
           <XMarkIcon className="h-8 w-8" />
         </button>
       </div>
+      <p className="sm:col-span-6 text-sm text-red-500">
+        {defaultValues?.isSuperAdmin ? 'Super Admin role' : ''}
+      </p>
       <FormModeProvider
         mode={editable ? FormMode.Editable : FormMode.ReadOnly}
         oldId={roleId}

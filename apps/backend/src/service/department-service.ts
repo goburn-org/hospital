@@ -1,24 +1,30 @@
 import {
+  DepartmentResponse,
   PaginatedResponse,
   PaginateParamsWithSort,
   UpdateDepartmentInput,
 } from '@hospital/shared';
-import { Department, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { dbClient } from '../prisma';
 import { useAuthUser } from '../provider/async-context';
 
 class DepartmentService {
-  create(data: Prisma.DepartmentUncheckedCreateInput) {
+  create(
+    data: Prisma.DepartmentUncheckedCreateInput,
+  ): Promise<DepartmentResponse> {
     const user = useAuthUser();
     return dbClient.department.create({
       data: {
         ...data,
         updatedBy: user.id,
       },
+      include: {
+        Role: true,
+      },
     });
   }
 
-  update(data: UpdateDepartmentInput) {
+  update(data: UpdateDepartmentInput): Promise<DepartmentResponse> {
     const user = useAuthUser();
     return dbClient.department.update({
       where: {
@@ -27,6 +33,9 @@ class DepartmentService {
       data: {
         ...data,
         updatedBy: user.id,
+      },
+      include: {
+        Role: true,
       },
     });
   }
@@ -37,11 +46,14 @@ class DepartmentService {
   }: {
     hospitalId: number;
     options?: PaginateParamsWithSort;
-  }): Promise<PaginatedResponse<Department>> {
+  }): Promise<PaginatedResponse<DepartmentResponse>> {
     const { paginate, sort } = options || {};
     const data = await dbClient.department.findMany({
       where: {
         hospitalId,
+      },
+      include: {
+        Role: true,
       },
       orderBy: sort
         ? {
@@ -66,10 +78,13 @@ class DepartmentService {
     };
   }
 
-  getById(id: number) {
+  getById(id: number): Promise<DepartmentResponse | null> {
     return dbClient.department.findUnique({
       where: {
         id,
+      },
+      include: {
+        Role: true,
       },
     });
   }
