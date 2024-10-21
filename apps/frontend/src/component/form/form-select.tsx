@@ -8,11 +8,11 @@ import { LeadingAny } from '../leading-any-input';
 import { CustomSelect, SelectOption } from '../select';
 import { getNestedValue } from './form-util';
 
-const getError = (error?: any) => {
+const getError = (error?: unknown) => {
   if (typeof error === 'string') {
     return error;
   }
-  return error;
+  return error as string;
 };
 export const FormSelect = <T extends FieldValues = FieldValues>({
   labelName,

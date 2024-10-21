@@ -81,7 +81,7 @@ export const EmployeeDrawer = ({
                   autoComplete="off"
                   id="name"
                   labelName="Name"
-                  placeholder="eg. John Doe"
+                  placeholder=" John Doe"
                 />
               </div>
               <div className="sm:col-span-3">
@@ -91,7 +91,7 @@ export const EmployeeDrawer = ({
                   autoComplete="off"
                   id="email"
                   labelName="Email"
-                  placeholder="eg. abc@example.com"
+                  placeholder=" abc@example.com"
                 />
               </div>
               <div className="sm:col-span-4">
@@ -100,7 +100,7 @@ export const EmployeeDrawer = ({
                   autoComplete="off"
                   id="phoneNumber"
                   labelName="Phone Number"
-                  placeholder="eg. 1234567890"
+                  placeholder=" 1234567890"
                 />
               </div>
               <div className="sm:col-span-3">
@@ -109,7 +109,7 @@ export const EmployeeDrawer = ({
                   autoComplete="off"
                   id="password.newPassword"
                   labelName="New Password"
-                  placeholder="eg. ********"
+                  placeholder=" ********"
                 />
               </div>
               <div className="sm:col-span-3">
@@ -118,7 +118,7 @@ export const EmployeeDrawer = ({
                   autoComplete="off"
                   id="password.confirmPassword"
                   labelName="Confirm Password"
-                  placeholder="eg. ********"
+                  placeholder=" ********"
                 />
                 {formProvider.watch('password.newPassword') !==
                   formProvider.watch('password.confirmPassword') && (

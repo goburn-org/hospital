@@ -74,7 +74,7 @@ export const DepartmentDrawer = ({
                   autoComplete="off"
                   id="name"
                   labelName="Department Name"
-                  placeholder="eg. Front Office"
+                  placeholder=" Front Office"
                 />
               </div>
               <div className="sm:col-span-6">

@@ -11,12 +11,12 @@ import { classNames } from '../../utils/classNames';
 import { routerConfig } from '../../utils/constants';
 import { useEsc } from '../../utils/use-esc';
 import { CreateProductInput, createProductSchema } from '@hospital/shared';
-import { FormSelect } from '../../component/form/form-select';
-import { useAllRoleQuery } from '../role/use-role-query';
 import {
   useCreateProductMutation,
   useUpdateProductMutation,
 } from './use-product-query';
+import { CustomSelect, SelectOption } from '../../component/select';
+import { useAllDepartmentQuery } from '../department/use-department-query';
 
 export const ProductDrawer = ({
   defaultValues,
@@ -28,7 +28,6 @@ export const ProductDrawer = ({
   departmentId?: string;
 }) => {
   const navigate = useNavigate();
-  const { data: roles, isLoading: isRoleLoading } = useAllRoleQuery();
   const formProvider = useForm<CreateProductInput>({
     resolver: zodResolver(createProductSchema),
     defaultValues,
@@ -40,7 +39,7 @@ export const ProductDrawer = ({
   });
   const editable = mode !== 'view';
   return (
-    <div className="w-[500px]">
+    <div className="w-[800px]">
       <div className="flex items-center justify-between">
         <h1 className="mb-2 text-2xl font-semibold capitalize text-gray-400">
           {mode} Product
@@ -65,26 +64,121 @@ export const ProductDrawer = ({
         <FormProvider {...formProvider}>
           <form className="flex max-h-[90vh] flex-col gap-12">
             <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div className="sm:col-span-6">
+              <div className="sm:col-span-2">
                 <FormInput<CreateProductInput>
                   isRequired
                   autoComplete="off"
                   id="name"
-                  labelName="Department Name"
-                  placeholder="eg. Front Office"
+                  labelName="Product Name"
+                  placeholder=" Pracitomol 650"
                 />
               </div>
-              <div className="sm:col-span-6">
-                <FormSelect<CreateProductInput>
+              <div className="sm:col-span-2">
+                <FormInput<CreateProductInput>
+                  isRequired
+                  id="dosageForm"
+                  labelName="Dosage Form"
+                  placeholder=" Tablet"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <FormInput<CreateProductInput>
+                  isRequired
+                  id="strength"
+                  labelName="Strength"
+                  placeholder="650"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <FormInput<CreateProductInput>
                   isRequired
                   id="brandName"
-                  labelName="Role"
-                  options={roles?.data.map((d) => ({
-                    label: d.roleName,
-                    id: d.id,
-                  }))}
-                  isLoading={isRoleLoading}
+                  labelName="Brand Name"
+                  placeholder=" Crocin"
+                  autoComplete="off"
                 />
+              </div>
+              <div className="sm:col-span-2">
+                <FormInput<CreateProductInput>
+                  isRequired
+                  id="genericName"
+                  labelName="Generic Name"
+                  placeholder=" Paracetamol"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <FormInput<CreateProductInput>
+                  isRequired
+                  id="manufacturer"
+                  labelName="Manufacturer"
+                  placeholder=" Tablet"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="sm:col-span-3">
+                <FormInput<CreateProductInput>
+                  isRequired
+                  id="hsnCode"
+                  labelName="Hsn Code"
+                  placeholder=" 123456"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="sm:col-span-3">
+                <FormInput<CreateProductInput>
+                  isRequired
+                  id="sku"
+                  labelName="SKU Code"
+                  placeholder=" 123456"
+                  autoComplete="off"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <FormInput<CreateProductInput>
+                  isRequired
+                  id="purchaseRate"
+                  labelName="Purchase Rate"
+                  placeholder=" 0.85"
+                  type="number"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <FormInput<CreateProductInput>
+                  isRequired
+                  id="saleRate"
+                  labelName="Sale Rate"
+                  placeholder=" 2"
+                  type="number"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <FormInput<CreateProductInput>
+                  isRequired
+                  id="mrp"
+                  labelName="MRP"
+                  placeholder=" 2"
+                  type="number"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="sm:col-span-3">
+                <FormInput<CreateProductInput>
+                  isRequired
+                  id="maxDiscount"
+                  labelName="Max Discount"
+                  placeholder=" 20"
+                  type="number"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="sm:col-span-3">
+                <DepartmentSelect />
               </div>
             </div>
             {mode === 'view' ? <ViewFooter /> : null}
@@ -94,6 +188,30 @@ export const ProductDrawer = ({
         </FormProvider>
       </FormModeProvider>
     </div>
+  );
+};
+
+const DepartmentSelect = () => {
+  const { data, isLoading } = useAllDepartmentQuery();
+  const { watch, setValue } = useFormContext<CreateProductInput>();
+  return (
+    <CustomSelect
+      multiple
+      isRequired
+      isLoading={isLoading}
+      htmlFor="departmentId"
+      labelName="Department"
+      options={data?.data.map(
+        (d): SelectOption => ({
+          id: d.id,
+          label: d.name,
+        }),
+      )}
+      value={watch('departmentIds')}
+      onChange={function (value) {
+        setValue('departmentIds', value as number[]);
+      }}
+    />
   );
 };
 

@@ -26,25 +26,32 @@ export const CustomSelect = <Option extends SelectOption>({
   buttonClassName,
   isLoading,
   isRequired,
+  multiple,
 }: {
   labelName: string;
   htmlFor: string;
   options?: Option[];
   isLoading?: boolean;
-  onChange: (value: string) => void;
-  value: string;
+  onChange: (value: (string | number)[] | string | number) => void;
+  value: (string | number)[];
   defaultValue?: string;
   disabled?: boolean;
   buttonClassName?: string;
   isRequired?: boolean;
+  multiple?: boolean;
 }) => {
+  const selection = Array.isArray(value) ? value : [value];
+  const initialValue = multiple
+    ? ([] as (string | number)[])
+    : ('' as string | number);
   return (
     <Listbox
       as="div"
-      value={value ?? ''}
+      value={value || initialValue}
       onChange={(e) => {
         onChange(e);
       }}
+      multiple={multiple}
     >
       {labelName ? (
         <Label
@@ -74,7 +81,9 @@ export const CustomSelect = <Option extends SelectOption>({
         >
           <span className="inline-flex w-full truncate">
             <span className="truncate">
-              {options?.find((o) => o.id === value)?.label}
+              {selection
+                .map((v) => options?.find((o) => o.id === v)?.label)
+                .join(', ')}
             </span>
           </span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -132,7 +141,7 @@ export const CustomSelect = <Option extends SelectOption>({
               key={option.id}
               value={option.id}
               className={classNames(
-                option.id === value ? 'bg-gray-100' : '',
+                selection.includes(option.id) ? 'bg-gray-100' : '',
                 'group relative cursor-default select-none py-2 pl-3 pr-4 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white',
               )}
             >

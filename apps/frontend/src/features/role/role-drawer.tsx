@@ -68,7 +68,7 @@ export const RoleDrawer = ({
                   autoComplete="off"
                   id="roleName"
                   labelName="Role Name"
-                  placeholder="eg. Admin"
+                  placeholder=" Admin"
                 />
               </div>
               <div className="sm:col-span-6">
@@ -76,7 +76,7 @@ export const RoleDrawer = ({
                   autoComplete="off"
                   id="description"
                   labelName="Role Description"
-                  placeholder="eg. Manages all the things"
+                  placeholder=" Manages all the things"
                 />
               </div>
             </div>

@@ -59,7 +59,9 @@ export const FormInput = <T extends FieldValues = FieldValues>({
               placeholder={placeholder}
               value={field.value ?? ''}
               onChange={(e) => {
-                setValue(id, e.target.value as PathValue<T, Path<T>>, {
+                const value =
+                  type === 'number' ? Number(e.target.value) : e.target.value;
+                setValue(id, value as PathValue<T, Path<T>>, {
                   shouldValidate: true,
                   shouldTouch: true,
                 });
