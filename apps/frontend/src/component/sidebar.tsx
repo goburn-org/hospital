@@ -25,7 +25,7 @@ const navigation = [
   },
   {
     name: 'User Management',
-    href: routerConfig.UserRoute,
+    href: `${routerConfig.UserRoute}/${routerConfig.Employee}`,
     icon: UserCircleIcon,
     current: false,
   },
@@ -102,7 +102,7 @@ const MobileSidebar = ({
                         <item.icon
                           aria-hidden="true"
                           className={classNames(
-                            pathname == item.href ||
+                            pathname === item.href ||
                               pathname.startsWith(item.href)
                               ? 'text-white'
                               : 'text-violet-300 group-hover:text-white',
@@ -154,7 +154,7 @@ const DesktopSidebar = () => {
                 <Link
                   to={item.href}
                   className={
-                    pathname == item.href || pathname.startsWith(item.href)
+                    pathname === item.href || pathname.startsWith(item.href)
                       ? 'sidebar-nav-selected group'
                       : 'sidebar-nav-unselected group'
                   }
@@ -162,7 +162,7 @@ const DesktopSidebar = () => {
                   <item.icon
                     aria-hidden="true"
                     className={classNames(
-                      pathname == item.href || pathname.startsWith(item.href)
+                      pathname === item.href || pathname.startsWith(item.href)
                         ? 'text-white'
                         : 'text-violet-300 group-hover:text-white',
                       'h-6 w-6 shrink-0',

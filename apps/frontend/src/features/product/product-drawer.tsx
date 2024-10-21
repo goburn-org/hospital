@@ -6,6 +6,7 @@ import { FormInput } from '../../component/form/form-input';
 import {
   FormMode,
   FormModeProvider,
+  useFormMode,
 } from '../../provider/form-context-provider/form-mode-provider';
 import { classNames } from '../../utils/classNames';
 import { routerConfig } from '../../utils/constants';
@@ -194,10 +195,12 @@ export const ProductDrawer = ({
 const DepartmentSelect = () => {
   const { data, isLoading } = useAllDepartmentQuery();
   const { watch, setValue } = useFormContext<CreateProductInput>();
+  const isReadOnly = useFormMode() === FormMode.ReadOnly;
   return (
     <CustomSelect
       multiple
       isRequired
+      disabled={isReadOnly}
       isLoading={isLoading}
       htmlFor="departmentId"
       labelName="Department"
@@ -224,7 +227,7 @@ const ViewFooter = () => {
         type="button"
         className="btn-text btn-text-secondary"
         onClick={() => {
-          const path = `../../${routerConfig.Department}/${routerConfig.Edit}/${id}`;
+          const path = `../../${routerConfig.Inventory}/${routerConfig.Edit}/${id}`;
           navigate(path, {
             replace: true,
           });
