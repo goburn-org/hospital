@@ -14,9 +14,14 @@ export const Component = () => {
   if (!data) {
     return <div>Employee not found</div>;
   }
+  console.log({ ...data, roles: data.UserRole.map((r) => r.id) });
   return (
     <CustomDialog open={true}>
-      <EmployeeDrawer mode="view" defaultValues={data} departmentId={id} />
+      <EmployeeDrawer
+        mode="view"
+        defaultValues={{ ...data, roles: data.UserRole.map((r) => r.roleId) }}
+        departmentId={id}
+      />
     </CustomDialog>
   );
 };

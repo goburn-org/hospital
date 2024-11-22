@@ -141,11 +141,12 @@ export const EmployeeDrawer = ({
               </div>
               <div className="sm:col-span-3">
                 <FormSelect<CreateEmployeeInput>
+                  multiple
                   id="roles"
                   labelName="Role"
                   options={roles?.data.map((d) => ({
                     label: d.roleName,
-                    id: String(d.id),
+                    id: Number(d.id),
                   }))}
                   isLoading={isRoleLoading}
                 />
@@ -236,10 +237,10 @@ const CreateFooter = () => {
         )}
         disabled={formProvider.formState.isSubmitting}
         onClick={async () => {
-          console.log(formProvider.getValues());
           await formProvider.handleSubmit((data) => {
             return mutateAsync(data);
           })();
+          console.log(formProvider.formState.errors);
         }}
       >
         {formProvider.formState.isSubmitting ? (

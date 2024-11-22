@@ -20,6 +20,7 @@ export const FormSelect = <T extends FieldValues = FieldValues>({
   id,
   isLoading,
   isRequired,
+  multiple,
 }: {
   labelName: string;
   isRequired?: boolean;
@@ -27,9 +28,11 @@ export const FormSelect = <T extends FieldValues = FieldValues>({
   type?: HTMLInputTypeAttribute;
   options?: SelectOption[];
   isLoading: boolean;
+  multiple?: boolean;
 }) => {
   const { setValue, formState, watch } = useFormContext<T>();
   const isReadOnly = useFormMode() === FormMode.ReadOnly;
+  console.log(options);
   const error = formState.errors;
   return (
     <LeadingAny
@@ -50,6 +53,7 @@ export const FormSelect = <T extends FieldValues = FieldValues>({
           value={watch(id)}
           buttonClassName="py-3"
           isLoading={isLoading}
+          multiple={multiple}
         />
       </div>
     </LeadingAny>

@@ -23,7 +23,7 @@ export const useEmployeeQuery = (
 ) => {
   return useQuery({
     ...(options || {}),
-    queryKey: [...queryKey, queryParams],
+    queryKey: [...queryKey, queryParams, options],
     queryFn: () =>
       HttpService.get<PaginatedResponse<UserWithRolesAndDepartment>>(
         '/v1/employee',
@@ -36,7 +36,7 @@ export const useEmployeeQuery = (
 
 export const useEmployeeByIdQuery = (
   id: string,
-  options?: QueryOptions<User>,
+  options?: QueryOptions<UserWithRolesAndDepartment>,
 ) => {
   return useQuery({
     ...(options || {}),

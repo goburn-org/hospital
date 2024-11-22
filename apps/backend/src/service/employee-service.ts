@@ -1,16 +1,53 @@
 import {
   CreateEmployeeInput,
   ensure,
+  Maybe,
   PaginatedResponse,
   PaginateParamsWithSort,
   UpdateEmployeeInput,
 } from '@hospital/shared';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { dbClient } from '../prisma';
 import { useAuthUser } from '../provider/async-context';
 import { userService } from './user-service';
 
 class EmployeeService {
+  constructSearchQuery(search: Maybe<string>): Prisma.UserWhereInput {
+    if (search) {
+      return {
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            email: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            phoneNumber: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            Department: {
+              name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          },
+        ],
+      };
+    }
+    return {};
+  }
+
   async create(data: CreateEmployeeInput) {
     const authUser = useAuthUser();
     const user = await userService.createUser(
@@ -75,6 +112,7 @@ class EmployeeService {
     const data = await dbClient.user.findMany({
       where: {
         hospitalId,
+        ...this.constructSearchQuery(options?.search),
       },
       include: {
         Department: true,

@@ -22,7 +22,7 @@ export const usePatientQuery = (
 ) => {
   return useQuery({
     ...(options || {}),
-    queryKey: [...queryKey, queryParams],
+    queryKey: [...queryKey, queryParams, options],
     queryFn: () =>
       HttpService.get<PaginatedResponse<PatientResponse>>('/v1/patient', {
         params: queryParams,

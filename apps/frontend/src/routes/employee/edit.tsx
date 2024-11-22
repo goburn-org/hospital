@@ -16,7 +16,11 @@ export const Component = () => {
   }
   return (
     <CustomDialog open={true}>
-      <EmployeeDrawer mode="edit" defaultValues={data} departmentId={id} />
+      <EmployeeDrawer
+        mode="edit"
+        defaultValues={{ ...data, roles: data.UserRole.map((r) => r.roleId) }}
+        departmentId={id}
+      />
     </CustomDialog>
   );
 };
