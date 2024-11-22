@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { classNames } from '../utils/classNames';
 import { ProjectName, routerConfig } from '../utils/constants';
 import { Link, useLocation } from 'react-router-dom';
+import Tooltip from './tooltip';
 
 const navigation = [
   {
@@ -138,56 +139,58 @@ const MobileSidebar = ({
 const DesktopSidebar = () => {
   const { pathname } = useLocation();
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-sidebar pb-6">
-      <div className="flex shrink-0 items-center border-r-2 border-sidebar bg-white">
+    <>
+      <div className="flex h-16 shrink-0 items-center justify-center">
         <img
-          alt={ProjectName}
-          src="https://logowik.com/content/uploads/images/apollo-hospitals9684.jpg"
-          className="m-auto h-48 w-auto object-cover"
+          alt="Logo"
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJHBnK_iFpzeT3O5vAkHu9Ynl2CO_DK1wPNQ&s"
+          className="h-8 w-auto"
         />
       </div>
-      <nav className="flex flex-1 flex-col">
+      <nav className="flex flex-1 flex-col h-[92%]">
         <ul className="flex flex-1 flex-col gap-y-7">
-          <ul>
+          {/* Navigation Items */}
+          <ul className="flex flex-col items-center space-y-1">
             {navigation.map((item) => (
               <li key={item.name}>
-                <Link
-                  to={item.href}
-                  className={
+                <a
+                  href={item.href}
+                  className={classNames(
                     pathname === item.href || pathname.startsWith(item.href)
-                      ? 'sidebar-nav-selected group'
-                      : 'sidebar-nav-unselected group'
-                  }
+                      ? 'bg-gray-800 text-white'
+                      : 'text-gray-400 hover:bg-gray-800 hover:text-white',
+                    'group flex gap-x-3 rounded-md p-3 text-sm/6 font-semibold',
+                  )}
                 >
-                  <item.icon
-                    aria-hidden="true"
-                    className={classNames(
-                      pathname === item.href || pathname.startsWith(item.href)
-                        ? 'text-white'
-                        : 'text-violet-300 group-hover:text-white',
-                      'h-6 w-6 shrink-0',
-                    )}
-                  />
-                  {item.name}
-                </Link>
+                  <Tooltip text={item.name}>
+                    <item.icon
+                      aria-hidden="true"
+                      className="h-6 w-6 shrink-0"
+                    />
+                  </Tooltip>
+                </a>
               </li>
             ))}
           </ul>
-          <li className="mt-auto">
+
+          {/* Spacer to push settings item to the bottom */}
+          <div className="flex-1"></div>
+
+          {/* Settings Item */}
+          <li className="flex flex-col items-center space-y-1">
             <Link
               to="#"
-              className="group mx-3 flex gap-x-3 rounded-md bg-violet-100 p-2 text-sm font-semibold leading-6 text-black hover:bg-gray-900 hover:text-white"
+              className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-violet-300 hover:bg-gray-900 hover:text-white"
             >
               <Cog6ToothIcon
                 aria-hidden="true"
-                className="h-6 w-6 shrink-0 text-black group-hover:text-white"
+                className="h-6 w-6 shrink-0 text-violet-300 group-hover:text-white"
               />
-              Settings
             </Link>
           </li>
         </ul>
       </nav>
-    </div>
+    </>
   );
 };
 export const Sidebar = () => {
@@ -203,7 +206,7 @@ export const Sidebar = () => {
           setSidebarOpen={setSidebarOpen}
         />
       </div>
-      <div className="hidden 2xl:fixed 2xl:inset-y-0 2xl:z-50 2xl:flex 2xl:w-64 2xl:flex-col">
+      <div className="hidden sm:fixed sm:inset-y-0 sm:left-0 sm:z-50 sm:block sm:w-20 sm:overflow-y-auto sm:bg-gray-900 sm:pb-4">
         <DesktopSidebar />
       </div>
     </>
