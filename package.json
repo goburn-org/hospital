@@ -3,7 +3,14 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev:db-local-start": "docker compose -f docker-compose-local.yml up -d db"
+    "dev:db-local-start": "docker compose -f docker-compose-local.yml up -d db",
+    "dev:web": "yarn nx serve frontend",
+    "dev:api": "yarn nx serve backend",
+    "db:push": "yarn prisma push dev",
+    "db:migrate": "yarn prisma migrate dev",
+    "db:studio": "yarn prisma studio",
+    "nx:reset": "yarn nx reset",
+    "nx:format": "yarn nx format:write"
   },
   "private": true,
   "dependencies": {
