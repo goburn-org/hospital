@@ -1,3 +1,4 @@
+/// <reference types="vite-plugin-svgr/client" />
 export function App() {
   return (
     <div>

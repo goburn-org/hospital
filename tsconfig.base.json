@@ -11,10 +11,12 @@
     "target": "es2015",
     "module": "ESNext",
     "jsx": "react-jsx",
+    "esModuleInterop": true,
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "resolveJsonModule": true,
     "paths": {
       "@hospital/shared": ["libs/shared/src/index.ts"]
     }

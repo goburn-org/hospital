@@ -16,6 +16,25 @@ export type SelectOption = {
   icon?: ReactNode;
 };
 
+type Props<Option extends SelectOption> = {
+  labelName: string;
+  htmlFor: string;
+  options?: Option[];
+  isLoading?: boolean;
+  onChange: Props<Option>['multiple'] extends true
+    ? (value: Option['id'][]) => void
+    : (value: Option['id']) => void;
+  value?: Props<Option>['multiple'] extends true
+    ? (string | number)[] | null
+    : string | number | null;
+  defaultValue?: string;
+  disabled?: boolean;
+  buttonClassName?: string;
+  isRequired?: boolean;
+  multiple?: boolean;
+  error?: string;
+};
+
 export const CustomSelect = <Option extends SelectOption>({
   labelName,
   htmlFor,
@@ -27,19 +46,8 @@ export const CustomSelect = <Option extends SelectOption>({
   isLoading,
   isRequired,
   multiple,
-}: {
-  labelName: string;
-  htmlFor: string;
-  options?: Option[];
-  isLoading?: boolean;
-  onChange: (value: (string | number)[] | string | number) => void;
-  value: (string | number)[];
-  defaultValue?: string;
-  disabled?: boolean;
-  buttonClassName?: string;
-  isRequired?: boolean;
-  multiple?: boolean;
-}) => {
+  error,
+}: Props<Option>) => {
   const selection = Array.isArray(value) ? value : [value];
   const initialValue = multiple
     ? ([] as (string | number)[])
@@ -49,7 +57,7 @@ export const CustomSelect = <Option extends SelectOption>({
       as="div"
       value={value || initialValue}
       onChange={(e) => {
-        onChange(e);
+        onChange(e as any);
       }}
       multiple={multiple}
     >
@@ -168,6 +176,9 @@ export const CustomSelect = <Option extends SelectOption>({
             </ListboxOption>
           ))}
         </ListboxOptions>
+      </div>
+      <div>
+        {error ? <p className="text-base text-red-500">{error}</p> : null}
       </div>
     </Listbox>
   );

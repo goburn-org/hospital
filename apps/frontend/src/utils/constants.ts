@@ -2,6 +2,7 @@ export const ProjectName = 'Apollo Health';
 const UserRoute = '/ut';
 const DashboardRoute = '/dashboard';
 const Inventory = '/inventory';
+const Patient = '/patient';
 const New = 'new';
 const Edit = 'edit';
 const View = 'view';
@@ -25,6 +26,7 @@ export const routerConfig = {
   Department,
   Role,
   Employee,
+  Patient,
 };
 
 export const TypingSpeed = 700;

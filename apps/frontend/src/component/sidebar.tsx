@@ -16,12 +16,13 @@ import { classNames } from '../utils/classNames';
 import { ProjectName, routerConfig } from '../utils/constants';
 import { Link, useLocation } from 'react-router-dom';
 import Tooltip from './tooltip';
+import PatientIcon from '../asset/patient.svg?react';
 
 const navigation = [
   {
-    name: 'Dashboard',
-    href: routerConfig.DashboardRoute,
-    icon: HomeIcon,
+    name: 'Patient',
+    href: routerConfig.Patient,
+    icon: PatientIcon,
     current: false,
   },
   {

@@ -1,7 +1,9 @@
 import { HttpError } from './http-error';
+import moment from 'moment-timezone';
 
 export type Maybe<T> = T | null | undefined;
 export type Sure<T> = Exclude<T, null | undefined>;
+export type DateLike = string | number | Date;
 // Explicit type annotation for the 'ensure' function
 export const ensure: (
   value: unknown,
@@ -105,4 +107,34 @@ export const validateSearch = (search: unknown): search is Maybe<string> => {
     return true;
   }
   return typeof search === 'string';
+};
+
+export type NullOrUndefined<T> = T extends null | undefined
+  ? undefined | null
+  : T extends Date // Handle Date explicitly
+    ? Date
+    : T extends Array<infer U> // Handle arrays
+      ? Array<NullOrUndefined<U>>
+      : T extends object // Recursively handle objects
+        ? { [K in keyof T]: NullOrUndefined<T[K]> }
+        : T; // Primitive types remain unchanged
+
+export const toDate = (date: DateLike) => {
+  if (date instanceof Date) {
+    return date;
+  }
+  return new Date(date);
+};
+
+export const humanizedDate = (rawDate: DateLike) => {
+  const date = toDate(rawDate);
+  const isInLast3Days = date.getDate() - new Date().getDate() <= 3;
+  if (isInLast3Days) {
+    return `${moment(date).fromNow()} (${moment(date).format('lll')})`;
+  }
+  const isToday = moment(date).isSame(new Date(), 'day');
+  if (isToday) {
+    return `Today (${moment(date).format('lll')})`;
+  }
+  return moment(date).format('lll');
 };

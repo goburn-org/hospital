@@ -221,3 +221,31 @@ model ProductIntent {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model Patient {
+  uhid         String    @id @default(uuid())
+  name         String
+  gender       Gender
+  mobile       String
+  fatherName   String
+  hospitalId   Int
+  dob          DateTime?
+  bornYear     Int?
+  aadharNumber String?
+  aadharName   String?
+  bloodGroup   String?
+  address      String?
+  city         String?
+  pincode      String?
+  isDeleted    Boolean   @default(false)
+
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

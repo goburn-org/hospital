@@ -77,6 +77,23 @@ const inventoryRoutes = (
   </Route>
 );
 
+const patientRoutes = (
+  <Route path={routerConfig.Patient} lazy={() => import('./routes/patient')}>
+    <Route
+      path={routerConfig.New}
+      lazy={() => import('./routes/patient/new')}
+    />
+    <Route
+      path={`${routerConfig.View}/:id`}
+      lazy={() => import('./routes/patient/view')}
+    />
+    <Route
+      path={`${routerConfig.Edit}/:id`}
+      lazy={() => import('./routes/patient/edit')}
+    />
+  </Route>
+);
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
@@ -84,6 +101,7 @@ export const router = createBrowserRouter(
       <Route path="/" lazy={() => import('./routes/entry-point')}>
         {userRoutes}
         {inventoryRoutes}
+        {patientRoutes}
       </Route>
     </Route>,
   ),
