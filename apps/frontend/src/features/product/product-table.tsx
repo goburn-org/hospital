@@ -6,7 +6,6 @@ import {
   useMaterialReactTable,
 } from 'material-react-table';
 import { useMemo, useState } from 'react';
-import Tooltip from '@mui/material/Tooltip';
 import { Link } from 'react-router-dom';
 import { routerConfig, TypingSpeed } from '../../utils/constants';
 import { useParam } from '../../utils/use-param';
@@ -14,6 +13,7 @@ import { useDebounce } from '../../utils/use-debounce';
 import { toPagination, toSortField } from '../../utils/sort-transform';
 import { Product } from '@hospital/shared';
 import { useProductQuery } from './use-product-query';
+import Tooltip from '../../component/tooltip';
 
 export const ProductTable = () => {
   const { param, updateParam } = useParam<'q'>();
@@ -37,7 +37,7 @@ export const ProductTable = () => {
         enableSorting: true,
         Header() {
           return (
-            <Tooltip title={`Total Departments ${data?.meta.total}`}>
+            <Tooltip text={`Total Products ${data?.meta.total}`}>
               <div className="flex items-center gap-2">
                 <span>Product Name</span>
                 <span className="text-sm text-gray-500">

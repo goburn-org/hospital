@@ -8,12 +8,12 @@ import {
   useMaterialReactTable,
 } from 'material-react-table';
 import { useMemo, useState } from 'react';
-import Tooltip from '@mui/material/Tooltip';
 import { Link } from 'react-router-dom';
 import { routerConfig, TypingSpeed } from '../../utils/constants';
 import { useParam } from '../../utils/use-param';
 import { useDebounce } from '../../utils/use-debounce';
 import { toPagination, toSortField } from '../../utils/sort-transform';
+import Tooltip from '../../component/tooltip';
 
 export const RoleTable = () => {
   const { param, updateParam } = useParam<'q'>();
@@ -37,7 +37,7 @@ export const RoleTable = () => {
         enableSorting: true,
         Header() {
           return (
-            <Tooltip title={`Total Roles ${data?.meta.total}`}>
+            <Tooltip text={`Total Roles ${data?.meta.total}`}>
               <div className="flex items-center gap-2">
                 <span>Role Name</span>
                 <span className="text-sm text-gray-500">

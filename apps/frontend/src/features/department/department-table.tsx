@@ -7,13 +7,13 @@ import {
   useMaterialReactTable,
 } from 'material-react-table';
 import { useMemo, useState } from 'react';
-import Tooltip from '@mui/material/Tooltip';
 import { Link } from 'react-router-dom';
 import { routerConfig, TypingSpeed } from '../../utils/constants';
 import { useParam } from '../../utils/use-param';
 import { useDebounce } from '../../utils/use-debounce';
 import { toPagination, toSortField } from '../../utils/sort-transform';
 import { DepartmentResponse } from '@hospital/shared';
+import Tooltip from '../../component/tooltip';
 
 export const DepartmentTable = () => {
   const { param, updateParam } = useParam<'q'>();
@@ -37,7 +37,7 @@ export const DepartmentTable = () => {
         enableSorting: true,
         Header() {
           return (
-            <Tooltip title={`Total Departments ${data?.meta.total}`}>
+            <Tooltip text={`Total Departments ${data?.meta.total}`}>
               <div className="flex items-center gap-2">
                 <span>Department Name</span>
                 <span className="text-sm text-gray-500">

@@ -1,5 +1,4 @@
 import { DateLike, humanizedDate, PatientResponse } from '@hospital/shared';
-import Tooltip from '@mui/material/Tooltip';
 import {
   MRT_ColumnDef,
   MRT_PaginationState,
@@ -14,6 +13,7 @@ import { toPagination, toSortField } from '../../utils/sort-transform';
 import { useDebounce } from '../../utils/use-debounce';
 import { useParam } from '../../utils/use-param';
 import { usePatientQuery } from './use-patient-query';
+import Tooltip from '../../component/tooltip';
 
 export const PatientTable = () => {
   const { param, updateParam } = useParam<'q'>();
@@ -38,7 +38,7 @@ export const PatientTable = () => {
         enableResizing: true,
         Header() {
           return (
-            <Tooltip title={`Total Departments ${data?.meta.total}`}>
+            <Tooltip text={`Total Patient ${data?.meta.total}`}>
               <div className="flex items-center gap-2">
                 <span>Name</span>
                 <span className="text-sm text-gray-500">
