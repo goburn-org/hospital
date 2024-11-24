@@ -81,7 +81,11 @@ export const FormInput = <T extends FieldValues = FieldValues>({
                 disabled={isReadOnly || disabled}
                 autoComplete={autoComplete}
                 className={classNames(
-                  inputClassName ? inputClassName : 'sm:max-w-xs',
+                  inputClassName
+                    ? inputClassName
+                    : twoColumn
+                      ? 'sm:max-w-xs'
+                      : '',
                   getNestedValue(formState.errors, id)
                     ? 'border-red-500'
                     : 'border-gray-300',

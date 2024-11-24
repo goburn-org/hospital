@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE', 'OTHER');
+
 -- CreateTable
 CREATE TABLE "Hospital" (
     "id" SERIAL NOT NULL,
@@ -187,6 +190,71 @@ CREATE TABLE "ProductIntent" (
     CONSTRAINT "ProductIntent_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Patient" (
+    "uhid" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "gender" "Gender" NOT NULL,
+    "mobile" TEXT NOT NULL,
+    "hospitalId" INTEGER NOT NULL,
+    "dob" TIMESTAMP(3),
+    "bornYear" INTEGER,
+    "aadharNumber" TEXT,
+    "aadharName" TEXT,
+    "bloodGroup" TEXT,
+    "address" TEXT,
+    "city" TEXT,
+    "pincode" TEXT,
+    "updatedBy" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "fatherName" TEXT NOT NULL,
+
+    CONSTRAINT "Patient_pkey" PRIMARY KEY ("uhid")
+);
+
+-- CreateTable
+CREATE TABLE "PatientVisit" (
+    "id" TEXT NOT NULL,
+    "uhid" TEXT NOT NULL,
+    "hospitalId" INTEGER NOT NULL,
+    "departmentId" INTEGER NOT NULL,
+    "doctorId" TEXT NOT NULL,
+    "checkInTime" TIMESTAMP(3) NOT NULL,
+    "checkOutTime" TIMESTAMP(3) NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "updatedBy" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "PatientVisit_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Assessment" (
+    "id" TEXT NOT NULL,
+    "uhid" TEXT NOT NULL,
+    "doctorId" TEXT NOT NULL,
+    "patientVisitId" TEXT NOT NULL,
+    "complaint" TEXT NOT NULL,
+    "currentMedication" TEXT NOT NULL,
+    "pastMedicalHistory" TEXT NOT NULL,
+    "examination" TEXT NOT NULL,
+    "investigation" TEXT NOT NULL,
+    "procedureDone" TEXT NOT NULL,
+    "diagnosis" JSONB NOT NULL,
+    "treatmentGiven" TEXT NOT NULL,
+    "followUp" TIMESTAMP(3) NOT NULL,
+    "followupInstruction" TEXT NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "updatedBy" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Assessment_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_hospitalId_key" ON "User"("email", "hospitalId");
 
@@ -205,6 +273,9 @@ CREATE UNIQUE INDEX "Permission_permissionName_key" ON "Permission"("permissionN
 -- CreateIndex
 CREATE UNIQUE INDEX "ProductDepartment_productId_departmentId_key" ON "ProductDepartment"("productId", "departmentId");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Assessment_patientVisitId_key" ON "Assessment"("patientVisitId");
+
 -- AddForeignKey
 ALTER TABLE "Department" ADD CONSTRAINT "Department_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -212,10 +283,10 @@ ALTER TABLE "Department" ADD CONSTRAINT "Department_hospitalId_fkey" FOREIGN KEY
 ALTER TABLE "Department" ADD CONSTRAINT "Department_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "User" ADD CONSTRAINT "User_department_fkey" FOREIGN KEY ("department") REFERENCES "Department"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_department_fkey" FOREIGN KEY ("department") REFERENCES "Department"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "User" ADD CONSTRAINT "User_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserLogin" ADD CONSTRAINT "UserLogin_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -224,19 +295,19 @@ ALTER TABLE "UserLogin" ADD CONSTRAINT "UserLogin_userId_fkey" FOREIGN KEY ("use
 ALTER TABLE "Role" ADD CONSTRAINT "Role_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Permission" ADD CONSTRAINT "Permission_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RolePermission" ADD CONSTRAINT "RolePermission_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "RolePermission" ADD CONSTRAINT "RolePermission_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "Permission"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RolePermission" ADD CONSTRAINT "RolePermission_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "Permission"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "RolePermission" ADD CONSTRAINT "RolePermission_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Vendor" ADD CONSTRAINT "Vendor_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -245,10 +316,10 @@ ALTER TABLE "Vendor" ADD CONSTRAINT "Vendor_hospitalId_fkey" FOREIGN KEY ("hospi
 ALTER TABLE "Product" ADD CONSTRAINT "Product_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductDepartment" ADD CONSTRAINT "ProductDepartment_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ProductDepartment" ADD CONSTRAINT "ProductDepartment_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductDepartment" ADD CONSTRAINT "ProductDepartment_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ProductDepartment" ADD CONSTRAINT "ProductDepartment_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "IntentTrack" ADD CONSTRAINT "IntentTrack_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -257,13 +328,34 @@ ALTER TABLE "IntentTrack" ADD CONSTRAINT "IntentTrack_hospitalId_fkey" FOREIGN K
 ALTER TABLE "IntentTrack" ADD CONSTRAINT "IntentTrack_statusId_fkey" FOREIGN KEY ("statusId") REFERENCES "IntentStatus"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductIntent" ADD CONSTRAINT "ProductIntent_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ProductIntent" ADD CONSTRAINT "ProductIntent_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProductIntent" ADD CONSTRAINT "ProductIntent_intentId_fkey" FOREIGN KEY ("intentId") REFERENCES "IntentStatus"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "ProductIntent" ADD CONSTRAINT "ProductIntent_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "ProductIntent" ADD CONSTRAINT "ProductIntent_trackId_fkey" FOREIGN KEY ("trackId") REFERENCES "IntentTrack"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductIntent" ADD CONSTRAINT "ProductIntent_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "PatientVisit" ADD CONSTRAINT "PatientVisit_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PatientVisit" ADD CONSTRAINT "PatientVisit_doctorId_fkey" FOREIGN KEY ("doctorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PatientVisit" ADD CONSTRAINT "PatientVisit_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PatientVisit" ADD CONSTRAINT "PatientVisit_uhid_fkey" FOREIGN KEY ("uhid") REFERENCES "Patient"("uhid") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Assessment" ADD CONSTRAINT "Assessment_doctorId_fkey" FOREIGN KEY ("doctorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Assessment" ADD CONSTRAINT "Assessment_patientVisitId_fkey" FOREIGN KEY ("patientVisitId") REFERENCES "PatientVisit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Assessment" ADD CONSTRAINT "Assessment_uhid_fkey" FOREIGN KEY ("uhid") REFERENCES "Patient"("uhid") ON DELETE RESTRICT ON UPDATE CASCADE;

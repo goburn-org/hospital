@@ -5,6 +5,7 @@ import healthRoute from './health/health-route';
 import patientRoute from './patient/patient-route';
 import productRoute from './product/product-route';
 import route from './role/role-route';
+import superAdminRoute from './super-admin/super-admin-route';
 
 export default [
   ...healthRoute,
@@ -14,4 +15,5 @@ export default [
   ...employeeRoute,
   ...productRoute,
   ...patientRoute,
+  ...superAdminRoute,
 ];

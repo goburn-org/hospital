@@ -6,6 +6,7 @@ import {
 import { Router } from 'express';
 import { errorHandler } from '../../middleware/error-middleware';
 import { patientService } from '../../service/patient-service';
+import { authMiddleware } from '../../middleware/auth-middleware';
 
 const route = Router();
 const baseVersion = '/v1';
@@ -13,6 +14,7 @@ const baseRoute = '/patient';
 
 route.post(
   `${baseVersion}${baseRoute}`,
+  authMiddleware,
   errorHandler(async (req, res) => {
     const body = createPatientSchema.parse({
       ...req.body,
@@ -25,6 +27,7 @@ route.post(
 
 route.get(
   `${baseVersion}${baseRoute}`,
+  authMiddleware,
   errorHandler(async (req, res) => {
     ensure(validatePaginateParamsWithSort(req.query), 'Invalid sort params');
     const param = {
@@ -39,6 +42,7 @@ route.get(
 
 route.get(
   `${baseVersion}${baseRoute}/:id`,
+  authMiddleware,
   errorHandler(async (req, res) => {
     const data = await patientService.getById(req.params.id);
     res.send(data);

@@ -123,7 +123,7 @@ export const Header = () => {
 
                 <span className="flex 2xl:items-center">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary p-5 text-base font-bold text-white">
-                    {user?.name[0].toUpperCase()}
+                    {user?.name?.[0].toUpperCase()}
                   </span>
                   <span
                     aria-hidden="true"
