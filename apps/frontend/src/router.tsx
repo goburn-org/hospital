@@ -78,20 +78,18 @@ const inventoryRoutes = (
 );
 
 const patientRoutes = (
-  <Route path={routerConfig.Patient} lazy={() => import('./routes/patient')}>
+  <>
+    <Route path={routerConfig.Patient} lazy={() => import('./routes/patient')}>
+      <Route
+        path={routerConfig.New}
+        lazy={() => import('./routes/patient/new')}
+      />
+    </Route>
     <Route
-      path={routerConfig.New}
-      lazy={() => import('./routes/patient/new')}
-    />
-    <Route
-      path={`${routerConfig.View}/:id`}
+      path={`${routerConfig.Patient}/:id`}
       lazy={() => import('./routes/patient/view')}
     />
-    <Route
-      path={`${routerConfig.Edit}/:id`}
-      lazy={() => import('./routes/patient/edit')}
-    />
-  </Route>
+  </>
 );
 
 export const router = createBrowserRouter(

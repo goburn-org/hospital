@@ -32,7 +32,6 @@ export const FormSelect = <T extends FieldValues = FieldValues>({
 }) => {
   const { setValue, formState, watch } = useFormContext<T>();
   const isReadOnly = useFormMode() === FormMode.ReadOnly;
-  console.log(options);
   const error = formState.errors;
   return (
     <LeadingAny

@@ -8,7 +8,7 @@ import {
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CustomTable } from '../../component/table';
-import { routerConfig, TypingSpeed } from '../../utils/constants';
+import { TypingSpeed } from '../../utils/constants';
 import { toPagination, toSortField } from '../../utils/sort-transform';
 import { useDebounce } from '../../utils/use-debounce';
 import { useParam } from '../../utils/use-param';
@@ -52,7 +52,7 @@ export const PatientTable = () => {
           return (
             <div className="flex items-center">
               <Link
-                to={`${routerConfig.View}/${row?.original.uhid}`}
+                to={`${row?.original.uhid}`}
                 className="px-4 text-blue-600 hover:text-blue-300"
               >
                 {renderedCellValue}

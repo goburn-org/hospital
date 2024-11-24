@@ -7,6 +7,9 @@ import svgr from 'vite-plugin-svgr';
 export default defineConfig({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/frontend',
+  define: {
+    global: {}, // Define global for compatibility
+  },
   server: {
     port: 4200,
     host: 'localhost',

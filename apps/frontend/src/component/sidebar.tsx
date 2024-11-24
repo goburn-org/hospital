@@ -119,7 +119,7 @@ const MobileSidebar = ({
                 <li className="mt-auto">
                   <Link
                     to="#"
-                    className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-violet-300 hover:bg-gray-900 hover:text-white"
+                    className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-violet-300 hover:bg-violet-700 hover:text-white"
                   >
                     <Cog6ToothIcon
                       aria-hidden="true"
@@ -181,7 +181,7 @@ const DesktopSidebar = () => {
           <li className="flex flex-col items-center space-y-1">
             <Link
               to="#"
-              className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-violet-300 hover:bg-gray-900 hover:text-white"
+              className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-violet-300 hover:bg-violet-900 hover:text-white"
             >
               <Cog6ToothIcon
                 aria-hidden="true"

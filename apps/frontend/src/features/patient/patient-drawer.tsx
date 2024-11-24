@@ -213,7 +213,7 @@ const ViewFooter = () => {
         type="button"
         className="btn-text btn-text-secondary"
         onClick={() => {
-          const path = `../../${routerConfig.Inventory}/${routerConfig.Edit}/${id}`;
+          const path = `../../${routerConfig.Patient}/${routerConfig.Edit}/${id}`;
           navigate(path, {
             replace: true,
           });

@@ -32,6 +32,8 @@ export const FormInput = <T extends FieldValues = FieldValues>({
   type,
   isRequired,
   disabled,
+  twoColumn,
+  inputClassName,
 }: {
   labelName: string;
   placeholder?: string;
@@ -40,19 +42,32 @@ export const FormInput = <T extends FieldValues = FieldValues>({
   type?: HTMLInputTypeAttribute;
   isRequired?: boolean;
   disabled?: boolean;
+  twoColumn?: boolean;
+  inputClassName?: string;
 }) => {
   const { setValue, formState, control } = useFormContext<T>();
   const isReadOnly = useFormMode() === FormMode.ReadOnly;
 
   return (
-    <div className="sm:col-span-4">
+    <div
+      className={classNames(
+        twoColumn
+          ? 'sm:grid sm:grid-cols-7 sm:items-start sm:gap-4 '
+          : 'sm:col-span-4',
+      )}
+    >
       <label
         htmlFor={id}
-        className="block text-base font-medium leading-6 text-gray-900"
+        className={classNames(
+          twoColumn ? 'block sm:pt-1.5' : 'block leading-6 ',
+          'font-medium text-gray-900 text-base',
+        )}
       >
         {labelName} {isRequired && <span className="text-red-500">*</span>}
       </label>
-      <div>
+      <div
+        className={classNames(twoColumn ? 'mt-2 sm:col-span-2 sm:mt-0' : '')}
+      >
         <Controller
           name={id}
           control={control}
@@ -66,10 +81,14 @@ export const FormInput = <T extends FieldValues = FieldValues>({
                 disabled={isReadOnly || disabled}
                 autoComplete={autoComplete}
                 className={classNames(
+                  inputClassName ? inputClassName : 'sm:max-w-xs',
                   getNestedValue(formState.errors, id)
                     ? 'border-red-500'
                     : 'border-gray-300',
-                  'w-full rounded-md border p-2 disabled:bg-gray-100',
+                  twoColumn
+                    ? 'block w-full py-1.5  sm:text-sm/6 '
+                    : 'w-full  p-2 disabled:bg-gray-100',
+                  'rounded-md border',
                 )}
                 placeholder={placeholder}
                 value={value}

@@ -14,7 +14,6 @@ export const Component = () => {
   if (!data) {
     return <div>Employee not found</div>;
   }
-  console.log({ ...data, roles: data.UserRole.map((r) => r.id) });
   return (
     <CustomDialog open={true}>
       <EmployeeDrawer
