@@ -6,3 +6,7 @@ const throwErrorMessage = (message: string) => {
 
 export const NODE_ENV = (import.meta.env.VITE_NODE_ENV ||
   'development') as NODE_ENV;
+
+export const HOSPITAL_ID =
+  parseInt(import.meta.env.VITE_HOSPITAL_ID) ||
+  throwErrorMessage('VITE_HOSPITAL_ID is required');

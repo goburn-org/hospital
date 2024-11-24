@@ -1,5 +1,5 @@
 generator client {
-  provider = "zod-prisma-types"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -13,6 +13,7 @@ model Hospital {
   phoneNumber   String
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  hospitalImg   String
   Department    Department[]
   IntentTrack   IntentTrack[]
   PatientVisit  PatientVisit[]
@@ -253,21 +254,19 @@ model PatientVisit {
 }
 
 model Assessment {
-  id                  String       @id @default(uuid())
   uhid                String
   doctorId            String
   patientVisitId      String       @unique
-  complaint           String
-  currentMedication   String
-  pastMedicalHistory  String
-  examination         String
-  investigation       String
-  procedureDone       String
-  diagnosis           Json
-  treatmentGiven      String
-  followUp            DateTime
-  followupInstruction String
-  isDeleted           Boolean      @default(false)
+  complaint           String?
+  currentMedication   String?
+  pastMedicalHistory  String?
+  examination         String?
+  investigation       String?
+  procedureDone       String?
+  diagnosis           Json?
+  treatmentGiven      String?
+  followUp            DateTime?
+  followupInstruction String?
   updatedBy           String?
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt

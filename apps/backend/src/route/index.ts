@@ -1,3 +1,4 @@
+import accountConfigRoute from './account-config/account-config-route';
 import authRoute from './auth/auth-route';
 import departmentRoute from './department/department-route';
 import employeeRoute from './employee/employee-route';
@@ -16,4 +17,5 @@ export default [
   ...productRoute,
   ...patientRoute,
   ...superAdminRoute,
+  ...accountConfigRoute,
 ];

@@ -3,6 +3,8 @@ import { FormInput } from '../component/form/form-input';
 import { UserLoginInput, userLoginSchema } from '@hospital/shared';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useLoginMutation } from '../component/user-query';
+import { HOSPITAL_ID } from '../env';
+import { useAccountConfig } from '../provider/account/use-account-config';
 
 const getErrorMessage = (error: any) => {
   if (error instanceof Error) {
@@ -15,6 +17,7 @@ export const Component = () => {
   const formProvider = useForm<UserLoginInput>({
     resolver: zodResolver(userLoginSchema),
   });
+  const { data } = useAccountConfig();
   const { mutateAsync, isPending, error } = useLoginMutation({
     onSuccess: () => {
       window.location.href = '/';
@@ -25,8 +28,8 @@ export const Component = () => {
       {/* Left Side (Aesthetics and Logo) */}
       <div className="bg-blue-100 flex flex-col items-center justify-center w-full md:w-1/2 p-6">
         <img
-          src="https://logowik.com/content/uploads/images/apollo-hospitals9684.jpg"
-          alt="Apollo Hospitals"
+          src={data?.hospitalImg}
+          alt={data?.hospitalName}
           className="mb-4 w-2/3"
         />
         <div className="text-center">
@@ -41,7 +44,7 @@ export const Component = () => {
           <FormProvider {...formProvider}>
             <form
               onSubmit={formProvider.handleSubmit((data) => {
-                mutateAsync({ ...data, hospitalId: 2 });
+                mutateAsync({ ...data, hospitalId: HOSPITAL_ID });
               })}
             >
               <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>

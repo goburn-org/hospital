@@ -2,9 +2,9 @@ import {
   DepartmentResponse,
   PaginatedResponse,
   PaginateParamsWithSort,
+  Prisma,
   UpdateDepartmentInput,
 } from '@hospital/shared';
-import { Prisma } from '@prisma/client';
 import { dbClient } from '../prisma';
 import { useAuthUser } from '../provider/async-context';
 
@@ -16,6 +16,7 @@ class DepartmentService {
     return dbClient.department.create({
       data: {
         ...data,
+        hospitalId: user.hospitalId,
         updatedBy: user.id,
       },
       include: {

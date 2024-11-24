@@ -1,14 +1,19 @@
 import {
+  CreateRoleInput,
   PaginatedResponse,
   PaginateParamsWithSort,
+  Role,
   UpdateRoleInput,
 } from '@hospital/shared';
-import { Prisma, Role } from '@prisma/client';
 import { dbClient } from '../prisma';
 import { useAuthUser } from '../provider/async-context';
 
 class RoleService {
-  create(role: Prisma.RoleUncheckedCreateInput) {
+  create(
+    role: CreateRoleInput & {
+      hospitalId: number;
+    },
+  ) {
     const user = useAuthUser();
     return dbClient.role.create({
       data: {

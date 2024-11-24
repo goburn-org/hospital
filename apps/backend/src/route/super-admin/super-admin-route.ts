@@ -1,8 +1,4 @@
-import {
-  ensure,
-  HospitalCreateInputSchema,
-  UserCreateInputSchema,
-} from '@hospital/shared';
+import { ensure, hospitalCreateInputSchema } from '@hospital/shared';
 import { Router } from 'express';
 import { superAdminMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
@@ -19,7 +15,7 @@ route.post(
   `${baseVersion}${baseRoute}/hospital`,
   superAdminMiddleware,
   errorHandler(async (req, res) => {
-    const hospitalInput = HospitalCreateInputSchema.parse(req.body.hospital);
+    const hospitalInput = hospitalCreateInputSchema.parse(req.body.hospital);
     console.log('Hospital Input', hospitalInput);
     ensure(req.body.role.roleName, 'Role Name is required');
     ensure(req.body.department.name, 'Department Name is required');
