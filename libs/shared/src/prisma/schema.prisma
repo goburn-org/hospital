@@ -8,95 +8,92 @@ datasource db {
 }
 
 model Hospital {
-  id           Int          @id @default(autoincrement())
-  hospitalName String
-  phoneNumber  String
-  Department   Department[]
-  User         User[]
-
+  id            Int             @id @default(autoincrement())
+  hospitalName  String
+  phoneNumber   String
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  Role          Role[]
+  Department    Department[]
+  IntentTrack   IntentTrack[]
+  PatientVisit  PatientVisit[]
   Permission    Permission[]
-  Vendor        Vendor[]
   Product       Product[]
   ProductIntent ProductIntent[]
-  IntentTrack   IntentTrack[]
+  Role          Role[]
+  User          User[]
+  Vendor        Vendor[]
 }
 
 model Department {
-  id         Int      @id @default(autoincrement())
-  name       String
-  hospitalId Int
-  Hospital   Hospital @relation(fields: [hospitalId], references: [id])
-  User       User[]
-  roleId     Int
-  Role       Role     @relation(fields: [roleId], references: [id])
-
+  id                Int                 @id @default(autoincrement())
+  name              String
+  hospitalId        Int
+  roleId            Int
   updatedBy         String?
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
+  Hospital          Hospital            @relation(fields: [hospitalId], references: [id])
+  Role              Role                @relation(fields: [roleId], references: [id])
+  PatientVisit      PatientVisit[]
   ProductDepartment ProductDepartment[]
+  User              User[]
 }
 
 model User {
-  id          String     @id @default(uuid())
-  name        String
-  email       String
-  phoneNumber String
-  hospitalId  Int
-  Hospital    Hospital   @relation(fields: [hospitalId], references: [id])
-  department  Int
-  Department  Department @relation(fields: [department], references: [id])
-  UserRole    UserRole[]
-  isActive    Boolean    @default(true)
-
-  updatedBy String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  UserLogin UserLogin[]
+  id           String         @id @default(uuid())
+  name         String
+  email        String
+  phoneNumber  String
+  hospitalId   Int
+  department   Int
+  isActive     Boolean        @default(true)
+  updatedBy    String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Assessment   Assessment[]
+  PatientVisit PatientVisit[]
+  Department   Department     @relation(fields: [department], references: [id])
+  Hospital     Hospital       @relation(fields: [hospitalId], references: [id])
+  UserLogin    UserLogin?
+  UserRole     UserRole[]
 
   @@unique([email, hospitalId])
 }
 
 model UserLogin {
-  userId   String @unique
-  user     User   @relation(fields: [userId], references: [id])
-  password String
-
+  userId    String   @unique
+  password  String
   updatedBy String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Role {
   id           Int              @id @default(autoincrement())
   roleName     String
-  description  String? // Optional role description
-  roleUsers    UserRole[] // Relationship to users
-  permissions  RolePermission[] // Relationship to permissions
+  description  String?
   hospitalId   Int
-  Hospital     Hospital         @relation(fields: [hospitalId], references: [id])
   isSuperAdmin Boolean?         @default(false)
-
-  updatedBy  String?
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  Department Department[]
+  updatedBy    String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  Department   Department[]
+  Hospital     Hospital         @relation(fields: [hospitalId], references: [id])
+  permissions  RolePermission[]
+  roleUsers    UserRole[]
 
   @@unique([roleName, hospitalId])
 }
 
 model UserRole {
-  id     Int    @id @default(autoincrement())
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-  role   Role   @relation(fields: [roleId], references: [id])
-  roleId Int
-
+  id        Int      @id @default(autoincrement())
+  userId    String
+  roleId    Int
   updatedBy String?
   createdAt DateTime @default(now())
+  role      Role     @relation(fields: [roleId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, roleId])
 }
@@ -104,26 +101,24 @@ model UserRole {
 model Permission {
   id              Int              @id @default(autoincrement())
   permissionName  String           @unique
-  description     String? // Optional permission description
-  rolePermissions RolePermission[] // Relationship to roles
+  description     String?
   hospitalId      Int
+  updatedBy       String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   Hospital        Hospital         @relation(fields: [hospitalId], references: [id])
-
-  updatedBy String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  rolePermissions RolePermission[]
 }
 
 model RolePermission {
   id           Int        @id @default(autoincrement())
-  role         Role       @relation(fields: [roleId], references: [id])
   roleId       Int
-  permission   Permission @relation(fields: [permissionId], references: [id])
   permissionId Int
-
-  updatedBy String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedBy    String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  role         Role       @relation(fields: [roleId], references: [id])
 }
 
 model Vendor {
@@ -135,48 +130,44 @@ model Vendor {
   gstNumber   String
   branchName  String
   hospitalId  Int
+  updatedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   Hospital    Hospital @relation(fields: [hospitalId], references: [id])
-
-  updatedBy String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Product {
-  id           String @id @default(uuid())
-  name         String
-  sku          String
-  hsnCode      String
-  genericName  String
-  brandName    String
-  manufacturer String
-  dosageForm   String
-  strength     String
-  purchaseRate Float
-  saleRate     Float
-  mrp          Float
-  maxDiscount  Float
-
-  hospitalId Int
-  Hospital   Hospital @relation(fields: [hospitalId], references: [id])
-
+  id                String              @id @default(uuid())
+  name              String
+  sku               String
+  hsnCode           String
+  genericName       String
+  brandName         String
+  manufacturer      String
+  dosageForm        String
+  strength          String
+  purchaseRate      Float
+  saleRate          Float
+  mrp               Float
+  maxDiscount       Float
+  hospitalId        Int
   updatedBy         String?
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
-  ProductIntent     ProductIntent[]
+  Hospital          Hospital            @relation(fields: [hospitalId], references: [id])
   ProductDepartment ProductDepartment[]
+  ProductIntent     ProductIntent[]
 }
 
 model ProductDepartment {
   id           Int        @id @default(autoincrement())
   productId    String
-  Product      Product    @relation(fields: [productId], references: [id])
   departmentId Int
+  updatedBy    String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   Department   Department @relation(fields: [departmentId], references: [id])
-
-  updatedBy String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  Product      Product    @relation(fields: [productId], references: [id])
 
   @@unique([productId, departmentId])
 }
@@ -184,56 +175,46 @@ model ProductDepartment {
 model IntentTrack {
   id            Int             @id @default(autoincrement())
   hospitalId    Int
-  Hospital      Hospital        @relation(fields: [hospitalId], references: [id])
   statusId      Int
-  IntentStatus  IntentStatus    @relation(fields: [statusId], references: [id])
   color         String
   updatedBy     String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  Hospital      Hospital        @relation(fields: [hospitalId], references: [id])
+  IntentStatus  IntentStatus    @relation(fields: [statusId], references: [id])
   ProductIntent ProductIntent[]
 }
 
 model IntentStatus {
-  id     Int           @id @default(autoincrement())
-  name   String
-  tracks IntentTrack[]
-
+  id            Int             @id @default(autoincrement())
+  name          String
   updatedBy     String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  tracks        IntentTrack[]
   ProductIntent ProductIntent[]
 }
 
 model ProductIntent {
-  id        String       @id @default(uuid())
-  productId String
-  Product   Product      @relation(fields: [productId], references: [id])
-  intentId  Int
-  Intent    IntentStatus @relation(fields: [intentId], references: [id])
-  trackId   Int
-  Track     IntentTrack  @relation(fields: [trackId], references: [id])
-
+  id         String       @id @default(uuid())
+  productId  String
+  intentId   Int
+  trackId    Int
   hospitalId Int
-  Hospital   Hospital @relation(fields: [hospitalId], references: [id])
-
-  updatedBy String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum Gender {
-  MALE
-  FEMALE
-  OTHER
+  updatedBy  String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Hospital   Hospital     @relation(fields: [hospitalId], references: [id])
+  Intent     IntentStatus @relation(fields: [intentId], references: [id])
+  Product    Product      @relation(fields: [productId], references: [id])
+  Track      IntentTrack  @relation(fields: [trackId], references: [id])
 }
 
 model Patient {
-  uhid         String    @id @default(uuid())
+  uhid         String         @id @default(uuid())
   name         String
   gender       Gender
   mobile       String
-  fatherName   String
   hospitalId   Int
   dob          DateTime?
   bornYear     Int?
@@ -243,9 +224,60 @@ model Patient {
   address      String?
   city         String?
   pincode      String?
-  isDeleted    Boolean   @default(false)
+  updatedBy    String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  isDeleted    Boolean        @default(false)
+  fatherName   String
+  Assessment   Assessment[]
+  PatientVisit PatientVisit[]
+}
 
-  updatedBy String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model PatientVisit {
+  id           String      @id @default(uuid())
+  uhid         String
+  hospitalId   Int
+  departmentId Int
+  doctorId     String
+  checkInTime  DateTime
+  checkOutTime DateTime
+  isDeleted    Boolean     @default(false)
+  updatedBy    String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  Assessment   Assessment?
+  Department   Department  @relation(fields: [departmentId], references: [id])
+  Doctor       User        @relation(fields: [doctorId], references: [id])
+  Hospital     Hospital    @relation(fields: [hospitalId], references: [id])
+  Patient      Patient     @relation(fields: [uhid], references: [uhid])
+}
+
+model Assessment {
+  id                  String       @id @default(uuid())
+  uhid                String
+  doctorId            String
+  patientVisitId      String       @unique
+  complaint           String
+  currentMedication   String
+  pastMedicalHistory  String
+  examination         String
+  investigation       String
+  procedureDone       String
+  diagnosis           Json
+  treatmentGiven      String
+  followUp            DateTime
+  followupInstruction String
+  isDeleted           Boolean      @default(false)
+  updatedBy           String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  Doctor              User         @relation(fields: [doctorId], references: [id])
+  PatientVisit        PatientVisit @relation(fields: [patientVisitId], references: [id])
+  Patient             Patient      @relation(fields: [uhid], references: [uhid])
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
 }
