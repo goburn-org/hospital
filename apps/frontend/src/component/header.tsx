@@ -52,7 +52,9 @@ export const Header = () => {
       const modifier = navigator.userAgent.includes('Mac')
         ? event.metaKey
         : event.ctrlKey;
-      if (event.key === 'k' && modifier) {
+      if (event.key === 'f' && modifier) {
+        event.preventDefault();
+        event.stopPropagation();
         ref.current?.focus();
       }
     };
@@ -82,7 +84,7 @@ export const Header = () => {
             <input
               ref={ref}
               type="text"
-              placeholder={` Tap ${modifierKey} + K to start search              ${searchPlaceholder}`}
+              placeholder={` Tap ${modifierKey} + f to start search              ${searchPlaceholder}`}
               value={search || ''}
               onChange={(e) => updateSearch(e.target.value)}
               className="w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-4 text-gray-700 shadow-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"

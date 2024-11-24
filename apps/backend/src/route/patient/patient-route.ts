@@ -5,7 +5,7 @@ import {
 } from '@hospital/shared';
 import { Router } from 'express';
 import { errorHandler } from '../../middleware/error-middleware';
-import { patientService } from '../../service/patient-service';
+import { patientService } from '../../service/patient/patient-service';
 import { authMiddleware } from '../../middleware/auth-middleware';
 
 const route = Router();

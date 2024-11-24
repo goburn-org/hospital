@@ -51,7 +51,7 @@ export class HttpService {
     }
   }
 
-  static async post<T, R = unknown>(url: string, data: R) {
+  static async post<T, R = unknown>(url: string, data?: R) {
     try {
       const response = await axios.post<T>(`${baseUrl}/${url}`, data);
       return response.data;

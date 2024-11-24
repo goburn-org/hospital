@@ -26,6 +26,10 @@
   @apply text-black transition-all duration-300 hover:text-primary;
 }
 
+.btn-text-tertiary {
+  @apply text-sky-900 transition-all duration-300 hover:text-sky-800;
+}
+
 input[type='file'] {
   display: none;
 }

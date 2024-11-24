@@ -1,6 +1,7 @@
 import { Patient } from '@prisma/client';
 import { z } from 'zod';
-import { NullOrUndefined } from './ts-util';
+import { NullOrUndefined } from '../ts-util';
+import { PatientVisitResponse } from './patient-visit-util';
 
 export const createPatientSchema = z.object({
   name: z.string().min(3, 'At least 3 characters'),
@@ -53,4 +54,8 @@ export type UpdatePatientInput = NullOrUndefined<
   z.infer<typeof updatePatientSchema>
 >;
 
-export type PatientResponse = NullOrUndefined<Patient>;
+export type PatientResponse = NullOrUndefined<
+  Patient & {
+    lastVisit: PatientVisitResponse;
+  }
+>;

@@ -1,4 +1,9 @@
-import { HTMLInputAutoCompleteAttribute, HTMLInputTypeAttribute } from 'react';
+import {
+  HTMLInputAutoCompleteAttribute,
+  HTMLInputTypeAttribute,
+  useEffect,
+  useRef,
+} from 'react';
 import {
   Controller,
   FieldValues,
@@ -21,6 +26,9 @@ const parseValue = (value: string, type: HTMLInputTypeAttribute) => {
   if (type === 'date' && value) {
     return moment(value).format('YYYY-MM-DD');
   }
+  if (type === 'datetime-local' && value) {
+    return moment(value).format('YYYY-MM-DDTHH:mm');
+  }
   return value;
 };
 
@@ -34,6 +42,7 @@ export const FormInput = <T extends FieldValues = FieldValues>({
   disabled,
   twoColumn,
   inputClassName,
+  defaultValue,
 }: {
   labelName: string;
   placeholder?: string;
@@ -44,9 +53,20 @@ export const FormInput = <T extends FieldValues = FieldValues>({
   disabled?: boolean;
   twoColumn?: boolean;
   inputClassName?: string;
+  defaultValue?: PathValue<T, Path<T>>;
 }) => {
   const { setValue, formState, control } = useFormContext<T>();
   const isReadOnly = useFormMode() === FormMode.ReadOnly;
+  const defaultSet = useRef(false);
+  useEffect(() => {
+    if (defaultValue) {
+      if (defaultSet.current) {
+        return;
+      }
+      defaultSet.current = true;
+      setValue(id, defaultValue as any);
+    }
+  }, [defaultValue, id, setValue]);
 
   return (
     <div

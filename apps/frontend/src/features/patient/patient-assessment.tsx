@@ -1,7 +1,9 @@
 import { FormInput } from '../../component/form/form-input';
 import { FormProvider, useForm } from 'react-hook-form';
+import { usePatientAssessmentMutation } from './use-patient-visit';
 
 export const PatientAssessment = () => {
+  const { mutateAsync } = usePatientAssessmentMutation();
   const formProvider = useForm();
   return (
     <FormProvider {...formProvider}>
@@ -15,7 +17,7 @@ export const PatientAssessment = () => {
               <div className="sm:col-span-6 sm:py-2">
                 <FormInput
                   labelName="Complaints"
-                  id="complaints"
+                  id="complaint"
                   type="text"
                   autoComplete="off"
                   twoColumn
@@ -25,7 +27,7 @@ export const PatientAssessment = () => {
               <div className="sm:col-span-4 sm:py-2">
                 <FormInput
                   labelName="Current Medications"
-                  id="currentMedications"
+                  id="currentMedication"
                   type="text"
                   autoComplete="off"
                   twoColumn
@@ -34,7 +36,7 @@ export const PatientAssessment = () => {
               <div className="sm:col-span-4 sm:py-2">
                 <FormInput
                   labelName="History"
-                  id="history"
+                  id="pastMedicalHistory"
                   type="text"
                   autoComplete="off"
                   twoColumn
@@ -106,7 +108,7 @@ export const PatientAssessment = () => {
               <div className="sm:col-span-4 sm:py-2">
                 <FormInput
                   labelName="Follow Up Instructions"
-                  id="followUpInstructions"
+                  id="followupInstruction"
                   type="text"
                   autoComplete="off"
                   twoColumn

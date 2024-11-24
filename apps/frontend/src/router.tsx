@@ -84,9 +84,13 @@ const patientRoutes = (
         path={routerConfig.New}
         lazy={() => import('./routes/patient/new')}
       />
+      <Route
+        path={`:patientId/${routerConfig.Visit}/${routerConfig.New}`}
+        lazy={() => import('./routes/patient/new-visit')}
+      />
     </Route>
     <Route
-      path={`${routerConfig.Patient}/:id`}
+      path={`/${routerConfig.Patient}/:patientId/${routerConfig.Visit}/:visitId`}
       lazy={() => import('./routes/patient/view')}
     />
   </>

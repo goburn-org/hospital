@@ -6,7 +6,7 @@ import {
   ListboxOptions,
 } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { classNames } from '../utils/classNames';
 
 export type SelectOption = {
@@ -33,6 +33,7 @@ type Props<Option extends SelectOption> = {
   isRequired?: boolean;
   multiple?: boolean;
   error?: string;
+  onRawChange?: (value: string) => void;
 };
 
 export const CustomSelect = <Option extends SelectOption>({
@@ -47,11 +48,17 @@ export const CustomSelect = <Option extends SelectOption>({
   isRequired,
   multiple,
   error,
+  onRawChange,
 }: Props<Option>) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const filteredOptions = options?.filter((option) =>
+    option.label.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
   const selection = Array.isArray(value) ? value : [value];
   const initialValue = multiple
     ? ([] as (string | number)[])
     : ('' as string | number);
+
   return (
     <Listbox
       as="div"
@@ -104,12 +111,25 @@ export const CustomSelect = <Option extends SelectOption>({
 
         <ListboxOptions
           transition
-          className="absolute z-10 mt-1 max-h-60 w-full min-w-[150px] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm"
+          className="absolute z-10 mt-1 max-h-60 w-full min-w-[150px] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
         >
+          {/* Search Input */}
+          <div className="sticky top-0 z-10 bg-white p-2">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => {
+                onRawChange?.(e.target.value);
+                setSearchTerm(e.target.value);
+              }}
+              className="w-full rounded-md border border-gray-300 py-1 px-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              placeholder="Search..."
+            />
+          </div>
           {isLoading ? (
             <ListboxOption
               value=""
-              className="group relative cursor-default select-none py-2 pl-3 pr-4 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white"
+              className="group relative cursor-default select-none py-2 pl-3 pr-4 text-gray-900"
             >
               <div className="flex flex-row items-center gap-2">
                 <span className="h-8 w-8">
@@ -134,47 +154,46 @@ export const CustomSelect = <Option extends SelectOption>({
                     />
                   </svg>
                 </span>
-                <div className="flex w-full flex-col">
-                  <div className="flex w-full justify-between">
-                    <p className="font-normal group-data-[selected]:font-semibold">
-                      Loading...
-                    </p>
-                  </div>
-                </div>
+                <p className="font-normal">Loading...</p>
               </div>
             </ListboxOption>
-          ) : null}
-          {options?.map((option) => (
-            <ListboxOption
-              key={option.id}
-              value={option.id}
-              className={classNames(
-                selection.includes(option.id) ? 'bg-gray-100' : '',
-                'group relative cursor-default select-none py-2 pl-3 pr-4 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white',
-              )}
-            >
-              <div className="flex flex-row items-center gap-2">
-                {option.icon ? (
-                  <span className="h-8 w-8">{option.icon}</span>
-                ) : null}
-                <div className="flex w-full flex-col">
-                  <div className="flex w-full justify-between">
-                    <p className="font-normal group-data-[selected]:font-semibold">
-                      {option.label}
-                    </p>
-                    <span className="text-indigo-600 group-data-[focus]:text-white [.group:not([data-selected])_&]:hidden">
-                      <CheckIcon aria-hidden="true" className="h-5 w-5" />
-                    </span>
-                  </div>
-                  {option.sub ? (
-                    <p className="mt-2 text-gray-500 group-data-[focus]:text-indigo-200">
-                      {option.sub}
-                    </p>
+          ) : filteredOptions?.length ? (
+            filteredOptions.map((option) => (
+              <ListboxOption
+                key={option.id}
+                value={option.id}
+                className={classNames(
+                  selection.includes(option.id) ? 'bg-gray-100' : '',
+                  'group relative cursor-default select-none py-2 pl-3 pr-4 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white',
+                )}
+              >
+                <div className="flex flex-row items-center gap-2">
+                  {option.icon ? (
+                    <span className="h-8 w-8">{option.icon}</span>
                   ) : null}
+                  <div className="flex w-full flex-col">
+                    <div className="flex w-full justify-between">
+                      <p className="font-normal group-data-[selected]:font-semibold">
+                        {option.label}
+                      </p>
+                      <span className="text-indigo-600 group-data-[focus]:text-white [.group:not([data-selected])_&]:hidden">
+                        <CheckIcon aria-hidden="true" className="h-5 w-5" />
+                      </span>
+                    </div>
+                    {option.sub ? (
+                      <p className="mt-2 text-gray-500 group-data-[focus]:text-indigo-200">
+                        {option.sub}
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            </ListboxOption>
-          ))}
+              </ListboxOption>
+            ))
+          ) : (
+            <div className="p-2 text-center text-sm text-gray-500">
+              No results found
+            </div>
+          )}
         </ListboxOptions>
       </div>
       <div>

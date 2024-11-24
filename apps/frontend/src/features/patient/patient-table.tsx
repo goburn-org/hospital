@@ -8,7 +8,7 @@ import {
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CustomTable } from '../../component/table';
-import { TypingSpeed } from '../../utils/constants';
+import { routerConfig, TypingSpeed } from '../../utils/constants';
 import { toPagination, toSortField } from '../../utils/sort-transform';
 import { useDebounce } from '../../utils/use-debounce';
 import { useParam } from '../../utils/use-param';
@@ -77,7 +77,7 @@ export const PatientTable = () => {
         enableSorting: true,
       },
       {
-        accessorKey: 'updatedAt',
+        accessorFn: (row) => row.lastVisit?.checkInTime,
         header: 'Last Visit',
         filterVariant: 'date-range',
         Cell: ({ renderedCellValue, cell }) => {
@@ -89,6 +89,31 @@ export const PatientTable = () => {
             <div className="flex items-center gap-2">
               <span>{humanizedDate(value)}</span>
             </div>
+          );
+        },
+      },
+      {
+        id: 'action',
+        header: 'Action',
+        Cell: ({ row }) => {
+          const value = row.original.lastVisit;
+          if (!value) {
+            return (
+              <Link
+                to={`${row.original.uhid}/visit/${routerConfig.New}`}
+                className="btn-text btn-small"
+              >
+                New Visit
+              </Link>
+            );
+          }
+          return (
+            <Link
+              to={`${row.original.uhid}/visit/${value.id}`}
+              className="btn-text-tertiary btn-small"
+            >
+              View Last Visit
+            </Link>
           );
         },
       },

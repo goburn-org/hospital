@@ -4,13 +4,14 @@ import {
   PaginateParamsWithSort,
   PatientResponse,
 } from '@hospital/shared';
-import { dbClient } from '../prisma';
-import { useAuthUser } from '../provider/async-context';
+import { useAuthUser } from '../../provider/async-context';
+import { dbClient } from '../../prisma';
+import { patientVisitService } from './patient-visit-service';
 
 class PatientService {
   async create(data: CreatePatientInput): Promise<PatientResponse> {
     const authUser = useAuthUser();
-    return dbClient.patient.create({
+    const response = await dbClient.patient.create({
       data: {
         ...data,
         dob: data.dob ? new Date(data.dob) : undefined,
@@ -18,6 +19,10 @@ class PatientService {
         updatedBy: authUser.id,
       },
     });
+    return {
+      ...response,
+      lastVisit: null,
+    };
   }
 
   async getAll(
@@ -36,6 +41,17 @@ class PatientService {
           }
         : undefined,
       take: paginate ? paginate.limit : undefined,
+      include: {
+        PatientVisit: {
+          where: {
+            isDeleted: false,
+          },
+          orderBy: {
+            checkInTime: 'desc',
+          },
+          take: 1,
+        },
+      },
       skip: paginate ? paginate.limit * (paginate.page - 1) : undefined,
     });
     const total = await dbClient.patient.count({
@@ -44,8 +60,16 @@ class PatientService {
         isDeleted: false,
       },
     });
+    const result: PatientResponse[] = [];
+    for (const d of data) {
+      const { PatientVisit, ...rest } = d;
+      result.push({
+        ...rest,
+        lastVisit: d.PatientVisit[0] ?? null,
+      });
+    }
     return {
-      data,
+      data: result,
       meta: {
         total,
         page: paginate?.page ?? 1,
@@ -56,13 +80,21 @@ class PatientService {
 
   async getById(id: string): Promise<PatientResponse | null> {
     const authUser = useAuthUser();
-    return dbClient.patient.findFirst({
+    const patient = await dbClient.patient.findFirst({
       where: {
         uhid: id,
         hospitalId: authUser.hospitalId,
         isDeleted: false,
       },
     });
+    if (!patient) {
+      return null;
+    }
+    const lastVisit = await patientVisitService.getLastVisit(id);
+    return {
+      ...patient,
+      lastVisit,
+    };
   }
 }
 

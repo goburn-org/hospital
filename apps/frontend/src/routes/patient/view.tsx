@@ -16,9 +16,9 @@ const tabs = [
 ] as const;
 
 export const Component = () => {
-  const { id } = useParams();
-  ensure(id, 'id is required');
-  const { data, isLoading } = usePatientByIdQuery(id);
+  const { patientId } = useParams();
+  ensure(patientId, 'id is required');
+  const { data, isLoading } = usePatientByIdQuery(patientId);
   const [activeTab, setActiveTab] =
     useState<(typeof tabs)[number]>('Assessment');
   if (isLoading) {
@@ -29,7 +29,11 @@ export const Component = () => {
   }
   const breadcrumbsPages = [
     { name: 'Patient', href: routerConfig.Patient },
-    { name: data.name, href: `${routerConfig.Patient}/${id}`, current: true },
+    {
+      name: data.name,
+      href: `${routerConfig.Patient}/${patientId}`,
+      current: true,
+    },
   ];
   return (
     <div className="flex flex-col gap-8 px-4 -mt-6 sm:px-6">

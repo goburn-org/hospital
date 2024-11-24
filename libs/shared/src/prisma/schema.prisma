@@ -238,25 +238,25 @@ model PatientVisit {
   id           String      @id @default(uuid())
   uhid         String
   hospitalId   Int
-  departmentId Int
   doctorId     String
   checkInTime  DateTime
-  checkOutTime DateTime
+  checkOutTime DateTime?
   isDeleted    Boolean     @default(false)
   updatedBy    String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   Assessment   Assessment?
-  Department   Department  @relation(fields: [departmentId], references: [id])
   Doctor       User        @relation(fields: [doctorId], references: [id])
   Hospital     Hospital    @relation(fields: [hospitalId], references: [id])
   Patient      Patient     @relation(fields: [uhid], references: [uhid])
+  Department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId Int?
 }
 
 model Assessment {
   uhid                String
   doctorId            String
-  patientVisitId      String       @unique
+  visitId             String       @unique
   complaint           String?
   currentMedication   String?
   pastMedicalHistory  String?
@@ -265,13 +265,14 @@ model Assessment {
   procedureDone       String?
   diagnosis           Json?
   treatmentGiven      String?
-  followUp            DateTime?
+  advice              String?
+  followUpDate        DateTime?
   followupInstruction String?
   updatedBy           String?
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
   Doctor              User         @relation(fields: [doctorId], references: [id])
-  PatientVisit        PatientVisit @relation(fields: [patientVisitId], references: [id])
+  PatientVisit        PatientVisit @relation(fields: [visitId], references: [id])
   Patient             Patient      @relation(fields: [uhid], references: [uhid])
 }
 
