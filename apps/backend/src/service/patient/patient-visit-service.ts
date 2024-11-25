@@ -1,11 +1,11 @@
 import {
-  PatientVisit,
   CreatePatientVisitRequest,
+  DetailedPatientVisit,
+  DetailedPatientVisitGetPayload,
   PaginateParamsWithSort,
   PaginatedResponse,
-  DetailedPatientVisit,
+  PatientVisit,
   Prisma,
-  DetailedPatientVisitGetPayload,
 } from '@hospital/shared';
 import { dbClient } from '../../prisma';
 import { useAuthUser } from '../../provider/async-context';

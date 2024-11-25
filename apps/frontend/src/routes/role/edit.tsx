@@ -1,8 +1,8 @@
+import { ensure } from '@hospital/shared';
 import { useParams } from 'react-router-dom';
 import { CustomDialog } from '../../component/custom-dialog';
-import { useRoleByIdQuery } from '../../features/role/use-role-query';
 import { RoleDrawer } from '../../features/role/role-drawer';
-import { ensure } from '@hospital/shared';
+import { useRoleByIdQuery } from '../../features/role/use-role-query';
 
 export const Component = () => {
   const { id } = useParams();

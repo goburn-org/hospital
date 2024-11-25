@@ -13,7 +13,6 @@ import PageLoading from '../../component/page-loader';
 import { useOrderQuery } from '../../provider/use-order';
 import { TIMER_S, useTimer } from '../../utils/use-timer';
 import {
-  usePatientAssessmentMutation,
   usePatientOrderMutation,
   usePatientVisitByIdQuery,
 } from './use-patient-visit';

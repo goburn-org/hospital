@@ -1,8 +1,8 @@
-import 'quill/dist/quill.snow.css'; // ES6
-import 'quill-mention/dist/quill.mention.css'; // Import quill-mention styles
-import { Mention, MentionBlot, MentionOption } from 'quill-mention'; // Ensure this is imported correctly
-import { useEffect, useRef } from 'react';
 import Quill from 'quill';
+import { Mention, MentionBlot, MentionOption } from 'quill-mention'; // Ensure this is imported correctly
+import 'quill-mention/dist/quill.mention.css'; // Import quill-mention styles
+import 'quill/dist/quill.snow.css'; // ES6
+import { useEffect, useRef } from 'react';
 import { useLatest } from '../utils/use-latest';
 
 Quill.register({

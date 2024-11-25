@@ -1,5 +1,5 @@
-import React from 'react';
 import { HomeIcon } from '@heroicons/react/20/solid';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { classNames } from '../utils/classNames';
 import { routerConfig } from '../utils/constants';

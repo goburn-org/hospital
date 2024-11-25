@@ -1,5 +1,5 @@
-import { dbClient } from '../prisma';
 import { Prisma } from '@hospital/shared';
+import { dbClient } from '../prisma';
 
 class HospitalService {
   create(data: Prisma.HospitalUncheckedCreateInput) {

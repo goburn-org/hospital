@@ -1,5 +1,6 @@
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CreateRoleInput, createRoleSchema } from '@hospital/shared';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
@@ -10,7 +11,6 @@ import {
 import { classNames } from '../../utils/classNames';
 import { routerConfig } from '../../utils/constants';
 import { useEsc } from '../../utils/use-esc';
-import { CreateRoleInput, createRoleSchema } from '@hospital/shared';
 import { useCreateRoleMutation, useUpdateRoleMutation } from './use-role-query';
 
 export const RoleDrawer = ({

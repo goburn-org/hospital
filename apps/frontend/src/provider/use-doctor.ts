@@ -1,7 +1,7 @@
+import { PaginatedResponse } from '@hospital/shared';
+import { User } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
 import { HttpService } from '../utils/http';
-import { User } from '@prisma/client';
-import { PaginatedResponse } from '@hospital/shared';
 
 export const useDoctor = (search: string) => {
   return useQuery({

@@ -1,8 +1,8 @@
 import { ensure } from '@hospital/shared';
 import { useParams } from 'react-router-dom';
 import { CustomDialog } from '../../component/custom-dialog';
-import { useProductByIdQuery } from '../../features/product/use-product-query';
 import { ProductDrawer } from '../../features/product/product-drawer';
+import { useProductByIdQuery } from '../../features/product/use-product-query';
 
 export const Component = () => {
   const { id } = useParams();

@@ -4,9 +4,9 @@ import {
   validatePaginateParamsWithSort,
 } from '@hospital/shared';
 import { Router } from 'express';
+import { authMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
 import { patientService } from '../../service/patient/patient-service';
-import { authMiddleware } from '../../middleware/auth-middleware';
 
 const route = Router();
 const baseVersion = '/v1';

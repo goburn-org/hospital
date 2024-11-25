@@ -1,3 +1,4 @@
+import { CheckIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   CreateAssessmentRequest,
@@ -7,20 +8,19 @@ import {
 } from '@hospital/shared';
 import { useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { CustomEditor } from '../../component/editor';
 import { FormEditor } from '../../component/form/form-editor';
 import { FormInput } from '../../component/form/form-input';
 import PageLoading from '../../component/page-loader';
 import { CustomSelect } from '../../component/select';
+import { TIMER_S, useTimer } from '../../utils/use-timer';
 import { useDiagnosisQuery } from './use-diagonisis';
 import {
   usePatientAssessmentMutation,
   usePatientVisitByIdQuery,
 } from './use-patient-visit';
-import toast from 'react-hot-toast';
-import { TIMER_S, useTimer } from '../../utils/use-timer';
-import { CheckIcon } from '@heroicons/react/24/outline';
 
 const DiagnosisEditor = () => {
   const { watch, formState, setValue } =

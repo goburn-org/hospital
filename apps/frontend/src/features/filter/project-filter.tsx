@@ -8,14 +8,14 @@ import {
 } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
-import { FixedSizeList as List } from 'react-window';
-import { classNames } from '../../utils/classNames';
-import { useParam } from '../../utils/use-param';
 import { useRef, useState } from 'react';
-import { useDebounce } from '../../utils/use-debounce';
-import { TypingSpeed } from '../../utils/constants';
+import { FixedSizeList as List } from 'react-window';
 import { FaceList } from '../../component/face-list';
 import { TableLoading } from '../../component/page-loader';
+import { classNames } from '../../utils/classNames';
+import { TypingSpeed } from '../../utils/constants';
+import { useDebounce } from '../../utils/use-debounce';
+import { useParam } from '../../utils/use-param';
 
 const filters = [
   {

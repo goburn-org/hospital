@@ -6,13 +6,13 @@ import {
   PathValue,
   useFormContext,
 } from 'react-hook-form';
-import { classNames } from '../../utils/classNames';
-import { getNestedValue } from './form-util';
 import {
   FormMode,
   useFormMode,
 } from '../../provider/form-context-provider/form-mode-provider';
+import { classNames } from '../../utils/classNames';
 import { CustomEditor } from '../editor';
+import { getNestedValue } from './form-util';
 
 export const FormEditor = <T extends FieldValues = FieldValues>({
   labelName,

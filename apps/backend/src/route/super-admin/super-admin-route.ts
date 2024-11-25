@@ -2,10 +2,10 @@ import { ensure, hospitalCreateInputSchema } from '@hospital/shared';
 import { Router } from 'express';
 import { superAdminMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
-import { hospitalService } from '../../service/hospital-service';
-import { userService } from '../../service/user-service';
 import { dbClient } from '../../prisma';
 import { setAuthUser } from '../../provider/async-context';
+import { hospitalService } from '../../service/hospital-service';
+import { userService } from '../../service/user-service';
 
 const route = Router();
 const baseVersion = '/v1';

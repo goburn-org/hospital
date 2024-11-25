@@ -1,3 +1,4 @@
+import moment from 'moment';
 import {
   HTMLInputAutoCompleteAttribute,
   HTMLInputTypeAttribute,
@@ -11,13 +12,12 @@ import {
   PathValue,
   useFormContext,
 } from 'react-hook-form';
-import { classNames } from '../../utils/classNames';
-import { getNestedValue } from './form-util';
 import {
   FormMode,
   useFormMode,
 } from '../../provider/form-context-provider/form-mode-provider';
-import moment from 'moment';
+import { classNames } from '../../utils/classNames';
+import { getNestedValue } from './form-util';
 
 const parseValue = (value: string, type: HTMLInputTypeAttribute) => {
   if (type === 'number' && typeof value === 'number') {

@@ -1,4 +1,4 @@
-import { CustomTable } from '../../component/table';
+import { Product } from '@hospital/shared';
 import {
   MRT_ColumnDef,
   MRT_PaginationState,
@@ -7,13 +7,13 @@ import {
 } from 'material-react-table';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { routerConfig, TypingSpeed } from '../../utils/constants';
-import { useParam } from '../../utils/use-param';
-import { useDebounce } from '../../utils/use-debounce';
-import { toPagination, toSortField } from '../../utils/sort-transform';
-import { Product } from '@hospital/shared';
-import { useProductQuery } from './use-product-query';
+import { CustomTable } from '../../component/table';
 import Tooltip from '../../component/tooltip';
+import { routerConfig, TypingSpeed } from '../../utils/constants';
+import { toPagination, toSortField } from '../../utils/sort-transform';
+import { useDebounce } from '../../utils/use-debounce';
+import { useParam } from '../../utils/use-param';
+import { useProductQuery } from './use-product-query';
 
 export const ProductTable = () => {
   const { param, updateParam } = useParam<'q'>();

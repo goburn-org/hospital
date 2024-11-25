@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { classNames } from '../utils/classNames';
 import { Link, useLocation } from 'react-router-dom';
+import { classNames } from '../utils/classNames';
 import { useLatest } from '../utils/use-latest';
 
 interface LinkTab {

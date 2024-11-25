@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { errorHandler } from '../../middleware/error-middleware';
-import { orderService } from '../../service/order-service';
 import { authMiddleware } from '../../middleware/auth-middleware';
+import { errorHandler } from '../../middleware/error-middleware';
 import { useAuthUser } from '../../provider/async-context';
+import { orderService } from '../../service/order-service';
 
 const route = Router();
 const baseVersion = '/v1';

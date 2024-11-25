@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { PageSubHeader } from '../../component/page-sub-header';
-import { routerConfig } from '../../utils/constants';
 import { EmployeeTable } from '../../features/employee/employee-table';
+import { routerConfig } from '../../utils/constants';
 
 export const Component = () => {
   const navigate = useNavigate();

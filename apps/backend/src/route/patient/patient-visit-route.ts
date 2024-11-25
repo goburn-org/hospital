@@ -8,9 +8,9 @@ import {
 import { Router } from 'express';
 import { authMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
-import { patientVisitService } from '../../service/patient/patient-visit-service';
 import { assessmentService } from '../../service/patient/assessment-service';
 import { patientOrderService } from '../../service/patient/patient-order-service';
+import { patientVisitService } from '../../service/patient/patient-visit-service';
 
 const route = Router();
 const baseVersion = '/v1';

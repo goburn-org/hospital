@@ -1,8 +1,8 @@
+import { ensure, validatePaginateParams } from '@hospital/shared';
 import { Router } from 'express';
+import { authMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
 import { diagnosisService } from '../../service/diagonsis-service';
-import { ensure, validatePaginateParams } from '@hospital/shared';
-import { authMiddleware } from '../../middleware/auth-middleware';
 
 const diagnosisRoute = Router();
 const baseVersion = '/v1';

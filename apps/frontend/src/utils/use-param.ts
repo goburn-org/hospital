@@ -1,7 +1,7 @@
+import { Maybe } from '@hospital/shared';
 import { useCallback } from 'react';
 import { NavigateOptions, useSearchParams } from 'react-router-dom';
 import { useLatest } from './use-latest';
-import { Maybe } from '@hospital/shared';
 
 export const useParam = <T extends string>() => {
   const [_params, setParams] = useSearchParams();

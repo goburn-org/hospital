@@ -18,11 +18,11 @@ import { classNames } from '../../utils/classNames';
 import { routerConfig } from '../../utils/constants';
 import { useEsc } from '../../utils/use-esc';
 import { useAllDepartmentQuery } from '../department/use-department-query';
+import { useAllRoleQuery } from '../role/use-role-query';
 import {
   useCreateEmployeeMutation,
   useUpdateEmployeeMutation,
 } from './use-employee-query';
-import { useAllRoleQuery } from '../role/use-role-query';
 
 export const EmployeeDrawer = ({
   defaultValues,

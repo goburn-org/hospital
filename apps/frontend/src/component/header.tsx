@@ -8,12 +8,12 @@ import {
   Bars3Icon,
   BellIcon,
 } from '@heroicons/react/24/outline';
-import { Sidebar } from './sidebar';
-import { useParam } from '../utils/use-param';
 import { useEffect, useRef, useState } from 'react';
-import { apiTokenStorage } from '../provider/auth/auth-util';
 import { useNavigate } from 'react-router-dom';
+import { apiTokenStorage } from '../provider/auth/auth-util';
 import { HttpService } from '../utils/http';
+import { useParam } from '../utils/use-param';
+import { Sidebar } from './sidebar';
 import { useUserQuery } from './user-query';
 
 const placeHolders = [

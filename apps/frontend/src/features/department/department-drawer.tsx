@@ -1,8 +1,13 @@
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  CreateDepartmentInput,
+  createDepartmentSchema,
+} from '@hospital/shared';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
+import { FormSelect } from '../../component/form/form-select';
 import {
   FormMode,
   FormModeProvider,
@@ -10,16 +15,11 @@ import {
 import { classNames } from '../../utils/classNames';
 import { routerConfig } from '../../utils/constants';
 import { useEsc } from '../../utils/use-esc';
-import {
-  CreateDepartmentInput,
-  createDepartmentSchema,
-} from '@hospital/shared';
+import { useAllRoleQuery } from '../role/use-role-query';
 import {
   useCreateDepartmentMutation,
   useUpdateDepartmentMutation,
 } from './use-department-query';
-import { FormSelect } from '../../component/form/form-select';
-import { useAllRoleQuery } from '../role/use-role-query';
 
 export const DepartmentDrawer = ({
   defaultValues,

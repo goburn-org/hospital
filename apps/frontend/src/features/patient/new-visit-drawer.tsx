@@ -15,11 +15,11 @@ import {
   FormModeProvider,
 } from '../../provider/form-context-provider/form-mode-provider';
 import { classNames } from '../../utils/classNames';
+import { routerConfig, TypingSpeed } from '../../utils/constants';
+import { useDebounce } from '../../utils/use-debounce';
 import { useEsc } from '../../utils/use-esc';
 import { useEmployeeQuery } from '../employee/use-employee-query';
 import { usePatientVisitMutation } from './use-patient-visit';
-import { useDebounce } from '../../utils/use-debounce';
-import { routerConfig, TypingSpeed } from '../../utils/constants';
 
 export const PatientVisitDrawer = ({
   defaultValues,

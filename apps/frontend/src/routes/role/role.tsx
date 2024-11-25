@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import { routerConfig } from '../../utils/constants';
 import { PageSubHeader } from '../../component/page-sub-header';
 import { RoleTable } from '../../features/role/role-table';
+import { routerConfig } from '../../utils/constants';
 
 export const Component = () => {
   const navigate = useNavigate();

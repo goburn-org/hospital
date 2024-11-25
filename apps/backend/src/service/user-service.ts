@@ -1,15 +1,15 @@
-import { Prisma, User } from '@prisma/client';
-import { useAuthUser } from '../provider/async-context';
 import {
   ensure,
   Maybe,
   UserLoginInput,
   UserWithRolesAndDepartment,
 } from '@hospital/shared';
-import { dbClient } from '../prisma';
+import { Prisma, User } from '@prisma/client';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../env';
-import bcrypt from 'bcrypt';
+import { dbClient } from '../prisma';
+import { useAuthUser } from '../provider/async-context';
 
 class UserService {
   async createUser(

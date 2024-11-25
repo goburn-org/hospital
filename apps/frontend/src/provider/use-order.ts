@@ -1,6 +1,6 @@
+import { AvailableOrder } from '@hospital/shared';
 import { useQuery } from '@tanstack/react-query';
 import { HttpService } from '../utils/http';
-import { AvailableOrder } from '@hospital/shared';
 
 export const useOrderQuery = () => {
   return useQuery({

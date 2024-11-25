@@ -3,7 +3,6 @@ import {
   PaginatedResponse,
   PaginateParamsWithSort,
   UpdateEmployeeInput,
-  User,
   UserWithRolesAndDepartment,
 } from '@hospital/shared';
 import {

@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { HttpService } from '../../utils/http';
-import { HOSPITAL_ID } from '../../env';
 import { Hospital } from '@prisma/client';
+import { useQuery } from '@tanstack/react-query';
+import { HOSPITAL_ID } from '../../env';
+import { HttpService } from '../../utils/http';
 
 export const useAccountConfig = () => {
   return useQuery({

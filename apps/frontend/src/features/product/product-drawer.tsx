@@ -1,8 +1,10 @@
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CreateProductInput, createProductSchema } from '@hospital/shared';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
+import { CustomSelect, SelectOption } from '../../component/select';
 import {
   FormMode,
   FormModeProvider,
@@ -11,13 +13,11 @@ import {
 import { classNames } from '../../utils/classNames';
 import { routerConfig } from '../../utils/constants';
 import { useEsc } from '../../utils/use-esc';
-import { CreateProductInput, createProductSchema } from '@hospital/shared';
+import { useAllDepartmentQuery } from '../department/use-department-query';
 import {
   useCreateProductMutation,
   useUpdateProductMutation,
 } from './use-product-query';
-import { CustomSelect, SelectOption } from '../../component/select';
-import { useAllDepartmentQuery } from '../department/use-department-query';
 
 export const ProductDrawer = ({
   defaultValues,

@@ -1,19 +1,17 @@
-import { User } from '@prisma/client';
-
-import { apiTokenStorage } from '../provider/auth/auth-util';
-import { HttpService } from '../utils/http';
+import {
+  LoginResponse,
+  UserLoginInput,
+  UserWithRolesAndDepartment,
+} from '@hospital/shared';
 import {
   useMutation,
   UseMutationOptions,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import {
-  LoginResponse,
-  UserLoginInput,
-  UserWithRolesAndDepartment,
-} from '@hospital/shared';
 import { useEffect } from 'react';
+import { apiTokenStorage } from '../provider/auth/auth-util';
+import { HttpService } from '../utils/http';
 
 const userQueryKey = ['user'];
 

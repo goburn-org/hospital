@@ -1,8 +1,8 @@
 import { ensure } from '@hospital/shared';
 import { useParams } from 'react-router-dom';
 import { CustomDialog } from '../../component/custom-dialog';
-import { useEmployeeByIdQuery } from '../../features/employee/use-employee-query';
 import { EmployeeDrawer } from '../../features/employee/employee-drawer';
+import { useEmployeeByIdQuery } from '../../features/employee/use-employee-query';
 
 export const Component = () => {
   const { id } = useParams();

@@ -6,17 +6,16 @@ import {
 } from '@headlessui/react';
 import {
   Cog6ToothIcon,
-  HomeIcon,
   ShoppingCartIcon,
   UserCircleIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import PatientIcon from '../asset/patient.svg?react';
 import { classNames } from '../utils/classNames';
 import { ProjectName, routerConfig } from '../utils/constants';
-import { Link, useLocation } from 'react-router-dom';
 import Tooltip from './tooltip';
-import PatientIcon from '../asset/patient.svg?react';
 
 const navigation = [
   {

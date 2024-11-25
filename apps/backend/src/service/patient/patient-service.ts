@@ -4,8 +4,8 @@ import {
   PaginateParamsWithSort,
   PatientResponse,
 } from '@hospital/shared';
-import { useAuthUser } from '../../provider/async-context';
 import { dbClient } from '../../prisma';
+import { useAuthUser } from '../../provider/async-context';
 import { patientVisitService } from './patient-visit-service';
 
 class PatientService {

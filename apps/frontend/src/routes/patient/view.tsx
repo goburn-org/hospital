@@ -1,12 +1,12 @@
 import { ensure } from '@hospital/shared';
+import { useState } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 import Breadcrumbs from '../../component/breadcrumbs';
-import { usePatientByIdQuery } from '../../features/patient/use-patient-query';
-import { routerConfig } from '../../utils/constants';
 import { Tabs } from '../../component/page-tabs';
-import { useState } from 'react';
 import { PatientAssessment } from '../../features/patient/patient-assessment';
 import { PatientOrder } from '../../features/patient/patient-order';
+import { usePatientByIdQuery } from '../../features/patient/use-patient-query';
+import { routerConfig } from '../../utils/constants';
 
 const tabs = [
   'Assessment',

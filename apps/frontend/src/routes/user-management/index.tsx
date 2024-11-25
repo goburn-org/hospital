@@ -1,11 +1,11 @@
-import { Outlet } from 'react-router-dom';
-import { routerConfig } from '../../utils/constants';
-import { Tabs } from '../../component/page-tabs';
 import {
   Cog8ToothIcon,
   IdentificationIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
+import { Outlet } from 'react-router-dom';
+import { Tabs } from '../../component/page-tabs';
+import { routerConfig } from '../../utils/constants';
 
 export const Component = () => {
   return (

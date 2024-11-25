@@ -1,11 +1,11 @@
+import { HttpError, Prisma } from '@hospital/shared';
 import {
+  ErrorRequestHandler,
   NextFunction,
   Request,
-  Response,
-  ErrorRequestHandler,
   RequestHandler,
+  Response,
 } from 'express';
-import { HttpError, Prisma } from '@hospital/shared';
 import { logger } from '../logger/logger-service';
 
 function handlePrismaError(error: unknown) {

@@ -2,6 +2,9 @@
   "json.format.enable": true,
   "cSpell.words": ["Atleast", "Datepicker", "Firestore", "pincode", "Vithura"],
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
   "files.associations": {
     "*.css": "tailwindcss"
   },

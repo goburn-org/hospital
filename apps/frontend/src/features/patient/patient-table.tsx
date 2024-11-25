@@ -8,12 +8,12 @@ import {
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CustomTable } from '../../component/table';
+import Tooltip from '../../component/tooltip';
 import { routerConfig, TypingSpeed } from '../../utils/constants';
 import { toPagination, toSortField } from '../../utils/sort-transform';
 import { useDebounce } from '../../utils/use-debounce';
 import { useParam } from '../../utils/use-param';
 import { usePatientQuery } from './use-patient-query';
-import Tooltip from '../../component/tooltip';
 
 export const PatientTable = () => {
   const { param, updateParam } = useParam<'q'>();

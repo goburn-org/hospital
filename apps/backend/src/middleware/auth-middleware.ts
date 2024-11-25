@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
+import { logger } from '../logger/logger-service';
 import { setAuthUser, useAuthUser } from '../provider/async-context';
 import { userService } from '../service/user-service';
-import { logger } from '../logger/logger-service';
 
 export const setUserContext = async (
   req: Request,

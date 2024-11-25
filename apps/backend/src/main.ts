@@ -1,10 +1,10 @@
-import express from 'express';
 import cors from 'cors';
-import Routes from './route';
-import { apiLoggerMiddleware } from './middleware/logger-middleware';
+import express from 'express';
 import multer from 'multer';
-import { errorMiddleware } from './middleware/error-middleware';
 import { setUserContext } from './middleware/auth-middleware';
+import { errorMiddleware } from './middleware/error-middleware';
+import { apiLoggerMiddleware } from './middleware/logger-middleware';
+import Routes from './route';
 
 const MAX_FILE_SIZE = 1024 * 1024 * 50; // 50MB
 

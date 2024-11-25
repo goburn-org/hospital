@@ -1,8 +1,8 @@
+import { userLoginSchema } from '@hospital/shared';
 import { Router } from 'express';
 import { errorHandler } from '../../middleware/error-middleware';
-import { userLoginSchema } from '@hospital/shared';
-import { userService } from '../../service/user-service';
 import { useAuthUser } from '../../provider/async-context';
+import { userService } from '../../service/user-service';
 
 const authRoute = Router();
 const baseVersion = '/v1';

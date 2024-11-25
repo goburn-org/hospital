@@ -1,19 +1,19 @@
+import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
+import { SortDirection } from '@mui/material';
 import {
-  MRT_TableInstance,
   flexRender,
+  MRT_Row,
+  MRT_RowData,
   MRT_TableBodyCellValue,
+  MRT_TableInstance,
   MRT_TablePagination,
   MRT_ToolbarAlertBanner,
-  MRT_RowData,
-  MRT_Row,
   useMRT_TableOptions,
 } from 'material-react-table';
 import { useState } from 'react';
-import { OutsideClick } from './outside-click';
 import { classNames } from '../utils/classNames';
 import { LoadingButton } from './loading-button';
-import { SortDirection } from '@mui/material';
-import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
+import { OutsideClick } from './outside-click';
 
 interface Menu<T extends MRT_RowData> {
   label: string;

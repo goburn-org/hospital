@@ -1,6 +1,6 @@
+import { Diagnosis, PaginatedResponse, PaginateParams } from '@hospital/shared';
 import { useQuery } from '@tanstack/react-query';
 import { HttpService } from '../../utils/http';
-import { Diagnosis, PaginatedResponse, PaginateParams } from '@hospital/shared';
 
 export const useDiagnosisQuery = (search: string, param: PaginateParams) => {
   return useQuery({
