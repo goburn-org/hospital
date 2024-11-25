@@ -14,11 +14,26 @@ export type CreatePatientVisitRequest = z.infer<
 
 export type PatientVisitResponse = Maybe<PatientVisit>;
 
-export type DetailedPatientVisit = Prisma.PatientVisitGetPayload<{
+export const DetailedPatientVisitGetPayload = {
   include: {
-    Assessment: true;
-  };
-}> & {
+    Assessment: true,
+    PatientOrder: {
+      select: {
+        order: {
+          select: {
+            id: true,
+            name: true,
+            orderDeptId: true,
+          },
+        },
+      },
+    },
+  },
+} as const;
+
+export type DetailedPatientVisit = Prisma.PatientVisitGetPayload<
+  typeof DetailedPatientVisitGetPayload
+> & {
   Assessment: Maybe<{
     diagnosis: Maybe<AssessmentResponse['diagnosis']>;
     updatedBy: Maybe<string>;

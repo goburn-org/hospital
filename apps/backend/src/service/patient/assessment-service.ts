@@ -4,7 +4,7 @@ import { useAuthUser } from '../../provider/async-context';
 
 class AssessmentService {
   upsert(visitId: string, assessment: CreateAssessmentRequest) {
-    const { patientId: uhid, ...rest } = assessment;
+    const { patientId, ...rest } = assessment;
     const user = useAuthUser();
     return dbClient.assessment.upsert({
       where: {
@@ -12,16 +12,14 @@ class AssessmentService {
       },
       create: {
         ...rest,
-        uhid,
         diagnosis: assessment.diagnosis || undefined,
-        doctorId: user.id,
         visitId,
+        updatedBy: user.id,
       },
       update: {
         ...rest,
         diagnosis: assessment.diagnosis || undefined,
-        doctorId: user.id,
-        uhid,
+        updatedBy: user.id,
       },
     });
   }

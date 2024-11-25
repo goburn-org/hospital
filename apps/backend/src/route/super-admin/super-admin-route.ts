@@ -62,4 +62,72 @@ route.post(
   }),
 );
 
+route.post(
+  `${baseVersion}${baseRoute}/:hospitalId/order-department`,
+  superAdminMiddleware,
+  errorHandler(async (req, res) => {
+    const hospitalId = Number(req.params.hospitalId);
+    ensure(hospitalId, 'Hospital Id is required');
+    const departmentNames = req.body.departmentNames;
+    ensure(
+      Array.isArray(departmentNames),
+      'departmentNames should be an array',
+    );
+    ensure(departmentNames.length > 0, 'departmentNames should not be empty');
+    ensure(
+      departmentNames.every((d) => typeof d === 'string'),
+      'departmentNames should be an array of strings',
+    );
+    const department = await dbClient.orderDepartment.createMany({
+      data: departmentNames.map((name) => ({
+        hospitalId,
+        nane: name,
+      })),
+    });
+    res.json(department);
+  }),
+);
+
+route.post(
+  `${baseVersion}${baseRoute}/:hospitalId/order`,
+  superAdminMiddleware,
+  errorHandler(async (req, res) => {
+    const hospitalId = Number(req.params.hospitalId);
+    ensure(hospitalId, 'Hospital Id is required');
+    const orders = req.body;
+    ensure(Array.isArray(orders), 'req.body should be an array');
+    ensure(orders.length > 0, 'req.body should not be empty');
+    ensure(
+      orders.every(
+        (d) =>
+          typeof d.orderDeptName === 'string' && typeof d.name === 'string',
+      ),
+      'Array should contain orderDeptName and name',
+    );
+    const uniqueDepartment = [...new Set(orders.map((o) => o.orderDeptName))];
+    const departments = await dbClient.orderDepartment.findMany({
+      where: {
+        hospitalId,
+      },
+    });
+    const departmentMap = uniqueDepartment.reduce(
+      (acc, d) => {
+        acc[d] = departments.find((dept) => dept.nane === d)?.id;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+    console.log('Department Map', departmentMap);
+
+    const result = await dbClient.order.createMany({
+      data: orders.map((o) => ({
+        name: o.name,
+        orderDeptId: departmentMap[o.orderDeptName],
+        hospitalId,
+      })),
+    });
+    return res.json(result);
+  }),
+);
+
 export default [route];

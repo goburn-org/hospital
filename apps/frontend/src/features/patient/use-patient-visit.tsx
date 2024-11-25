@@ -9,8 +9,10 @@ import { HttpService } from '../../utils/http';
 import {
   AssessmentResponse,
   CreateAssessmentRequest,
+  CreatePatientOrderRequest,
   CreatePatientVisitRequest,
   DetailedPatientVisit,
+  PatientOrderResponse,
   PatientVisit,
 } from '@hospital/shared';
 
@@ -27,6 +29,25 @@ export const usePatientAssessmentMutation = () => {
     mutationFn: (data: CreateAssessmentRequest) =>
       HttpService.post<AssessmentResponse>(
         `/v1/visit/assessment/${data.patientId}/${data.visitId}`,
+        data,
+      ),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: VisitQueryKey({
+          visitId: data.visitId,
+          patientId: data.patientId,
+        }),
+      });
+    },
+  });
+};
+
+export const usePatientOrderMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreatePatientOrderRequest) =>
+      HttpService.post<PatientOrderResponse>(
+        `v1/visit/order/${data.patientId}/${data.visitId}`,
         data,
       ),
     onSuccess: (data) => {

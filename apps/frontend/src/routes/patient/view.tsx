@@ -6,6 +6,7 @@ import { routerConfig } from '../../utils/constants';
 import { Tabs } from '../../component/page-tabs';
 import { useState } from 'react';
 import { PatientAssessment } from '../../features/patient/patient-assessment';
+import { PatientOrder } from '../../features/patient/patient-order';
 
 const tabs = [
   'Assessment',
@@ -54,6 +55,7 @@ export const Component = () => {
         <div className="-my-2 sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
             {activeTab === 'Assessment' && <PatientAssessment />}
+            {activeTab === 'Orders' && <PatientOrder />}
           </div>
         </div>
         <Outlet />

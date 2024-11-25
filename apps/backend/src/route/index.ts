@@ -9,6 +9,7 @@ import patientVisitRoute from './patient/patient-visit-route';
 import productRoute from './product/product-route';
 import route from './role/role-route';
 import superAdminRoute from './super-admin/super-admin-route';
+import utilRoute from './util/util-route';
 
 export default [
   ...healthRoute,
@@ -22,4 +23,5 @@ export default [
   ...accountConfigRoute,
   ...patientVisitRoute,
   ...diagnosisRoute,
+  ...utilRoute,
 ];

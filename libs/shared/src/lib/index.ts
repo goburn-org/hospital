@@ -8,4 +8,6 @@ export * from './product-util';
 export * from './patient/patient-util';
 export * from './patient/assessment-util';
 export * from './patient/patient-visit-util';
+export * from './patient/patient-order-util';
 export * from './hospital-util';
+export * from './order-util';

@@ -1,5 +1,6 @@
 import {
   createAssessmentSchema,
+  createPatientOrderSchema,
   createPatientVisitSchema,
   ensure,
   validatePaginateParamsWithSort,
@@ -9,6 +10,7 @@ import { authMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
 import { patientVisitService } from '../../service/patient/patient-visit-service';
 import { assessmentService } from '../../service/patient/assessment-service';
+import { patientOrderService } from '../../service/patient/patient-order-service';
 
 const route = Router();
 const baseVersion = '/v1';
@@ -44,6 +46,20 @@ route.post(
         : undefined,
     });
     const data = await assessmentService.upsert(visitId, body);
+    res.json(data);
+  }),
+);
+
+route.post(
+  `${baseVersion}${baseRoute}/order/:patientId/:visitId`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const patientId = req.params.patientId;
+    ensure(patientId, 'Invalid patientId params');
+    const visitId = req.params.visitId;
+    ensure(visitId, 'Invalid visitId params');
+    const body = createPatientOrderSchema.parse(req.body);
+    const data = await patientOrderService.upsert(visitId, body);
     res.json(data);
   }),
 );

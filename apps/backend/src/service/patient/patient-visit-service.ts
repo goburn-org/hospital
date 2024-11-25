@@ -5,7 +5,7 @@ import {
   PaginatedResponse,
   DetailedPatientVisit,
   Prisma,
-  Maybe,
+  DetailedPatientVisitGetPayload,
 } from '@hospital/shared';
 import { dbClient } from '../../prisma';
 import { useAuthUser } from '../../provider/async-context';
@@ -82,9 +82,7 @@ class PatientVisitService {
       where: {
         id,
       },
-      include: {
-        Assessment: true,
-      },
+      ...DetailedPatientVisitGetPayload,
     });
     if (!res) {
       return null;
@@ -93,25 +91,20 @@ class PatientVisitService {
   }
 
   toDetailedPatientVisit(
-    data: Prisma.PatientVisitGetPayload<{
-      include: {
-        Assessment: true;
-      };
-    }>,
+    data: Prisma.PatientVisitGetPayload<typeof DetailedPatientVisitGetPayload>,
   ): DetailedPatientVisit {
-    if (data.Assessment) {
-      return {
-        ...data,
-        Assessment: {
-          ...data.Assessment,
-          diagnosis: data.Assessment?.diagnosis as any,
-        },
-      };
-    }
-    return {
+    const result: DetailedPatientVisit = {
       ...data,
       Assessment: null,
+      PatientOrder: data.PatientOrder,
     };
+    if (data.Assessment) {
+      result['Assessment'] = {
+        ...data.Assessment,
+        diagnosis: data.Assessment?.diagnosis as any,
+      };
+    }
+    return result;
   }
 }
 

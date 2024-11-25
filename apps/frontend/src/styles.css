@@ -38,6 +38,10 @@ input[type='file'].show {
   display: block;
 }
 
+input[type='checkbox'] {
+  @apply rounded-md text-primary;
+}
+
 .form-tag-wrapper {
   @apply flex w-full flex-wrap gap-2 overflow-auto rounded-md border border-gray-300 bg-gray-300 p-2;
 }
