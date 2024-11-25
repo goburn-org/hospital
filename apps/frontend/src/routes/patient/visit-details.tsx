@@ -1,6 +1,8 @@
+import { ArrowLeftCircleIcon } from '@heroicons/react/24/outline';
 import { ensure } from '@hospital/shared';
 import { useState } from 'react';
-import { Outlet, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { Link, Outlet, useParams } from 'react-router-dom';
 import Breadcrumbs from '../../component/breadcrumbs';
 import { Tabs } from '../../component/page-tabs';
 import { PatientAssessment } from '../../features/patient/patient-assessment';
@@ -8,6 +10,7 @@ import { PatientOrder } from '../../features/patient/patient-order';
 import { PatientPrescription } from '../../features/patient/patient-prescription';
 import { PatientVitals } from '../../features/patient/patient-vitals';
 import { usePatientByIdQuery } from '../../features/patient/use-patient-query';
+import { usePatientVisitCheckoutMutation } from '../../features/patient/use-patient-visit';
 import { routerConfig } from '../../utils/constants';
 
 const tabs = [
@@ -19,10 +22,14 @@ const tabs = [
 ] as const;
 
 export const Component = () => {
-  const { patientId } = useParams();
+  const { patientId, visitId } = useParams();
   ensure(patientId, 'id is required');
+  ensure(visitId, 'id is required');
+
   const { data, isLoading } = usePatientByIdQuery(patientId);
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>(tabs[0]);
+  const { mutateAsync } = usePatientVisitCheckoutMutation({});
+  const isCheckout = Boolean(data?.lastVisit?.checkOutTime);
   if (isLoading) {
     return <div>Loading</div>;
   }
@@ -40,7 +47,29 @@ export const Component = () => {
   return (
     <div className="flex flex-col gap-8 -mt-6 sm:px-6">
       <div className="">
-        <Breadcrumbs pages={breadcrumbsPages} />
+        <div className="flex justify-between">
+          <Breadcrumbs pages={breadcrumbsPages} />
+          {isCheckout ? (
+            <Link className="btn-primary" to={`${routerConfig.Patient}`}>
+              Back
+              <ArrowLeftCircleIcon width={24} className="w-5 h-5" />
+            </Link>
+          ) : (
+            <button
+              className="btn-danger"
+              onClick={async () => {
+                await mutateAsync({
+                  visitId,
+                  patientId,
+                });
+                toast.success('Patient Checked Out');
+              }}
+            >
+              Checkout
+              <ArrowLeftCircleIcon width={24} className="w-5 h-5" />
+            </button>
+          )}
+        </div>
         <div className="mt-2">
           <Tabs
             defaultTab={activeTab}

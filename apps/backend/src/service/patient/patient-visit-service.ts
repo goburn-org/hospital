@@ -26,6 +26,17 @@ class PatientVisitService {
     });
   }
 
+  checkout(visitId: string) {
+    return dbClient.patientVisit.update({
+      where: {
+        id: visitId,
+      },
+      data: {
+        checkOutTime: new Date(),
+      },
+    });
+  }
+
   create(uhid: string, data: CreatePatientVisitRequest): Promise<PatientVisit> {
     const authUser = useAuthUser();
     return dbClient.patientVisit.create({

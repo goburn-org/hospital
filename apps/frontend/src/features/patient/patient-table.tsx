@@ -96,8 +96,9 @@ export const PatientTable = () => {
         id: 'action',
         header: 'Action',
         Cell: ({ row }) => {
-          const value = row.original.lastVisit;
-          if (!value) {
+          const isCheckout =
+            row.original.lastVisit && row.original.lastVisit.checkOutTime;
+          if (isCheckout) {
             return (
               <Link
                 to={`${row.original.uhid}/visit/${routerConfig.New}`}
@@ -109,7 +110,7 @@ export const PatientTable = () => {
           }
           return (
             <Link
-              to={`${row.original.uhid}/visit/${value.id}`}
+              to={`${row.original.uhid}/visit/${row.original.lastVisit?.id}`}
               className="btn-text-tertiary btn-small"
             >
               View Last Visit

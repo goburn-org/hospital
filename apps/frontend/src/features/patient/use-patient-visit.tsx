@@ -144,3 +144,27 @@ export const usePatientVisitByIdQuery = (
     ...options,
   });
 };
+
+export const usePatientVisitCheckoutMutation = (
+  options: UseMutationOptions<CreatePatientVisit, unknown, VisitIdPatientId>,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    ...options,
+    mutationFn: (param) =>
+      HttpService.post<CreatePatientVisit>(
+        `/v1/visit/checkout/${param.patientId}/${param.visitId}`,
+      ),
+    onSuccess: (res, req) => {
+      queryClient.invalidateQueries({
+        queryKey: VisitQueryKey({
+          visitId: req.visitId,
+          patientId: req.patientId,
+        }),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['patient', req.patientId],
+      });
+    },
+  });
+};

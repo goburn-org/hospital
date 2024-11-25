@@ -96,6 +96,19 @@ route.post(
   }),
 );
 
+route.post(
+  `${baseVersion}${baseRoute}/checkout/:patientId/:visitId`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const patientId = req.params.patientId;
+    ensure(patientId, 'Invalid patientId params');
+    const visitId = req.params.visitId;
+    ensure(visitId, 'Invalid visitId params');
+    const data = await patientVisitService.checkout(visitId);
+    res.json(data);
+  }),
+);
+
 route.get(
   `${baseVersion}${baseRoute}/:patientId`,
   authMiddleware,
