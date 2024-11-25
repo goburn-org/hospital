@@ -15,8 +15,8 @@ import { FormEditor } from '../../component/form/form-editor';
 import { FormInput } from '../../component/form/form-input';
 import PageLoading from '../../component/page-loader';
 import { CustomSelect } from '../../component/select';
+import { useOrderQuery } from '../../provider/use-order';
 import { TIMER_S, useTimer } from '../../utils/use-timer';
-import { useDiagnosisQuery } from './use-diagonisis';
 import {
   usePatientAssessmentMutation,
   usePatientVisitByIdQuery,
@@ -26,11 +26,7 @@ const DiagnosisEditor = () => {
   const { watch, formState, setValue } =
     useFormContext<CreateAssessmentRequest>();
   const error = formState.errors['diagnosis'];
-  const [search, setSearch] = useState('');
-  const { data, isLoading } = useDiagnosisQuery(search, {
-    limit: 10,
-    page: 1,
-  });
+  const { data, isLoading } = useOrderQuery();
   const handleSelect = (index: number, value: string) => {
     const oldDiagnosis = watch('diagnosis') || [];
     const newDiagnosis = oldDiagnosis.map((d, i) =>
@@ -56,14 +52,13 @@ const DiagnosisEditor = () => {
           <CustomSelect
             labelName="Diagnosis"
             isLoading={isLoading}
-            options={data?.data.map((d) => ({
+            options={data?.map((d) => ({
               label: d.name,
               id: d.id,
             }))}
             htmlFor="diagnosis"
             value={d.diagnosisId}
             onChange={(value) => handleSelect(idx, value)}
-            onRawChange={setSearch}
           />
           <div className={'w-full'}>
             <label

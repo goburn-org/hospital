@@ -23,7 +23,6 @@ model Hospital {
   Role            Role[]
   User            User[]
   Vendor          Vendor[]
-  Diagnosis       Diagnosis[]
   OrderDepartment OrderDepartment[]
   Order           Order[]
 }
@@ -255,17 +254,6 @@ model PatientVisit {
   PatientOrder        PatientOrder?
   PatientVital        PatientVital?
   PatientPrescription PatientPrescription?
-}
-
-model Diagnosis {
-  id          String   @id @default(uuid())
-  hospitalId  Int
-  hospital    Hospital @relation(fields: [hospitalId], references: [id])
-  name        String
-  description String?
-  updatedBy   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 }
 
 model Assessment {

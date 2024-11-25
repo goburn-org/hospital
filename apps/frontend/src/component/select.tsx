@@ -7,6 +7,7 @@ import {
 } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { ReactNode, useState } from 'react';
+import { FixedSizeList as List } from 'react-window';
 import { classNames } from '../utils/classNames';
 
 export type SelectOption = {
@@ -158,37 +159,49 @@ export const CustomSelect = <Option extends SelectOption>({
               </div>
             </ListboxOption>
           ) : filteredOptions?.length ? (
-            filteredOptions.map((option) => (
-              <ListboxOption
-                key={option.id}
-                value={option.id}
-                className={classNames(
-                  selection.includes(option.id) ? 'bg-gray-100' : '',
-                  'group relative cursor-default select-none py-2 pl-3 pr-4 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white',
-                )}
-              >
-                <div className="flex flex-row items-center gap-2">
-                  {option.icon ? (
-                    <span className="h-8 w-8">{option.icon}</span>
-                  ) : null}
-                  <div className="flex w-full flex-col">
-                    <div className="flex w-full justify-between">
-                      <p className="font-normal group-data-[selected]:font-semibold">
-                        {option.label}
-                      </p>
-                      <span className="text-indigo-600 group-data-[focus]:text-white [.group:not([data-selected])_&]:hidden">
-                        <CheckIcon aria-hidden="true" className="h-5 w-5" />
+            <List
+              height={192}
+              itemCount={filteredOptions.length}
+              itemSize={35}
+              width={400}
+            >
+              {({ index, style }) => (
+                <ListboxOption
+                  key={filteredOptions[index].id}
+                  value={filteredOptions[index].id}
+                  className={classNames(
+                    selection.includes(filteredOptions[index].id)
+                      ? 'bg-gray-100'
+                      : '',
+                    'group relative cursor-default select-none py-2 pl-3 pr-4 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white',
+                  )}
+                  style={style}
+                >
+                  <div className="flex flex-row items-center gap-2">
+                    {filteredOptions[index].icon ? (
+                      <span className="h-8 w-8">
+                        {filteredOptions[index].icon}
                       </span>
-                    </div>
-                    {option.sub ? (
-                      <p className="mt-2 text-gray-500 group-data-[focus]:text-indigo-200">
-                        {option.sub}
-                      </p>
                     ) : null}
+                    <div className="flex w-full flex-col">
+                      <div className="flex w-full justify-between">
+                        <p className="font-normal group-data-[selected]:font-semibold">
+                          {filteredOptions[index].label}
+                        </p>
+                        <span className="text-indigo-600 group-data-[focus]:text-white [.group:not([data-selected])_&]:hidden">
+                          <CheckIcon aria-hidden="true" className="h-5 w-5" />
+                        </span>
+                      </div>
+                      {filteredOptions[index].sub ? (
+                        <p className="mt-2 text-gray-500 group-data-[focus]:text-indigo-200">
+                          {filteredOptions[index].sub}
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-              </ListboxOption>
-            ))
+                </ListboxOption>
+              )}
+            </List>
           ) : (
             <div className="p-2 text-center text-sm text-gray-500">
               No results found

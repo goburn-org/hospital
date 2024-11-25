@@ -19,7 +19,7 @@ import { useUserQuery } from './user-query';
 
 const placeHolders = [
   'Search...',
-  'Search for Projects...',
+  'Search for Patient...',
   'Search for Users...',
   'Search by Email...',
   'Search by Name...',
