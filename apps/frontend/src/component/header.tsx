@@ -11,6 +11,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiTokenStorage } from '../provider/auth/auth-util';
+import { useZoom } from '../provider/zoom-context';
 import { HttpService } from '../utils/http';
 import { useParam } from '../utils/use-param';
 import { Sidebar } from './sidebar';
@@ -47,6 +48,7 @@ export const Header = () => {
     return () => clearInterval(id);
   }, []);
   const ref = useRef<HTMLInputElement>(null);
+  const { handleZoomIn, handleZoomOut, resetZoom } = useZoom();
   useEffect(() => {
     const handleTilt = (event: KeyboardEvent) => {
       const modifier = navigator.userAgent.includes('Mac')
@@ -150,6 +152,24 @@ export const Header = () => {
                   </button>
                 </MenuItem>
                 <span className="h-1 w-2/3 self-center rounded-3xl bg-gray-200"></span>
+                <div className="flex justify-center w-full items-center">
+                  <button onClick={handleZoomOut} className="px-2 mr-2">
+                    <span role="img" aria-label="Zoom Out">
+                      🔍➖
+                    </span>
+                  </button>
+                  <button
+                    className="text-base bg-blue-500 px-2 border border-black"
+                    onClick={resetZoom}
+                  >
+                    A
+                  </button>
+                  <button onClick={handleZoomIn} className="px-2 ml-2">
+                    <span role="img" aria-label="Zoom In">
+                      🔍➕
+                    </span>
+                  </button>
+                </div>
                 <MenuItem>
                   <button
                     className="btn-text w-full !items-center !justify-center !text-center"

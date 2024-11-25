@@ -6,6 +6,7 @@ import {
   SetStateAction,
   useCallback,
   useContext,
+  useMemo,
   useState,
 } from 'react';
 
@@ -34,7 +35,9 @@ export const PatientVisitDrawerProvider: FC<{
     show: false,
   });
   return (
-    <PatientVisitDrawerContext.Provider value={{ value, setValue }}>
+    <PatientVisitDrawerContext.Provider
+      value={useMemo(() => ({ value, setValue }), [value])}
+    >
       {children}
     </PatientVisitDrawerContext.Provider>
   );

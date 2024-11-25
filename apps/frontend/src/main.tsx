@@ -7,6 +7,7 @@ import { RouterProvider } from 'react-router-dom';
 import PageLoader from './component/page-loader';
 import { PatientVisitDetailsDrawer } from './features/patient/patient-visit-details-drawer';
 import { PatientVisitDrawerProvider } from './provider/patient-drawer-context-provider';
+import { ZoomProvider } from './provider/zoom-context';
 import { router } from './router';
 
 const queryClient = new QueryClient();
@@ -18,12 +19,14 @@ const root = ReactDOM.createRoot(
 root.render(
   <StrictMode>
     <PatientVisitDrawerProvider>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} fallbackElement={<PageLoader />} />
-        <PatientVisitDetailsDrawer />
-        <ReactQueryDevtools initialIsOpen={false} />
-        <Toaster position="top-center" gutter={3} />
-      </QueryClientProvider>
+      <ZoomProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} fallbackElement={<PageLoader />} />
+          <PatientVisitDetailsDrawer />
+          <ReactQueryDevtools initialIsOpen={false} />
+          <Toaster position="top-center" gutter={3} />
+        </QueryClientProvider>
+      </ZoomProvider>
     </PatientVisitDrawerProvider>
   </StrictMode>,
 );
