@@ -65,18 +65,18 @@ export const Header = () => {
   }, []);
 
   return (
-    <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-violet-50 px-4 shadow-sm sm:gap-x-6 sm:px-6 2xl:px-8">
+    <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-violet-50 px-4 shadow-sm sm:gap-x-6 ">
       <button
         type="button"
         onClick={() => Sidebar.open()}
-        className="-m-2.5 p-2.5 text-gray-700 2xl:hidden"
+        className="-m-2.5 p-2.5 text-gray-700 "
       >
         <span className="sr-only">Open sidebar</span>
         <Bars3Icon aria-hidden="true" className="h-6 w-6" />
       </button>
 
       {/* Separator */}
-      <div aria-hidden="true" className="h-6 w-px bg-gray-900/10 2xl:hidden" />
+      <div aria-hidden="true" className="h-6 w-px bg-gray-900/10" />
 
       <div className="flex flex-1 gap-x-4 self-stretch 2xl:gap-x-6">
         <div className="flex w-full items-center justify-center">

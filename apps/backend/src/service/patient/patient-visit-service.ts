@@ -3,6 +3,9 @@ import {
   CreatePatientVisitRequest,
   PaginateParamsWithSort,
   PaginatedResponse,
+  DetailedPatientVisit,
+  Prisma,
+  Maybe,
 } from '@hospital/shared';
 import { dbClient } from '../../prisma';
 import { useAuthUser } from '../../provider/async-context';
@@ -71,6 +74,43 @@ class PatientVisitService {
         page: paginate?.page ?? 1,
         limit: paginate?.limit ?? total,
       },
+    };
+  }
+
+  async getById(id: string): Promise<DetailedPatientVisit | null> {
+    const res = await dbClient.patientVisit.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        Assessment: true,
+      },
+    });
+    if (!res) {
+      return null;
+    }
+    return this.toDetailedPatientVisit(res);
+  }
+
+  toDetailedPatientVisit(
+    data: Prisma.PatientVisitGetPayload<{
+      include: {
+        Assessment: true;
+      };
+    }>,
+  ): DetailedPatientVisit {
+    if (data.Assessment) {
+      return {
+        ...data,
+        Assessment: {
+          ...data.Assessment,
+          diagnosis: data.Assessment?.diagnosis as any,
+        },
+      };
+    }
+    return {
+      ...data,
+      Assessment: null,
     };
   }
 }

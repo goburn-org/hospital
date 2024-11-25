@@ -1,6 +1,7 @@
 import {
   useMutation,
   UseMutationOptions,
+  useQuery,
   useQueryClient,
   UseQueryOptions,
 } from '@tanstack/react-query';
@@ -9,6 +10,7 @@ import {
   AssessmentResponse,
   CreateAssessmentRequest,
   CreatePatientVisitRequest,
+  DetailedPatientVisit,
   PatientVisit,
 } from '@hospital/shared';
 
@@ -56,5 +58,19 @@ export const usePatientVisitMutation = (
         queryKey: ['patient-visit'],
       });
     },
+  });
+};
+
+export const usePatientVisitByIdQuery = (
+  param: VisitIdPatientId,
+  options?: UseQueryOptions<DetailedPatientVisit>,
+) => {
+  return useQuery({
+    queryKey: VisitQueryKey(param),
+    queryFn: () =>
+      HttpService.get<DetailedPatientVisit>(
+        `/v1/visit/${param.patientId}/${param.visitId}`,
+      ),
+    ...options,
   });
 };

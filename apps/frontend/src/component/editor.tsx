@@ -3,11 +3,13 @@ import 'quill-mention/dist/quill.mention.css'; // Import quill-mention styles
 import { Mention, MentionBlot, MentionOption } from 'quill-mention'; // Ensure this is imported correctly
 import { useEffect, useRef } from 'react';
 import Quill from 'quill';
+import { useLatest } from '../utils/use-latest';
 
 Quill.register({
   'blots/mention': MentionBlot,
   'modules/mention': Mention,
 });
+
 const atValues = [
   { id: '1', value: 'Fredrik Sundqvist' },
   { id: '2', value: 'Patrik Sjölin' },
@@ -23,7 +25,7 @@ const mention: Partial<MentionOption> = {
   source: function (searchTerm, renderList, mentionChar) {
     let values;
 
-    if (mentionChar === '@') {
+    if (mentionChar === '.') {
       values = atValues;
     } else {
       values = hashValues;
@@ -46,9 +48,22 @@ const modules = {
   toolbar: null,
 };
 
-export const CustomEditor = () => {
+export const CustomEditor = ({
+  disabled,
+  className,
+  placeholder,
+  onChange,
+  initialValue,
+}: {
+  disabled?: boolean;
+  className?: string;
+  placeholder?: string;
+  onChange?: (value: string) => void;
+  initialValue?: string;
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const init = useRef(false);
+  const latestCb = useLatest(onChange);
 
   useEffect(() => {
     if (ref.current && !init.current) {
@@ -56,11 +71,36 @@ export const CustomEditor = () => {
       const quill = new Quill(ref.current, {
         theme: 'snow',
         modules: modules,
+        readOnly: disabled,
+        placeholder,
       });
+      quill.keyboard.addBinding(
+        { key: 9 }, // Keycode for Tab
+        () => {
+          console.log('here');
+          const form = document.querySelector('form'); // Assuming inside a form
+          const inputs = Array.from(
+            form?.querySelectorAll(
+              'input, textarea, button, select, [contenteditable=true]',
+            ) ?? [],
+          );
+          const currentIndex = inputs.findIndex(
+            (el) => el === document.activeElement,
+          );
+
+          if (currentIndex >= 0) {
+            const nextInput = inputs[currentIndex + 1] || inputs[0]; // Loop back to the first input if needed
+            (nextInput as any).focus?.();
+          }
+          return false; // Prevent default behavior (inserting spaces)
+        },
+      );
+      quill.root.innerHTML = initialValue || '';
+
       quill.on('text-change', function () {
-        console.log(quill.getContents());
+        latestCb.current && latestCb.current(quill.root.innerHTML);
       });
     }
-  }, []);
-  return <div ref={ref}></div>;
+  }, [disabled, initialValue, latestCb, placeholder]);
+  return <div className={className} ref={ref}></div>;
 };

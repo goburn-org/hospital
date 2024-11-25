@@ -1,4 +1,5 @@
 import {
+  createAssessmentSchema,
   createPatientVisitSchema,
   ensure,
   validatePaginateParamsWithSort,
@@ -7,6 +8,7 @@ import { Router } from 'express';
 import { authMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
 import { patientVisitService } from '../../service/patient/patient-visit-service';
+import { assessmentService } from '../../service/patient/assessment-service';
 
 const route = Router();
 const baseVersion = '/v1';
@@ -27,6 +29,25 @@ route.post(
   }),
 );
 
+route.post(
+  `${baseVersion}${baseRoute}/assessment/:patientId/:visitId`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const patientId = req.params.patientId;
+    ensure(patientId, 'Invalid patientId params');
+    const visitId = req.params.visitId;
+    ensure(visitId, 'Invalid visitId params');
+    const body = createAssessmentSchema.parse({
+      ...req.body,
+      followUpDate: req.body.followUpDate
+        ? new Date(req.body.followUpDate)
+        : undefined,
+    });
+    const data = await assessmentService.upsert(visitId, body);
+    res.json(data);
+  }),
+);
+
 route.get(
   `${baseVersion}${baseRoute}/:patientId`,
   authMiddleware,
@@ -40,6 +61,19 @@ route.get(
       search: req.query.search,
     };
     const data = await patientVisitService.getAll(patientId, param);
+    res.send(data);
+  }),
+);
+
+route.get(
+  `${baseVersion}${baseRoute}/:patientId/:visitId`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const patientId = req.params.patientId;
+    ensure(patientId, 'Invalid patientId params');
+    const visitId = req.params.visitId;
+    ensure(visitId, 'Invalid visitId params');
+    const data = await patientVisitService.getById(visitId);
     res.send(data);
   }),
 );

@@ -36,7 +36,7 @@ export const Component = () => {
     },
   ];
   return (
-    <div className="flex flex-col gap-8 px-4 -mt-6 sm:px-6">
+    <div className="flex flex-col gap-8 -mt-6 sm:px-6">
       <div className="">
         <Breadcrumbs pages={breadcrumbsPages} />
         <div className="mt-2">

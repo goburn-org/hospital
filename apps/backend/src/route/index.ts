@@ -1,6 +1,7 @@
 import accountConfigRoute from './account-config/account-config-route';
 import authRoute from './auth/auth-route';
 import departmentRoute from './department/department-route';
+import diagnosisRoute from './diagonsis/diagonsis-route';
 import employeeRoute from './employee/employee-route';
 import healthRoute from './health/health-route';
 import patientRoute from './patient/patient-route';
@@ -20,4 +21,5 @@ export default [
   ...superAdminRoute,
   ...accountConfigRoute,
   ...patientVisitRoute,
+  ...diagnosisRoute,
 ];

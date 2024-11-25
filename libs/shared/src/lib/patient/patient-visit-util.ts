@@ -1,6 +1,7 @@
-import { PatientVisit } from '@prisma/client';
+import { PatientVisit, Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { Maybe } from '../ts-util';
+import { AssessmentResponse } from './assessment-util';
 
 export const createPatientVisitSchema = z.object({
   doctorId: z.string(),
@@ -12,3 +13,14 @@ export type CreatePatientVisitRequest = z.infer<
 >;
 
 export type PatientVisitResponse = Maybe<PatientVisit>;
+
+export type DetailedPatientVisit = Prisma.PatientVisitGetPayload<{
+  include: {
+    Assessment: true;
+  };
+}> & {
+  Assessment: Maybe<{
+    diagnosis: Maybe<AssessmentResponse['diagnosis']>;
+    updatedBy: Maybe<string>;
+  }>;
+};

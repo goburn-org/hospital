@@ -69,12 +69,13 @@ export const validatePaginateParams = (
     return true;
   }
   const isPaginateValid =
-    typeof paginateParams.page !== 'number' ||
-    typeof paginateParams.limit !== 'number';
-  if (isPaginateValid) {
-    return true;
+    !Number.isNaN(paginateParams.page) && !Number.isNaN(paginateParams.limit);
+  if (!isPaginateValid) {
+    return false;
   }
-  return false;
+  (params as PaginateParams).page = Number(paginateParams.page);
+  (params as PaginateParams).limit = Number(paginateParams.limit);
+  return true;
 };
 
 export const validatePaginateParamsWithSort = (

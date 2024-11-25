@@ -1,9 +1,4 @@
-import {
-  HTMLInputAutoCompleteAttribute,
-  HTMLInputTypeAttribute,
-  useEffect,
-  useRef,
-} from 'react';
+import { useEffect, useRef } from 'react';
 import {
   Controller,
   FieldValues,
@@ -17,27 +12,12 @@ import {
   FormMode,
   useFormMode,
 } from '../../provider/form-context-provider/form-mode-provider';
-import moment from 'moment';
+import { CustomEditor } from '../editor';
 
-const parseValue = (value: string, type: HTMLInputTypeAttribute) => {
-  if (type === 'number' && typeof value === 'number') {
-    return Number(value);
-  }
-  if (type === 'date' && value) {
-    return moment(value).format('YYYY-MM-DD');
-  }
-  if (type === 'datetime-local' && value) {
-    return moment(value).format('YYYY-MM-DDTHH:mm');
-  }
-  return value;
-};
-
-export const FormInput = <T extends FieldValues = FieldValues>({
+export const FormEditor = <T extends FieldValues = FieldValues>({
   labelName,
   placeholder,
   id,
-  autoComplete,
-  type,
   isRequired,
   disabled,
   twoColumn,
@@ -47,8 +27,6 @@ export const FormInput = <T extends FieldValues = FieldValues>({
   labelName: string;
   placeholder?: string;
   id: Path<T>;
-  autoComplete: HTMLInputAutoCompleteAttribute;
-  type?: HTMLInputTypeAttribute;
   isRequired?: boolean;
   disabled?: boolean;
   twoColumn?: boolean;
@@ -86,67 +64,27 @@ export const FormInput = <T extends FieldValues = FieldValues>({
         {labelName} {isRequired && <span className="text-red-500">*</span>}
       </label>
       <div
-        className={classNames(twoColumn ? 'mt-2 sm:col-span-2 sm:mt-0' : '')}
+        className={classNames(twoColumn ? 'mt-2 sm:col-span-4 sm:mt-0' : '')}
       >
         <Controller
           name={id}
           control={control}
           render={({ formState, field }) => {
-            const value = parseValue(field.value, type ?? 'text');
-
             return (
-              <input
-                id={id}
-                type={type}
+              <CustomEditor
                 disabled={isReadOnly || disabled}
-                autoComplete={autoComplete}
                 className={classNames(
-                  inputClassName
-                    ? inputClassName
-                    : twoColumn
-                      ? 'sm:max-w-xs'
-                      : '',
+                  inputClassName ? inputClassName : twoColumn ? 'w-full' : '',
                   getNestedValue(formState.errors, id)
                     ? 'border-red-500'
                     : 'border-gray-300',
-                  twoColumn
-                    ? 'block w-full py-1.5  sm:text-sm/6 '
-                    : 'w-full  p-2 ',
+                  twoColumn ? 'block sm:text-sm/6 ' : 'p-1 ',
                   'rounded-md border disabled:bg-gray-100 bg-white',
                 )}
                 placeholder={placeholder}
-                value={value || ''}
+                initialValue={field.value || ''}
                 onChange={(e) => {
-                  if (e.target.value === '') {
-                    setValue(id, undefined as any, {
-                      shouldValidate: true,
-                      shouldTouch: true,
-                    });
-                    return;
-                  }
-                  if (type === 'number') {
-                    setValue(
-                      id,
-                      Number(e.target.value) as PathValue<T, Path<T>>,
-                      {
-                        shouldValidate: true,
-                        shouldTouch: true,
-                      },
-                    );
-                    return;
-                  }
-                  if (type === 'date' || type === 'datetime-local') {
-                    setValue(
-                      id,
-                      new Date(e.target.value) as PathValue<T, Path<T>>,
-                      {
-                        shouldValidate: true,
-                        shouldTouch: true,
-                      },
-                    );
-                    return;
-                  }
-                  setValue(id, e.target.value as PathValue<T, Path<T>>, {
+                  setValue(id, e as PathValue<T, Path<T>>, {
                     shouldValidate: true,
                     shouldTouch: true,
                   });

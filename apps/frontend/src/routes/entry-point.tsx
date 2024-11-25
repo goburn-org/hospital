@@ -8,10 +8,10 @@ export function Component() {
   return (
     <div>
       <Sidebar />
-      <div className="2xl:pl-20">
+      <div className="sm:pl-20">
         <Header />
         <main className="py-10">
-          <div className="px-2">
+          <div className="px-0 sm:px-2">
             <Outlet />
           </div>
         </main>
