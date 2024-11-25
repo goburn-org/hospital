@@ -236,24 +236,25 @@ model Patient {
 }
 
 model PatientVisit {
-  id           String        @id @default(uuid())
-  uhid         String
-  hospitalId   Int
-  doctorId     String
-  checkInTime  DateTime
-  checkOutTime DateTime?
-  isDeleted    Boolean       @default(false)
-  updatedBy    String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  Assessment   Assessment?
-  Doctor       User          @relation(fields: [doctorId], references: [id])
-  Hospital     Hospital      @relation(fields: [hospitalId], references: [id])
-  Patient      Patient       @relation(fields: [uhid], references: [uhid])
-  Department   Department?   @relation(fields: [departmentId], references: [id])
-  departmentId Int?
-  PatientOrder PatientOrder?
-  PatientVital PatientVital?
+  id                  String               @id @default(uuid())
+  uhid                String
+  hospitalId          Int
+  doctorId            String
+  checkInTime         DateTime
+  checkOutTime        DateTime?
+  isDeleted           Boolean              @default(false)
+  updatedBy           String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  Assessment          Assessment?
+  Doctor              User                 @relation(fields: [doctorId], references: [id])
+  Hospital            Hospital             @relation(fields: [hospitalId], references: [id])
+  Patient             Patient              @relation(fields: [uhid], references: [uhid])
+  Department          Department?          @relation(fields: [departmentId], references: [id])
+  departmentId        Int?
+  PatientOrder        PatientOrder?
+  PatientVital        PatientVital?
+  PatientPrescription PatientPrescription?
 }
 
 model Diagnosis {
@@ -334,6 +335,16 @@ model PatientVital {
   updatedBy   String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+}
+
+model PatientPrescription {
+  visitId String       @unique
+  Visit   PatientVisit @relation(fields: [visitId], references: [id])
+  list    Json
+
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Gender {

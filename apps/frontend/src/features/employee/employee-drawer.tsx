@@ -240,7 +240,6 @@ const CreateFooter = () => {
           await formProvider.handleSubmit((data) => {
             return mutateAsync(data);
           })();
-          console.log(formProvider.formState.errors);
         }}
       >
         {formProvider.formState.isSubmitting ? (

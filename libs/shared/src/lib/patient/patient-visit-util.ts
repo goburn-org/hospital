@@ -2,6 +2,7 @@ import { PatientVisit, Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { Maybe } from '../ts-util';
 import { AssessmentResponse } from './assessment-util';
+import { CreatePatientPrescriptionRequest } from './patient-prescription-util';
 
 export const createPatientVisitSchema = z.object({
   doctorId: z.string(),
@@ -18,6 +19,7 @@ export const DetailedPatientVisitGetPayload = {
   include: {
     Assessment: true,
     PatientVital: true,
+    PatientPrescription: true,
     PatientOrder: {
       select: {
         order: {
@@ -39,4 +41,5 @@ export type DetailedPatientVisit = Prisma.PatientVisitGetPayload<
     diagnosis: Maybe<AssessmentResponse['diagnosis']>;
     updatedBy: Maybe<string>;
   }>;
+  PatientPrescription: Maybe<CreatePatientPrescriptionRequest>;
 };

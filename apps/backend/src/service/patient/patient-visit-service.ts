@@ -6,6 +6,7 @@ import {
   PaginatedResponse,
   PatientVisit,
   Prisma,
+  prescriptionDbConvertor,
 } from '@hospital/shared';
 import { dbClient } from '../../prisma';
 import { useAuthUser } from '../../provider/async-context';
@@ -97,12 +98,18 @@ class PatientVisitService {
       ...data,
       Assessment: null,
       PatientOrder: data.PatientOrder,
+      PatientPrescription: null,
     };
     if (data.Assessment) {
       result['Assessment'] = {
         ...data.Assessment,
         diagnosis: data.Assessment?.diagnosis as any,
       };
+    }
+    if (data.PatientPrescription) {
+      result['PatientPrescription'] = prescriptionDbConvertor.from(
+        data.PatientPrescription.list,
+      ) as any;
     }
     return result;
   }

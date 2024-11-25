@@ -28,7 +28,6 @@ const Form = ({
     resolver: zodResolver(createPatientVitalSchema),
   });
   const { mutateAsync } = usePatientVitalMutation();
-  console.log(formProvider.formState.errors);
   return (
     <FormProvider {...formProvider}>
       <form
