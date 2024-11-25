@@ -223,7 +223,7 @@ const Form = ({
           </div>
         </form>
       </FormProvider>
-      <div className="flex items-end">
+      <div className="flex justify-end items-center gap-4 w-[65vw]">
         <button
           className="btn-primary"
           onClick={async (e) => {

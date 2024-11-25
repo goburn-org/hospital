@@ -167,7 +167,7 @@ export const PatientDrawer = ({
               <div className="sm:col-span-3">
                 <FormInput<CreatePatientInput>
                   id="aadharName"
-                  labelName="Aadhar Code"
+                  labelName="Aadhar Name"
                   autoComplete="off"
                 />
               </div>

@@ -98,7 +98,7 @@ export const PatientTable = () => {
         Cell: ({ row }) => {
           const isCheckout =
             row.original.lastVisit && row.original.lastVisit.checkOutTime;
-          if (isCheckout) {
+          if (isCheckout || !row.original.lastVisit) {
             return (
               <Link
                 to={`${row.original.uhid}/visit/${routerConfig.New}`}
