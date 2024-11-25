@@ -8,6 +8,7 @@ CREATE TABLE "Hospital" (
     "phoneNumber" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "hospitalImg" TEXT NOT NULL,
 
     CONSTRAINT "Hospital_pkey" PRIMARY KEY ("id")
 );
@@ -219,40 +220,97 @@ CREATE TABLE "PatientVisit" (
     "id" TEXT NOT NULL,
     "uhid" TEXT NOT NULL,
     "hospitalId" INTEGER NOT NULL,
-    "departmentId" INTEGER NOT NULL,
     "doctorId" TEXT NOT NULL,
     "checkInTime" TIMESTAMP(3) NOT NULL,
-    "checkOutTime" TIMESTAMP(3) NOT NULL,
+    "checkOutTime" TIMESTAMP(3),
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "updatedBy" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "departmentId" INTEGER,
 
     CONSTRAINT "PatientVisit_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Assessment" (
+CREATE TABLE "Diagnosis" (
     "id" TEXT NOT NULL,
-    "uhid" TEXT NOT NULL,
-    "doctorId" TEXT NOT NULL,
-    "patientVisitId" TEXT NOT NULL,
-    "complaint" TEXT NOT NULL,
-    "currentMedication" TEXT NOT NULL,
-    "pastMedicalHistory" TEXT NOT NULL,
-    "examination" TEXT NOT NULL,
-    "investigation" TEXT NOT NULL,
-    "procedureDone" TEXT NOT NULL,
-    "diagnosis" JSONB NOT NULL,
-    "treatmentGiven" TEXT NOT NULL,
-    "followUp" TIMESTAMP(3) NOT NULL,
-    "followupInstruction" TEXT NOT NULL,
-    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "hospitalId" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
     "updatedBy" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Assessment_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Diagnosis_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Assessment" (
+    "visitId" TEXT NOT NULL,
+    "complaint" TEXT,
+    "currentMedication" TEXT,
+    "pastMedicalHistory" TEXT,
+    "examination" TEXT,
+    "investigation" TEXT,
+    "procedureDone" TEXT,
+    "diagnosis" JSONB,
+    "treatmentGiven" TEXT,
+    "advice" TEXT,
+    "followUpDate" TIMESTAMP(3),
+    "followupInstruction" TEXT,
+    "updatedBy" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "OrderDepartment" (
+    "id" SERIAL NOT NULL,
+    "nane" TEXT NOT NULL,
+    "hospitalId" INTEGER NOT NULL,
+    "updatedBy" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "OrderDepartment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Order" (
+    "id" TEXT NOT NULL,
+    "hospitalId" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "orderDeptId" INTEGER NOT NULL,
+    "updatedBy" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "patientOrderVisitId" TEXT,
+
+    CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PatientOrder" (
+    "visitId" TEXT NOT NULL,
+    "orderDate" TIMESTAMP(3) NOT NULL,
+    "updatedBy" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "PatientVital" (
+    "visitId" TEXT NOT NULL,
+    "height" DOUBLE PRECISION,
+    "weight" DOUBLE PRECISION,
+    "temperature" DOUBLE PRECISION,
+    "pulse" DOUBLE PRECISION,
+    "bp" TEXT,
+    "spo2" DOUBLE PRECISION,
+    "updatedBy" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- CreateIndex
@@ -274,7 +332,13 @@ CREATE UNIQUE INDEX "Permission_permissionName_key" ON "Permission"("permissionN
 CREATE UNIQUE INDEX "ProductDepartment_productId_departmentId_key" ON "ProductDepartment"("productId", "departmentId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Assessment_patientVisitId_key" ON "Assessment"("patientVisitId");
+CREATE UNIQUE INDEX "Assessment_visitId_key" ON "Assessment"("visitId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PatientOrder_visitId_key" ON "PatientOrder"("visitId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PatientVital_visitId_key" ON "PatientVital"("visitId");
 
 -- AddForeignKey
 ALTER TABLE "Department" ADD CONSTRAINT "Department_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -340,9 +404,6 @@ ALTER TABLE "ProductIntent" ADD CONSTRAINT "ProductIntent_productId_fkey" FOREIG
 ALTER TABLE "ProductIntent" ADD CONSTRAINT "ProductIntent_trackId_fkey" FOREIGN KEY ("trackId") REFERENCES "IntentTrack"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PatientVisit" ADD CONSTRAINT "PatientVisit_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "PatientVisit" ADD CONSTRAINT "PatientVisit_doctorId_fkey" FOREIGN KEY ("doctorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -352,10 +413,28 @@ ALTER TABLE "PatientVisit" ADD CONSTRAINT "PatientVisit_hospitalId_fkey" FOREIGN
 ALTER TABLE "PatientVisit" ADD CONSTRAINT "PatientVisit_uhid_fkey" FOREIGN KEY ("uhid") REFERENCES "Patient"("uhid") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Assessment" ADD CONSTRAINT "Assessment_doctorId_fkey" FOREIGN KEY ("doctorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "PatientVisit" ADD CONSTRAINT "PatientVisit_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Assessment" ADD CONSTRAINT "Assessment_patientVisitId_fkey" FOREIGN KEY ("patientVisitId") REFERENCES "PatientVisit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Diagnosis" ADD CONSTRAINT "Diagnosis_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Assessment" ADD CONSTRAINT "Assessment_uhid_fkey" FOREIGN KEY ("uhid") REFERENCES "Patient"("uhid") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Assessment" ADD CONSTRAINT "Assessment_visitId_fkey" FOREIGN KEY ("visitId") REFERENCES "PatientVisit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrderDepartment" ADD CONSTRAINT "OrderDepartment_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Order" ADD CONSTRAINT "Order_hospitalId_fkey" FOREIGN KEY ("hospitalId") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Order" ADD CONSTRAINT "Order_orderDeptId_fkey" FOREIGN KEY ("orderDeptId") REFERENCES "OrderDepartment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Order" ADD CONSTRAINT "Order_patientOrderVisitId_fkey" FOREIGN KEY ("patientOrderVisitId") REFERENCES "PatientOrder"("visitId") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PatientOrder" ADD CONSTRAINT "PatientOrder_visitId_fkey" FOREIGN KEY ("visitId") REFERENCES "PatientVisit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PatientVital" ADD CONSTRAINT "PatientVital_visitId_fkey" FOREIGN KEY ("visitId") REFERENCES "PatientVisit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

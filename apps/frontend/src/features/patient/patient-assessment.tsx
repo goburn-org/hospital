@@ -138,7 +138,7 @@ const Form = ({
   return (
     <FormProvider {...formProvider}>
       <form
-        className="flex flex-col gap-12 w-[100vw] sm:w-[70vw] px-4 py-6 bg-gray-50 rounded-lg "
+        className="flex flex-col gap-12 px-4 py-6 bg-gray-50 rounded-lg "
         onSubmit={formProvider.handleSubmit(async (data) => {
           console.log(data);
           await mutateAsync({ ...data, patientId, visitId });

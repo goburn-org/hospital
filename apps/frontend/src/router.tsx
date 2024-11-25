@@ -84,6 +84,7 @@ const patientRoutes = (
         path={routerConfig.New}
         lazy={() => import('./routes/patient/new')}
       />
+      <Route path={`:patientId`} lazy={() => import('./routes/patient/edit')} />
       <Route
         path={`:patientId/${routerConfig.Visit}/${routerConfig.New}`}
         lazy={() => import('./routes/patient/new-visit')}
@@ -91,7 +92,7 @@ const patientRoutes = (
     </Route>
     <Route
       path={`/${routerConfig.Patient}/:patientId/${routerConfig.Visit}/:visitId`}
-      lazy={() => import('./routes/patient/view')}
+      lazy={() => import('./routes/patient/visit-details')}
     />
   </>
 );

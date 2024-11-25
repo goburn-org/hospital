@@ -253,6 +253,7 @@ model PatientVisit {
   Department   Department?   @relation(fields: [departmentId], references: [id])
   departmentId Int?
   PatientOrder PatientOrder?
+  PatientVital PatientVital?
 }
 
 model Diagnosis {
@@ -319,6 +320,20 @@ model PatientOrder {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   PatientVisit PatientVisit @relation(fields: [visitId], references: [id])
+}
+
+model PatientVital {
+  visitId     String       @unique
+  Visit       PatientVisit @relation(fields: [visitId], references: [id])
+  height      Float?
+  weight      Float?
+  temperature Float?
+  pulse       Float?
+  bp          String?
+  spo2        Float?
+  updatedBy   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 enum Gender {

@@ -21,11 +21,11 @@ import {
 export const PatientDrawer = ({
   defaultValues,
   mode,
-  departmentId,
+  patientId,
 }: {
   defaultValues?: CreatePatientInput;
   mode: 'create' | 'edit' | 'view';
-  departmentId?: string;
+  patientId?: string;
 }) => {
   const navigate = useNavigate();
   const formProvider = useForm<CreatePatientInput>({
@@ -59,7 +59,7 @@ export const PatientDrawer = ({
       </div>
       <FormModeProvider
         mode={editable ? FormMode.Editable : FormMode.ReadOnly}
-        oldId={departmentId}
+        oldId={patientId}
       >
         <FormProvider {...formProvider}>
           <form className="flex max-h-[90vh] flex-col gap-12">

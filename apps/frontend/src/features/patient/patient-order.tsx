@@ -9,8 +9,10 @@ import { useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
+import { FaceList } from '../../component/face-list';
 import PageLoading from '../../component/page-loader';
 import { useOrderQuery } from '../../provider/use-order';
+import { useParam } from '../../utils/use-param';
 import { TIMER_S, useTimer } from '../../utils/use-timer';
 import {
   usePatientOrderMutation,
@@ -23,22 +25,14 @@ const OrderEditor = () => {
   const { data } = useOrderQuery();
   const error = formState.errors['order'];
   const uniqueDepartment = Array.from(new Set(data?.map((d) => d.orderDeptId)));
-  const [search, setSearch] = useState('');
+  const { param } = useParam<'q'>();
+  const search = param.q ?? '';
   return (
     <div className="relative sm:col-span-6 max-h-[75vh]">
       {error && (
         <p className="text-red-500 text-sm font-semibold">{error.message}</p>
       )}
-      <div className="flex items-center justify-between sticky top-0 left-0 bg-white py-3 px-2 ">
-        <input
-          type="search"
-          placeholder="Search Items"
-          className="input"
-          onChange={(e) => {
-            setSearch(e.target.value);
-          }}
-        />
-      </div>
+      <div className="flex items-center justify-between sticky top-0 left-0 bg-white py-3 px-2 "></div>
       <div className="px-4 max-h-[55vh] overflow-auto">
         {data?.filter((o) =>
           o.name.toLowerCase().includes(search.toLowerCase()),
@@ -90,7 +84,9 @@ const OrderEditor = () => {
                             }
                           }}
                         />
-                        <label htmlFor={order.id}>{order.name}</label>
+                        <label htmlFor={order.id}>
+                          <FaceList string={order.name} search={search} />
+                        </label>
                       </div>
                     ))}
                 </div>
@@ -141,7 +137,7 @@ const Form = ({
   return (
     <FormProvider {...formProvider}>
       <form
-        className="flex flex-col w-[100vw] sm:w-[70vw] bg-gray-50 rounded-lg "
+        className="flex flex-col bg-gray-50 rounded-lg "
         onSubmit={formProvider.handleSubmit(async (data) => {
           await mutateAsync(data);
           toast.success('Order Saved');

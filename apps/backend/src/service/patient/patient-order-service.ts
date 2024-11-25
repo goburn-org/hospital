@@ -2,6 +2,7 @@ import {
   CreatePatientOrderRequest,
   PatientOrderResponse,
 } from '@hospital/shared';
+import { logger } from '../../logger/logger-service';
 import { dbClient } from '../../prisma';
 
 class PatientOrderService {
@@ -9,11 +10,15 @@ class PatientOrderService {
     visitId: string,
     body: CreatePatientOrderRequest,
   ): Promise<PatientOrderResponse> {
-    await dbClient.patientOrder.delete({
-      where: {
-        visitId,
-      },
-    });
+    try {
+      await dbClient.patientOrder.delete({
+        where: {
+          visitId,
+        },
+      });
+    } catch (e) {
+      logger.log('patient order failed to delete', e);
+    }
     const res = await dbClient.patientOrder.create({
       data: {
         visitId,

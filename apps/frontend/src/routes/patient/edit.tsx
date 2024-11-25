@@ -5,9 +5,9 @@ import { PatientDrawer } from '../../features/patient/patient-drawer';
 import { usePatientByIdQuery } from '../../features/patient/use-patient-query';
 
 export const Component = () => {
-  const { id } = useParams();
-  ensure(id, 'id is required');
-  const { data, isLoading } = usePatientByIdQuery(id);
+  const { patientId } = useParams();
+  ensure(patientId, 'id is required');
+  const { data, isLoading } = usePatientByIdQuery(patientId);
   if (isLoading) {
     return <div>Loading</div>;
   }
@@ -16,7 +16,7 @@ export const Component = () => {
   }
   return (
     <CustomDialog open={true}>
-      <PatientDrawer mode="edit" defaultValues={data} departmentId={id} />
+      <PatientDrawer mode="edit" defaultValues={data} patientId={patientId} />
     </CustomDialog>
   );
 };

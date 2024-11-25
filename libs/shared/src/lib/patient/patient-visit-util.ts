@@ -17,6 +17,7 @@ export type PatientVisitResponse = Maybe<PatientVisit>;
 export const DetailedPatientVisitGetPayload = {
   include: {
     Assessment: true,
+    PatientVital: true,
     PatientOrder: {
       select: {
         order: {

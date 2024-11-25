@@ -3,6 +3,7 @@ import {
   CreateAssessmentRequest,
   CreatePatientOrderRequest,
   CreatePatientVisitRequest,
+  CreatePatientVitalRequest,
   DetailedPatientVisit,
   PatientOrderResponse,
   PatientVisit,
@@ -55,6 +56,30 @@ export const usePatientOrderMutation = () => {
         queryKey: VisitQueryKey({
           visitId: data.visitId,
           patientId: data.patientId,
+        }),
+      });
+    },
+  });
+};
+
+export const usePatientVitalMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (
+      data: CreatePatientVitalRequest & {
+        patientId: string;
+        visitId: string;
+      },
+    ) =>
+      HttpService.post<CreatePatientVitalRequest>(
+        `v1/visit/vital/${data.patientId}/${data.visitId}`,
+        data,
+      ),
+    onSuccess: (res, req) => {
+      queryClient.invalidateQueries({
+        queryKey: VisitQueryKey({
+          visitId: req.visitId,
+          patientId: req.patientId,
         }),
       });
     },
