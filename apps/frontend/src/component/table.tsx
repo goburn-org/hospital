@@ -154,16 +154,16 @@ export const CustomTable = <T extends MRT_RowData>({
                   <td
                     className={classNames(
                       idx === 0 ? 'text-gray-900' : 'text-gray-500',
-                      'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-6',
+                      'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 max-w-[25ch] overflow-hidden text-ellipsis',
                     )}
                     key={cell.id}
                   >
-                    {/* Use MRT's cell renderer that provides better logic than flexRender */}
                     <MRT_TableBodyCellValue
                       cell={cell}
                       table={table}
                       staticRowIndex={rowIndex} //just for batch row selection to work
                     />
+                    {/* Use MRT's cell renderer that provides better logic than flexRender */}
                   </td>
                 ))}
                 {menu.length ? (
