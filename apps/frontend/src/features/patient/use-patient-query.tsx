@@ -49,6 +49,7 @@ export const usePatientByIdQuery = (
     ...(options || {}),
     queryKey: [...queryKey, id],
     queryFn: () => HttpService.get<PatientResponse>(`/v1/patient/${id}`),
+    enabled: !!id,
   });
 };
 

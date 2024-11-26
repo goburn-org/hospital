@@ -4,6 +4,7 @@ import {
   createPatientVisitSchema,
   createPatientVitalSchema,
   ensure,
+  PaginateParamsWithSort,
   prescriptionDbConvertor,
   validatePaginateParamsWithSort,
 } from '@hospital/shared';
@@ -115,13 +116,12 @@ route.get(
   errorHandler(async (req, res) => {
     const patientId = req.params.patientId;
     ensure(patientId, 'Invalid sort params');
-    ensure(validatePaginateParamsWithSort(req.query), 'Invalid sort params');
-    const param = {
-      paginate: req.query.paginate,
-      sort: req.query.sort,
-      search: req.query.search,
-    };
-    const data = await patientVisitService.getAll(patientId, param);
+    let paginate: PaginateParamsWithSort | undefined = undefined;
+    if (req.query.paginate) {
+      ensure(validatePaginateParamsWithSort(req.query), 'Invalid sort params');
+      paginate = req.query;
+    }
+    const data = await patientVisitService.getAll(patientId, paginate);
     res.send(data);
   }),
 );

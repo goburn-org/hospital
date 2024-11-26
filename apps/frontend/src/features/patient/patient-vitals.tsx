@@ -1,3 +1,4 @@
+import { CheckIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   CreatePatientVitalRequest,
@@ -5,10 +6,12 @@ import {
   ensure,
   Maybe,
 } from '@hospital/shared';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
 import PageLoading from '../../component/page-loader';
+import { TIMER_L, useTimer } from '../../utils/use-timer';
 import {
   usePatientVisitByIdQuery,
   usePatientVitalMutation,
@@ -27,13 +30,19 @@ const Form = ({
     defaultValues: defaultValue || undefined,
     resolver: zodResolver(createPatientVitalSchema),
   });
+  const [start] = useTimer(TIMER_L);
   const { mutateAsync } = usePatientVitalMutation();
+  const [saved, setSaved] = useState(false);
   return (
     <FormProvider {...formProvider}>
       <form
         className="bg-slate-50 p-4 rounded-lg"
-        onSubmit={formProvider.handleSubmit((data) => {
-          mutateAsync({ patientId, visitId, ...data });
+        onSubmit={formProvider.handleSubmit(async (data) => {
+          await mutateAsync({ patientId, visitId, ...data });
+          setSaved(true);
+          start(() => {
+            setSaved(false);
+          });
         })}
       >
         <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -96,7 +105,14 @@ const Form = ({
             clear
           </button>
           <button type="submit" className="btn-primary">
-            Save
+            {saved ? (
+              <>
+                <CheckIcon width={24} />
+                Done
+              </>
+            ) : (
+              'Save'
+            )}
           </button>
         </div>
       </form>

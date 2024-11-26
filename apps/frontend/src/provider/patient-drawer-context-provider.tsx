@@ -43,11 +43,6 @@ export const PatientVisitDrawerProvider: FC<{
   );
 };
 
-export const usePatientVisitDrawerState = () => {
-  const props = useContext(PatientVisitDrawerContext);
-  return props?.value;
-};
-
 export const useVisitDrawer = () => {
   const props = useContext(PatientVisitDrawerContext);
   const { setValue } = props || {};
@@ -60,5 +55,5 @@ export const useVisitDrawer = () => {
   const hide = useCallback(() => {
     setValue?.({ show: false });
   }, [setValue]);
-  return { show, hide };
+  return { show, hide, state: props?.value };
 };

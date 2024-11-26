@@ -24,7 +24,7 @@ const Breadcrumbs: React.FC<defaultProps> = ({ pages }) => {
               onClick={() => {
                 navigate(`/${routerConfig.Patient}`);
               }}
-              className="text-violet-500 hover:text-violet-700"
+              className="text-indigo-500 hover:text-indigo-700"
             >
               <HomeIcon aria-hidden="true" className="h-5 w-5 flex-shrink-0" />
               <span className="sr-only">Home</span>
@@ -39,7 +39,7 @@ const Breadcrumbs: React.FC<defaultProps> = ({ pages }) => {
                 viewBox="0 0 24 44"
                 preserveAspectRatio="none"
                 aria-hidden="true"
-                className="h-full w-6 flex-shrink-0 text-violet-200"
+                className="h-full w-6 flex-shrink-0 text-indigo-200"
               >
                 <path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" />
               </svg>
@@ -51,7 +51,7 @@ const Breadcrumbs: React.FC<defaultProps> = ({ pages }) => {
                 className={classNames(
                   page.current
                     ? 'text-gray-500 hover:text-gray-700'
-                    : 'text-violet-500 hover:text-violet-700',
+                    : 'text-indigo-500 hover:text-indigo-700',
                   'ml-4 text-sm font-medium',
                 )}
               >

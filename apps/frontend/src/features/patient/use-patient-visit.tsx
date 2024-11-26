@@ -6,8 +6,11 @@ import {
   CreatePatientVisitRequest,
   CreatePatientVitalRequest,
   DetailedPatientVisit,
+  PaginatedResponse,
   PatientOrderResponse,
   PatientVisit,
+  PatientVisitResponse,
+  Sure,
 } from '@hospital/shared';
 import {
   useMutation,
@@ -163,8 +166,25 @@ export const usePatientVisitCheckoutMutation = (
         }),
       });
       queryClient.invalidateQueries({
+        queryKey: ['patient-visit', req.patientId],
+      });
+      queryClient.invalidateQueries({
         queryKey: ['patient', req.patientId],
       });
     },
+  });
+};
+
+export const usePatientVisitHistoryQuery = (
+  patientId: string,
+  options?: UseQueryOptions<PaginatedResponse<Sure<PatientVisitResponse>>>,
+) => {
+  return useQuery({
+    queryKey: ['patient-visit', patientId],
+    queryFn: () =>
+      HttpService.get<PaginatedResponse<Sure<PatientVisitResponse>>>(
+        `/v1/visit/${patientId}`,
+      ),
+    ...options,
   });
 };

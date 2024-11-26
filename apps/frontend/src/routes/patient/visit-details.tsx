@@ -11,6 +11,7 @@ import { PatientPrescription } from '../../features/patient/patient-prescription
 import { PatientVitals } from '../../features/patient/patient-vitals';
 import { usePatientByIdQuery } from '../../features/patient/use-patient-query';
 import { usePatientVisitCheckoutMutation } from '../../features/patient/use-patient-visit';
+import { VisitHistory } from '../../features/patient/visit-history';
 import { routerConfig } from '../../utils/constants';
 
 const tabs = [
@@ -45,7 +46,7 @@ export const Component = () => {
     },
   ];
   return (
-    <div className="flex flex-col gap-8 -mt-6 sm:px-6">
+    <div className="flex flex-col gap-4 -mt-6 sm:px-6">
       <div className="">
         <div className="flex justify-between">
           <Breadcrumbs pages={breadcrumbsPages} />
@@ -84,6 +85,7 @@ export const Component = () => {
       <div className="mt-1 flow-root">
         <div className="-my-2 sm:-mx-6 lg:-mx-8">
           <div className="inline-block py-2 align-middle sm:px-6 lg:px-8 w-[100vw] sm:w-[70vw]">
+            <VisitHistory patientId={patientId} />
             {activeTab === 'Vitals' && <PatientVitals />}
             {activeTab === 'Assessment' && <PatientAssessment />}
             {activeTab === 'Orders' && <PatientOrder />}

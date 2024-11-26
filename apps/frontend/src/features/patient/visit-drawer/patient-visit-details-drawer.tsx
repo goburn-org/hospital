@@ -1,11 +1,13 @@
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { DetailedPatientVisit } from '@hospital/shared';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  usePatientVisitDrawerState,
-  useVisitDrawer,
-} from '../../provider/patient-drawer-context-provider';
-import { HttpService } from '../../utils/http';
-import { VisitIdPatientId } from './use-patient-visit';
+import { OutsideClick } from '../../../component/outside-click';
+import { useVisitDrawer } from '../../../provider/patient-drawer-context-provider';
+import { HttpService } from '../../../utils/http';
+import { useEsc } from '../../../utils/use-esc';
+import { usePatientByIdQuery } from '../use-patient-query';
+import { VisitIdPatientId } from '../use-patient-visit';
+import { VisitDrawerDetails } from './visit-drawer-details';
 
 type DataReady<T> = {
   loading: false;
@@ -19,10 +21,10 @@ type Loading = {
   error: null;
 };
 
-type Error<T> = {
+type Error = {
   loading: false;
   data: null;
-  error: T;
+  error: unknown;
 };
 
 type Idle = {
@@ -38,7 +40,7 @@ type Stale<T> = {
   stale: true;
 };
 
-type State<T> = DataReady<T> | Loading | Error<T> | Idle | Stale<T>;
+type State<T> = DataReady<T> | Loading | Error | Idle | Stale<T>;
 
 const loadingState: Loading = {
   loading: true,
@@ -74,7 +76,7 @@ const usePatientVisitDetails = () => {
     setState(loadingState);
 
     HttpService.get<DetailedPatientVisit>(
-      `/patient/visit/${param.patientId}/${param.visitId}`,
+      `/v1/visit/${param.patientId}/${param.visitId}`,
     )
       .then((data) => {
         updateStale(data);
@@ -88,9 +90,12 @@ const usePatientVisitDetails = () => {
 };
 
 export const PatientVisitDetailsDrawer = () => {
-  const state = usePatientVisitDrawerState();
-  const { hide } = useVisitDrawer();
+  const { hide, state } = useVisitDrawer();
   const { state: data, get } = usePatientVisitDetails();
+  const { data: patientDetails } = usePatientByIdQuery(
+    state?.show ? state.patientId : '',
+  );
+  useEsc(hide);
   useEffect(() => {
     if (state?.show) {
       const { patientId, visitId } = state;
@@ -101,25 +106,35 @@ export const PatientVisitDetailsDrawer = () => {
 
   return (
     <div>
-      <div
-        className={`fixed top-0 z-10 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <button
-          onClick={hide}
-          className="p-2 bg-red-500 text-white rounded-md m-2"
+      <OutsideClick onOutsideClick={hide}>
+        <div
+          className={`fixed top-0 z-[100] right-0 h-full w-[35vw] bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+            isOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
         >
-          Close Drawer
-        </button>
-        <div className="p-4">
-          <h2 className="text-xl font-bold">Right-Side Drawer</h2>
-          <p>This is a right-side drawer implemented with Tailwind CSS.</p>
+          <div className="flex justify-between items-center p-4 border-b">
+            <h3 className="text-lg text-gray-500 font-bold">
+              {patientDetails?.name}
+            </h3>
+            <button onClick={hide}>
+              <XMarkIcon className="w-6 h-6" />
+            </button>
+          </div>
+          <div className="p-4">
+            {data.loading && <div>Loading...</div>}
+            {data.error ? <div>Something went wrong</div> : null}
+            {data.data ? (
+              <VisitDrawerDetails
+                data={data.data}
+                patientId={state?.show ? state.patientId : ''}
+              />
+            ) : null}
+          </div>
         </div>
-      </div>
-
-      {/* Overlay */}
-      {isOpen && <div className="fixed inset-0 bg-black bg-opacity-50"></div>}
+      </OutsideClick>
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[40]"></div>
+      )}
     </div>
   );
 };

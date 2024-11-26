@@ -129,13 +129,13 @@ export const toDate = (date: DateLike) => {
 
 export const humanizedDate = (rawDate: DateLike) => {
   const date = toDate(rawDate);
-  const isInLast3Days = date.getDate() - new Date().getDate() <= 3;
-  if (isInLast3Days) {
-    return `${moment(date).fromNow()} (${moment(date).format('lll')})`;
-  }
   const isToday = moment(date).isSame(new Date(), 'day');
   if (isToday) {
-    return `Today (${moment(date).format('lll')})`;
+    return moment(date).fromNow();
+  }
+  const isInLast3Days = date.getDate() - new Date().getDate() <= 3;
+  if (isInLast3Days) {
+    return moment(date).format('lll');
   }
   return moment(date).format('lll');
 };

@@ -106,7 +106,7 @@ const MobileSidebar = ({
                             pathname === item.href ||
                               pathname.startsWith(item.href)
                               ? 'text-white'
-                              : 'text-violet-300 group-hover:text-white',
+                              : 'text-indigo-300 group-hover:text-white',
                             'h-6 w-6 shrink-0',
                           )}
                         />
@@ -118,11 +118,11 @@ const MobileSidebar = ({
                 <li className="mt-auto">
                   <Link
                     to="#"
-                    className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-violet-300 hover:bg-violet-700 hover:text-white"
+                    className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-300 hover:bg-indigo-700 hover:text-white"
                   >
                     <Cog6ToothIcon
                       aria-hidden="true"
-                      className="h-6 w-6 shrink-0 text-violet-300 group-hover:text-white"
+                      className="h-6 w-6 shrink-0 text-indigo-300 group-hover:text-white"
                     />
                     Settings
                   </Link>
@@ -180,11 +180,11 @@ const DesktopSidebar = () => {
           <li className="flex flex-col items-center space-y-1">
             <Link
               to="#"
-              className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-violet-300 hover:bg-violet-900 hover:text-white"
+              className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-300 hover:bg-indigo-900 hover:text-white"
             >
               <Cog6ToothIcon
                 aria-hidden="true"
-                className="h-6 w-6 shrink-0 text-violet-300 group-hover:text-white"
+                className="h-6 w-6 shrink-0 text-indigo-300 group-hover:text-white"
               />
             </Link>
           </li>

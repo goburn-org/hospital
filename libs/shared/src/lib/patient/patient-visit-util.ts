@@ -20,6 +20,7 @@ export const DetailedPatientVisitGetPayload = {
     Assessment: true,
     PatientVital: true,
     PatientPrescription: true,
+    Doctor: true,
     PatientOrder: {
       select: {
         order: {

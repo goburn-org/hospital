@@ -51,7 +51,7 @@ class PatientVisitService {
 
   async getAll(
     uhid: string,
-    params: PaginateParamsWithSort,
+    params?: PaginateParamsWithSort,
   ): Promise<PaginatedResponse<PatientVisit>> {
     const authUser = useAuthUser();
     const { paginate, sort } = params || {};
