@@ -7,11 +7,15 @@ import {
   ArrowLeftStartOnRectangleIcon,
   Bars3Icon,
   BellIcon,
+  Cog6ToothIcon,
+  UserIcon,
 } from '@heroicons/react/24/outline';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAccountConfig } from '../provider/account/use-account-config';
 import { apiTokenStorage } from '../provider/auth/auth-util';
 import { useZoom } from '../provider/zoom-context';
+import { routerConfig } from '../utils/constants';
 import { HttpService } from '../utils/http';
 import { useParam } from '../utils/use-param';
 import { Sidebar } from './sidebar';
@@ -25,9 +29,89 @@ const placeHolders = [
   'Search by Name...',
 ];
 
+const ProfileCard = () => {
+  const navigate = useNavigate();
+  const { data: user } = useUserQuery();
+  const { handleZoomIn, handleZoomOut, resetZoom, zoomLevel } = useZoom();
+  const { data: account } = useAccountConfig();
+
+  return (
+    <div className="w-full overflow-hidden rounded-lg border pb-2 text-black">
+      {/* Background Image */}
+      <div className="relative h-36">
+        <img
+          className="h-full w-full bg-black object-contain"
+          src={account?.hospitalImg}
+          alt={account?.hospitalName}
+        />
+        <div className="absolute inset-0 bg-gray-500 bg-opacity-50"></div>
+        <div className="absolute bottom-5 flex w-full translate-y-1/2 transform items-center justify-center">
+          <UserIcon className="h-24 w-24 rounded-full bg-slate-300 p-5" />
+        </div>
+      </div>
+
+      {/* Name and Info */}
+      <div className="mt-8 px-4 text-center">
+        <h2 className="text-base">{user?.name}</h2>
+        <p className="text-xs capitalize text-gray-500">
+          {user?.Department.name}
+        </p>
+      </div>
+      <div className="m-auto my-2 h-1 w-2/3 rounded-3xl bg-gray-100"></div>
+      <div className="flex flex-col my-8">
+        <div className="flex justify-center w-full items-center">
+          <button onClick={handleZoomOut} className="px-2 mr-2">
+            <span role="img" aria-label="Zoom Out">
+              🔍➖
+            </span>
+            <p className="text-xs text-gray-400">zoom Out</p>
+          </button>
+          <button
+            className="text-sm text-white bg-blue-500 px-2 border border-black"
+            onClick={resetZoom}
+          >
+            Reset
+          </button>
+          <button onClick={handleZoomIn} className="px-2 ml-2">
+            <span role="img" aria-label="Zoom In">
+              🔍➕
+              <p className="text-xs text-gray-400">zoom In</p>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <MenuItem>
+        <button
+          className="btn-text-secondary"
+          onClick={() => {
+            navigate(routerConfig.SettingRoute);
+          }}
+        >
+          <Cog6ToothIcon height={24} />
+          Settings
+        </button>
+      </MenuItem>
+
+      <MenuItem>
+        <button
+          className="btn-text-secondary"
+          onClick={() => {
+            apiTokenStorage.removeToken();
+            HttpService.removeToken();
+            navigate('/login');
+          }}
+        >
+          <ArrowLeftStartOnRectangleIcon height={24} />
+          Logout
+        </button>
+      </MenuItem>
+    </div>
+  );
+};
+
 export const Header = () => {
   const { param, updateParam, removeParam } = useParam<'q' | 'status'>();
-  const navigate = useNavigate();
   const { data: user } = useUserQuery();
   const search = param.q;
   const updateSearch = (value: string) => {
@@ -48,7 +132,6 @@ export const Header = () => {
     return () => clearInterval(id);
   }, []);
   const ref = useRef<HTMLInputElement>(null);
-  const { handleZoomIn, handleZoomOut, resetZoom } = useZoom();
   useEffect(() => {
     const handleTilt = (event: KeyboardEvent) => {
       const modifier = navigator.userAgent.includes('Mac')
@@ -145,44 +228,7 @@ export const Header = () => {
                 transition
                 className="absolute right-0 z-10 mt-2.5 flex w-64 origin-top-right flex-col items-start gap-3 rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
               >
-                <MenuItem>
-                  <button className="btn-text btn-text-secondary !items-center !justify-center !text-center">
-                    <span className="text-gray-400">Department:</span>
-                    {user?.Department?.name}
-                  </button>
-                </MenuItem>
-                <span className="h-1 w-2/3 self-center rounded-3xl bg-gray-200"></span>
-                <div className="flex justify-center w-full items-center">
-                  <button onClick={handleZoomOut} className="px-2 mr-2">
-                    <span role="img" aria-label="Zoom Out">
-                      🔍➖
-                    </span>
-                  </button>
-                  <button
-                    className="text-base bg-blue-500 px-2 border border-black"
-                    onClick={resetZoom}
-                  >
-                    A
-                  </button>
-                  <button onClick={handleZoomIn} className="px-2 ml-2">
-                    <span role="img" aria-label="Zoom In">
-                      🔍➕
-                    </span>
-                  </button>
-                </div>
-                <MenuItem>
-                  <button
-                    className="btn-text w-full !items-center !justify-center !text-center"
-                    onClick={() => {
-                      apiTokenStorage.removeToken();
-                      HttpService.removeToken();
-                      navigate('/login');
-                    }}
-                  >
-                    <ArrowLeftStartOnRectangleIcon color="black" height={24} />
-                    Logout
-                  </button>
-                </MenuItem>
+                <ProfileCard />
               </MenuItems>
             </Menu>
           )}

@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserLoginInput, userLoginSchema } from '@hospital/shared';
+import { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormInput } from '../component/form/form-input';
-import { useLoginMutation } from '../component/user-query';
+import { useLoginMutation, useUserQuery } from '../component/user-query';
 import { HOSPITAL_ID } from '../env';
 import { useAccountConfig } from '../provider/account/use-account-config';
 
@@ -18,6 +19,12 @@ export const Component = () => {
     resolver: zodResolver(userLoginSchema),
   });
   const { data } = useAccountConfig();
+  const { data: user } = useUserQuery();
+  useEffect(() => {
+    if (user) {
+      window.location.href = '/';
+    }
+  }, [user]);
   const { mutateAsync, isPending, error } = useLoginMutation({
     onSuccess: () => {
       window.location.href = '/';

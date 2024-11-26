@@ -26,10 +26,6 @@
   @apply flex items-center gap-2 rounded-md px-3 py-2 text-center text-base font-semibold text-primary transition-all duration-300 hover:text-violet-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-950;
 }
 
-.btn-text-secondary {
-  @apply text-black transition-all duration-300 hover:text-primary;
-}
-
 .btn-text-tertiary {
   @apply text-sky-900 transition-all duration-300 hover:text-sky-800;
 }
@@ -109,4 +105,8 @@ textarea {
 }
 .ql-container.ql-snow.ql-disabled {
   @apply !border-0;
+}
+
+.btn-text-secondary {
+  @apply flex items-center gap-2 rounded-md px-3 py-2 text-center text-base font-semibold text-black transition-all duration-300 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-950;
 }

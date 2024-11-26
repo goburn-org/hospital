@@ -12,6 +12,9 @@ export const VisitHistory = ({ patientId }: { patientId: string }) => {
     <div className="flex gap-2 items-center mb-4">
       <p className="text-gray-500 text-sm">Past Visits:</p>
       <div className="flex flex-row gap-4 max-w-[45vw] overflow-auto ml-2 py-2">
+        {closedVisit?.length === 0 && (
+          <p className="text-sm text-gray-500">No past visits</p>
+        )}
         {closedVisit?.map((visit) => (
           <button
             key={visit.id}

@@ -1,5 +1,5 @@
 export const ProjectName = 'Apollo Health';
-const UserRoute = '/ut';
+const SettingRoute = '/setting';
 const DashboardRoute = '/dashboard';
 const Inventory = '/inventory';
 const Patient = '/patient';
@@ -15,7 +15,7 @@ const Visit = 'visit';
 const Employee = 'employee';
 
 export const routerConfig = {
-  UserRoute,
+  SettingRoute,
   New,
   Edit,
   View,

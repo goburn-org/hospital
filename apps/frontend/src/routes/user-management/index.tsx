@@ -3,11 +3,21 @@ import {
   IdentificationIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
-import { Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Tabs } from '../../component/page-tabs';
 import { routerConfig } from '../../utils/constants';
 
 export const Component = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (location.pathname === routerConfig.SettingRoute) {
+      navigate(routerConfig.Employee, {
+        replace: true,
+      });
+    }
+  }, [location.pathname, navigate]);
   return (
     <div className="flex flex-col gap-8 px-4 sm:px-6">
       <div className="">

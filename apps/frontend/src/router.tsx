@@ -5,9 +5,9 @@ import {
 } from 'react-router-dom';
 import { routerConfig } from './utils/constants';
 
-const userRoutes = (
+const settingRoutes = (
   <Route
-    path={routerConfig.UserRoute}
+    path={routerConfig.SettingRoute}
     lazy={() => import('./routes/user-management')}
   >
     <Route path={routerConfig.Role} lazy={() => import('./routes/role/role')}>
@@ -102,7 +102,7 @@ export const router = createBrowserRouter(
     <Route>
       <Route path="/login" lazy={() => import('./routes/login')} />
       <Route path="/" lazy={() => import('./routes/entry-point')}>
-        {userRoutes}
+        {settingRoutes}
         {inventoryRoutes}
         {patientRoutes}
       </Route>

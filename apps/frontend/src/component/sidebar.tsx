@@ -7,7 +7,6 @@ import {
 import {
   Cog6ToothIcon,
   ShoppingCartIcon,
-  UserCircleIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
@@ -23,12 +22,6 @@ const navigation = [
     name: 'Patient',
     href: routerConfig.Patient,
     icon: PatientIcon,
-    current: false,
-  },
-  {
-    name: 'User Management',
-    href: `${routerConfig.UserRoute}/${routerConfig.Employee}`,
-    icon: UserCircleIcon,
     current: false,
   },
   {
@@ -119,7 +112,7 @@ const MobileSidebar = ({
                 </ul>
                 <li className="mt-auto">
                   <Link
-                    to="#"
+                    to={routerConfig.SettingRoute}
                     className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-300 hover:bg-indigo-700 hover:text-white"
                   >
                     <Cog6ToothIcon
@@ -156,8 +149,8 @@ const DesktopSidebar = () => {
           <ul className="flex flex-col items-center space-y-1">
             {navigation.map((item) => (
               <li key={item.name}>
-                <a
-                  href={item.href}
+                <Link
+                  to={item.href}
                   className={classNames(
                     pathname === item.href || pathname.startsWith(item.href)
                       ? 'bg-gray-800 text-white'
@@ -171,7 +164,7 @@ const DesktopSidebar = () => {
                       className="h-6 w-6 shrink-0"
                     />
                   </Tooltip>
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -182,7 +175,7 @@ const DesktopSidebar = () => {
           {/* Settings Item */}
           <li className="flex flex-col items-center space-y-1">
             <Link
-              to="#"
+              to={routerConfig.SettingRoute}
               className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-300 hover:bg-indigo-900 hover:text-white"
             >
               <Cog6ToothIcon
