@@ -13,6 +13,7 @@ import {
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import PatientIcon from '../asset/patient.svg?react';
+import { useAccountConfig } from '../provider/account/use-account-config';
 import { classNames } from '../utils/classNames';
 import { ProjectName, routerConfig } from '../utils/constants';
 import Tooltip from './tooltip';
@@ -46,6 +47,7 @@ const MobileSidebar = ({
   setSidebarOpen: (open: boolean) => void;
 }) => {
   const { pathname } = useLocation();
+  const { data } = useAccountConfig();
   return (
     <Dialog
       open={sidebarOpen}
@@ -79,8 +81,8 @@ const MobileSidebar = ({
             <div className="flex h-48 shrink-0 items-center border-r-2 border-sidebar bg-white">
               <img
                 alt={ProjectName}
-                src="https://logowik.com/content/uploads/images/apollo-hospitals9684.jpg"
-                className="m-auto h-48 w-auto object-cover"
+                src={data?.hospitalImg}
+                className="m-auto h-48 w-auto object-contain"
               />
             </div>
             <nav className="flex flex-1 flex-col">
@@ -138,13 +140,14 @@ const MobileSidebar = ({
 
 const DesktopSidebar = () => {
   const { pathname } = useLocation();
+  const { data } = useAccountConfig();
   return (
     <>
-      <div className="flex h-16 shrink-0 items-center justify-center">
+      <div className="flex h-16 shrink-0 items-center justify-center px-2">
         <img
           alt="Logo"
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJHBnK_iFpzeT3O5vAkHu9Ynl2CO_DK1wPNQ&s"
-          className="h-8 w-auto"
+          src={data?.hospitalImg}
+          className="h-8 w-auto object-contain bg-white "
         />
       </div>
       <nav className="flex flex-1 flex-col h-[92%]">
