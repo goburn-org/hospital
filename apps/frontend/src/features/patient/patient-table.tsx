@@ -175,6 +175,15 @@ export const PatientTable = () => {
             },
             icon: <ArchiveBoxIcon width={24} />,
           },
+          {
+            label: 'No Past Visits',
+            disabled: () => true,
+            hidden: (r) => !!r?.original.lastVisit?.id,
+            action: () => {
+              return;
+            },
+            icon: <ArchiveBoxIcon width={24} />,
+          },
         ]}
       />
     </div>

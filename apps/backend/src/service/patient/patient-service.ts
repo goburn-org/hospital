@@ -1,22 +1,29 @@
 import {
   CreatePatientInput,
+  ensure,
   PaginatedResponse,
   PaginateParamsWithSort,
   PatientResponse,
 } from '@hospital/shared';
 import { dbClient } from '../../prisma';
 import { useAuthUser } from '../../provider/async-context';
+import { hospitalService } from '../hospital-service';
 import { patientVisitService } from './patient-visit-service';
 
 class PatientService {
   async create(data: CreatePatientInput): Promise<PatientResponse> {
     const authUser = useAuthUser();
+    const hospital = await hospitalService.getById(authUser.hospitalId);
+    ensure(hospital, 'Hospital not found');
+    const date = Date.now();
+    const randomDigit = Math.floor(Math.random() * 100);
     const response = await dbClient.patient.create({
       data: {
         ...data,
         dob: data.dob ? new Date(data.dob) : undefined,
         hospitalId: authUser.hospitalId,
         updatedBy: authUser.id,
+        uhid: `${hospital.hospitalCode}-${date}-${randomDigit}`,
       },
     });
     return {

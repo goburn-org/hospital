@@ -108,7 +108,7 @@ export const PatientVisitDetailsDrawer = () => {
     <div>
       <OutsideClick onOutsideClick={hide}>
         <div
-          className={`fixed top-0 z-[100] right-0 h-full w-[35vw] bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+          className={`fixed top-0 z-[100] right-0 h-full w-[100vw] lg:w-[35vw] bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
