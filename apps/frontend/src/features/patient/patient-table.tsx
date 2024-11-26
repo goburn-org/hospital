@@ -1,3 +1,4 @@
+import { ArchiveBoxIcon } from '@heroicons/react/24/outline';
 import { DateLike, humanizedDate, PatientResponse } from '@hospital/shared';
 import {
   MRT_ColumnDef,
@@ -9,6 +10,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CustomTable } from '../../component/table';
 import Tooltip from '../../component/tooltip';
+import { useVisitDrawer } from '../../provider/patient-drawer-context-provider';
 import { routerConfig, TypingSpeed } from '../../utils/constants';
 import { toPagination, toSortField } from '../../utils/sort-transform';
 import { useDebounce } from '../../utils/use-debounce';
@@ -29,6 +31,7 @@ export const PatientTable = () => {
     sort: toSortField(sorting),
     search: _search,
   });
+  const { show } = useVisitDrawer();
   const columns = useMemo<MRT_ColumnDef<PatientResponse>[]>(
     () => [
       {
@@ -159,7 +162,21 @@ export const PatientTable = () => {
   });
   return (
     <div className="flex flex-col gap-8">
-      <CustomTable table={table} menu={[]} />
+      <CustomTable
+        table={table}
+        menu={[
+          {
+            label: 'View Past Visits',
+            hidden: (r) => !r?.original.lastVisit?.id,
+            action: (row) => {
+              if (row?.original.lastVisit?.id) {
+                show(row?.original.lastVisit?.id, row?.original.uhid);
+              }
+            },
+            icon: <ArchiveBoxIcon width={24} />,
+          },
+        ]}
+      />
     </div>
   );
 };

@@ -168,7 +168,10 @@ export const CustomTable = <T extends MRT_RowData>({
                 ))}
                 {menu.length ? (
                   <td>
-                    <button onClick={(event) => handleOpenMenu(event, row)}>
+                    <button
+                      onClick={(event) => handleOpenMenu(event, row)}
+                      className="w-5"
+                    >
                       <EllipsisVerticalIcon />
                     </button>
                     {anchorEl && menuRowData?.index === rowIndex && (
