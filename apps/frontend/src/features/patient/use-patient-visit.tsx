@@ -1,6 +1,7 @@
 import {
   AssessmentResponse,
   CreateAssessmentRequest,
+  CreatePatientBillingRequest,
   CreatePatientOrderRequest,
   CreatePatientPrescriptionRequest,
   CreatePatientVisitRequest,
@@ -149,7 +150,11 @@ export const usePatientVisitByIdQuery = (
 };
 
 export const usePatientVisitCheckoutMutation = (
-  options: UseMutationOptions<CreatePatientVisit, unknown, VisitIdPatientId>,
+  options: UseMutationOptions<
+    CreatePatientVisit,
+    unknown,
+    CreatePatientBillingRequest & VisitIdPatientId
+  >,
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -157,8 +162,10 @@ export const usePatientVisitCheckoutMutation = (
     mutationFn: (param) =>
       HttpService.post<CreatePatientVisit>(
         `/v1/visit/checkout/${param.patientId}/${param.visitId}`,
+        param,
       ),
-    onSuccess: (res, req) => {
+    onSuccess: (res, req, ctx) => {
+      options.onSuccess?.(res, req, ctx);
       queryClient.invalidateQueries({
         queryKey: VisitQueryKey({
           visitId: req.visitId,

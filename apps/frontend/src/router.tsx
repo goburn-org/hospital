@@ -93,7 +93,12 @@ const patientRoutes = (
     <Route
       path={`/${routerConfig.Patient}/:patientId/${routerConfig.Visit}/:visitId`}
       lazy={() => import('./routes/patient/visit-details')}
-    />
+    >
+      <Route
+        path={routerConfig.Checkout}
+        lazy={() => import('./routes/patient/checkout')}
+      />
+    </Route>
   </>
 );
 

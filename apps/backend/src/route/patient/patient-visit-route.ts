@@ -1,5 +1,6 @@
 import {
   createAssessmentSchema,
+  createPatientBillingSchema,
   createPatientOrderSchema,
   createPatientVisitSchema,
   createPatientVitalSchema,
@@ -12,6 +13,7 @@ import { Router } from 'express';
 import { authMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
 import { assessmentService } from '../../service/patient/assessment-service';
+import { patientBillingService } from '../../service/patient/patient-billing-service';
 import { patientOrderService } from '../../service/patient/patient-order-service';
 import { patientPrescriptionService } from '../../service/patient/patient-prescription-service';
 import { patientVisitService } from '../../service/patient/patient-visit-service';
@@ -105,6 +107,8 @@ route.post(
     ensure(patientId, 'Invalid patientId params');
     const visitId = req.params.visitId;
     ensure(visitId, 'Invalid visitId params');
+    const body = createPatientBillingSchema.parse(req.body);
+    await patientBillingService.upsert(visitId, body);
     const data = await patientVisitService.checkout(visitId);
     res.json(data);
   }),

@@ -13,6 +13,7 @@ const Department = 'department';
 const Role = 'role';
 const Visit = 'visit';
 const Employee = 'employee';
+const Checkout = 'checkout';
 
 export const routerConfig = {
   SettingRoute,
@@ -29,6 +30,7 @@ export const routerConfig = {
   Employee,
   Patient,
   Visit,
+  Checkout,
 };
 
 export const TypingSpeed = 700;

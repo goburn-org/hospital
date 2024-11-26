@@ -4,6 +4,7 @@ export * from './hospital-util';
 export * from './http-error';
 export * from './order-util';
 export * from './patient/assessment-util';
+export * from './patient/patient-billing-util';
 export * from './patient/patient-order-util';
 export * from './patient/patient-prescription-util';
 export * from './patient/patient-util';

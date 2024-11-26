@@ -255,6 +255,7 @@ model PatientVisit {
   PatientOrder        PatientOrder?
   PatientVital        PatientVital?
   PatientPrescription PatientPrescription?
+  VisitBilling        VisitBilling?
 }
 
 model Assessment {
@@ -321,6 +322,19 @@ model PatientVital {
   pulse       Float?
   bp          String?
   spo2        Float?
+  updatedBy   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model VisitBilling {
+  visitId     String       @unique
+  Visit       PatientVisit @relation(fields: [visitId], references: [id])
+  items       Json?
+  cashAmount  Float
+  cardAmount  Float
+  totalAmount Float
+  details     String?
   updatedBy   String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
