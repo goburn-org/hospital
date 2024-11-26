@@ -11,10 +11,12 @@ import { MutableRefObject, useMemo, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
+import { FormAutoCompleteInput } from '../../component/form/form-auto-complete-input';
 import { FormInput } from '../../component/form/form-input';
 import PageLoading from '../../component/page-loader';
 import { CustomTable } from '../../component/table';
 import { TIMER_S, useTimer } from '../../utils/use-timer';
+import { useProductQuery } from '../product/use-product-query';
 import {
   usePatientPrescriptionMutation,
   usePatientVisitByIdQuery,
@@ -114,6 +116,13 @@ const Form = ({
   const [list, setList] = useState<CreatePatientPrescriptionRequest>(
     defaultValue || [],
   );
+  const { data } = useProductQuery({
+    search: formProvider.watch('medicineName'),
+    paginate: {
+      page: 1,
+      limit: 10,
+    },
+  });
   const [editId, setEditId] = useState<number | null>(null);
   const [start] = useTimer(TIMER_S);
   const [saved, setSaved] = useState(false);
@@ -123,8 +132,8 @@ const Form = ({
         <form
           className="bg-slate-50 p-4 rounded-lg"
           onSubmit={formProvider.handleSubmit((data) => {
-            formProvider.reset();
             if (Number.isFinite(editId)) {
+              formProvider.reset();
               const updateList = list.map((l, idx) => {
                 if (idx === editId) {
                   return { ...data, idx };
@@ -140,13 +149,20 @@ const Form = ({
         >
           <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
             <div className="sm:col-span-4">
-              <FormInput<CreatePatientPrescriptionForm>
-                autoComplete="off"
+              <FormAutoCompleteInput<CreatePatientPrescriptionForm>
                 id="medicineName"
                 labelName="Item Name"
-                type="text"
                 placeholder="Paracetamol"
                 isRequired
+                options={data?.data.map((d) => ({ id: d.id, label: d.name }))}
+                onEnter={(id) => {
+                  const product = data?.data.find((d) => d.id === id);
+                  if (!product) {
+                    return;
+                  }
+                  formProvider.setValue('generic', product?.genericName);
+                  document.getElementById('dosage')?.focus();
+                }}
               />
             </div>
             <div className="sm:col-span-2">
@@ -214,11 +230,27 @@ const Form = ({
             </div>
           </div>
           <div className="flex items-center justify-end gap-x-6 p-4">
-            <button type="reset" className="btn-text">
-              clear
+            <button
+              type="reset"
+              className={
+                typeof editId === 'number'
+                  ? 'btn-text !text-red-500'
+                  : 'btn-text'
+              }
+              onClick={(e) => {
+                if (Number.isFinite(editId)) {
+                  formProvider.clearErrors();
+                  formProvider.reset();
+                  e.preventDefault();
+                  setList((l) => l.filter((_, idx) => idx !== editId));
+                  setEditId(null);
+                }
+              }}
+            >
+              {typeof editId === 'number' ? 'Delete' : 'clear'}
             </button>
             <button type="submit" className="btn-primary">
-              Add
+              {typeof editId === 'number' ? 'Edit' : 'Add'}
             </button>
           </div>
         </form>

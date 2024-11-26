@@ -130,4 +130,22 @@ route.post(
   }),
 );
 
+route.post(
+  `${baseVersion}${baseRoute}/:hospitalId/product`,
+  superAdminMiddleware,
+  errorHandler(async (req, res) => {
+    const hospitalId = Number(req.params.hospitalId);
+    ensure(hospitalId, 'Hospital Id is required');
+    const product = req.body;
+    ensure(Array.isArray(product), 'req.body should be an array');
+    const result = await dbClient.product.createMany({
+      data: product.map((p) => ({
+        ...p,
+        hospitalId,
+      })),
+    });
+    return res.json(result);
+  }),
+);
+
 export default [route];

@@ -85,6 +85,26 @@ class ProductService {
     const data = await dbClient.product.findMany({
       where: {
         hospitalId,
+        OR: [
+          {
+            name: {
+              contains: options?.search ?? '',
+              mode: 'insensitive',
+            },
+          },
+          {
+            brandName: {
+              contains: options?.search ?? '',
+              mode: 'insensitive',
+            },
+          },
+          {
+            genericName: {
+              contains: options?.search ?? '',
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
       include: {
         ProductDepartment: true,
@@ -100,6 +120,26 @@ class ProductService {
     const total = await dbClient.product.count({
       where: {
         hospitalId,
+        OR: [
+          {
+            name: {
+              contains: options?.search ?? '',
+              mode: 'insensitive',
+            },
+          },
+          {
+            brandName: {
+              contains: options?.search ?? '',
+              mode: 'insensitive',
+            },
+          },
+          {
+            genericName: {
+              contains: options?.search ?? '',
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
     });
     return {
