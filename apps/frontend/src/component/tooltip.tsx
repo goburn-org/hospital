@@ -1,17 +1,20 @@
 import { FC, ReactNode, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { classNames } from '../utils/classNames';
 
 interface TooltipProps {
-  text: string;
+  text: ReactNode;
   children: ReactNode;
+  bgColor?: string;
 }
 
-const Tooltip: FC<TooltipProps> = ({ text, children }) => {
+const Tooltip: FC<TooltipProps> = ({ text, children, bgColor }) => {
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [tooltipPlacement, setTooltipPlacement] = useState<
     'top' | 'bottom' | 'left' | 'right'
   >('top');
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const [stop, setStop] = useState(false);
 
   const handleMouseEnter = (e: React.MouseEvent) => {
     updateTooltipPosition(e);
@@ -30,6 +33,7 @@ const Tooltip: FC<TooltipProps> = ({ text, children }) => {
     const { clientX: mouseX, clientY: mouseY } = e;
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
+    if (stop) return;
 
     let placement: 'top' | 'bottom' | 'left' | 'right' = 'top';
 
@@ -61,7 +65,10 @@ const Tooltip: FC<TooltipProps> = ({ text, children }) => {
 
   const renderTooltip = () => (
     <div
-      className="fixed z-50 whitespace-nowrap rounded bg-black px-2 py-1 text-sm text-white"
+      className={classNames(
+        bgColor ? bgColor : 'bg-black',
+        'fixed z-50 whitespace-nowrap rounded  px-2 py-1 text-sm text-white',
+      )}
       style={tooltipStyle()}
     >
       {text}
@@ -74,6 +81,10 @@ const Tooltip: FC<TooltipProps> = ({ text, children }) => {
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onClick={() => {
+        setStop(true);
+        setIsTooltipVisible(true);
+      }}
     >
       {children}
       {isTooltipVisible && createPortal(renderTooltip(), document.body)}

@@ -20,7 +20,10 @@ export const createAssessmentSchema = z.object({
     .optional(),
   treatmentGiven: z.string().nullable().optional(),
   advice: z.string().nullable().optional(),
-  followUpDate: z.date().nullable().optional(),
+  followUpDate: z
+    .preprocess((v) => new Date(v as string), z.date())
+    .nullable()
+    .optional(),
   followupInstruction: z.string().nullable().optional(),
   visitId: z.string(),
   patientId: z.string(),

@@ -1,6 +1,7 @@
 import {
   CreatePatientVitalRequest,
   CreatePatientVitalResponse,
+  patientVitalConverter,
 } from '@hospital/shared';
 import { dbClient } from '../../prisma';
 import { useAuthUser } from '../../provider/async-context';
@@ -16,6 +17,10 @@ class PatientVitalService {
         visitId,
         ...vital,
         updatedBy: authUser.id,
+        temperature: vital.temperature || [],
+        spo2: vital.spo2 || [],
+        pulse: vital.pulse || [],
+        bp: vital.bp || [],
       },
       where: {
         visitId,
@@ -23,9 +28,13 @@ class PatientVitalService {
       update: {
         ...vital,
         updatedBy: authUser.id,
+        temperature: vital.temperature || [],
+        spo2: vital.spo2 || [],
+        pulse: vital.pulse || [],
+        bp: vital.bp || [],
       },
     });
-    return res;
+    return patientVitalConverter.from(res);
   }
 }
 

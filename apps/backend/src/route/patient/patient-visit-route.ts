@@ -46,12 +46,7 @@ route.post(
     ensure(patientId, 'Invalid patientId params');
     const visitId = req.params.visitId;
     ensure(visitId, 'Invalid visitId params');
-    const body = createAssessmentSchema.parse({
-      ...req.body,
-      followUpDate: req.body.followUpDate
-        ? new Date(req.body.followUpDate)
-        : undefined,
-    });
+    const body = createAssessmentSchema.parse(req.body);
     const data = await assessmentService.upsert(visitId, body);
     res.json(data);
   }),

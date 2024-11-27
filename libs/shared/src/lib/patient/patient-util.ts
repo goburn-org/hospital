@@ -14,7 +14,7 @@ export const createPatientSchema = z.object({
     .regex(/^[6-9]\d{9}$/, 'Invalid Phone Number')
     .min(10, 'Invalid Phone Number')
     .max(10, 'Invalid Phone Number'),
-  dob: z.date().optional(),
+  dob: z.preprocess((v) => new Date(v as string), z.date()).optional(),
   bornYear: z
     .number()
     .min(1900, 'Invalid born year')

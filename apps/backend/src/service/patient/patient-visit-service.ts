@@ -6,6 +6,7 @@ import {
   PaginatedResponse,
   PatientVisit,
   Prisma,
+  patientVitalConverter,
   prescriptionDbConvertor,
 } from '@hospital/shared';
 import { dbClient } from '../../prisma';
@@ -110,7 +111,11 @@ class PatientVisitService {
       Assessment: null,
       PatientOrder: data.PatientOrder,
       PatientPrescription: null,
+      PatientVital: null,
     };
+    if (data.PatientVital) {
+      result['PatientVital'] = patientVitalConverter.from(data.PatientVital);
+    }
     if (data.Assessment) {
       result['Assessment'] = {
         ...data.Assessment,

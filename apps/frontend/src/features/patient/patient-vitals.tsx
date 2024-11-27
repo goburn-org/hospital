@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
+import { FormTimeSeriesInput } from '../../component/form/form-time-series-input';
 import PageLoading from '../../component/page-loader';
 import { TIMER_L, useTimer } from '../../utils/use-timer';
 import {
@@ -65,8 +66,7 @@ const Form = ({
             />
           </div>
           <div className="sm:col-span-2">
-            <FormInput<CreatePatientVitalRequest>
-              autoComplete="off"
+            <FormTimeSeriesInput<CreatePatientVitalRequest>
               id="temperature"
               labelName="Temperature"
               type="number"
@@ -74,8 +74,7 @@ const Form = ({
             />
           </div>
           <div className="sm:col-span-2">
-            <FormInput<CreatePatientVitalRequest>
-              autoComplete="off"
+            <FormTimeSeriesInput<CreatePatientVitalRequest>
               id="pulse"
               labelName="Pulse"
               type="number"
@@ -83,8 +82,7 @@ const Form = ({
             />
           </div>
           <div className="sm:col-span-2">
-            <FormInput<CreatePatientVitalRequest>
-              autoComplete="off"
+            <FormTimeSeriesInput<CreatePatientVitalRequest>
               id="spo2"
               labelName="SpO2"
               type="number"
@@ -92,8 +90,7 @@ const Form = ({
             />
           </div>
           <div className="sm:col-span-2">
-            <FormInput<CreatePatientVitalRequest>
-              autoComplete="off"
+            <FormTimeSeriesInput<CreatePatientVitalRequest>
               id="bp"
               labelName="BP"
               placeholder="120/80"
