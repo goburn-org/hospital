@@ -8,6 +8,7 @@ import {
   humanizedDate,
   Maybe,
 } from '@hospital/shared';
+import { Divider } from '@mui/material';
 import { useState } from 'react';
 import { CustomEditor } from '../../../component/editor';
 import { useOrderQuery } from '../../../provider/use-order';
@@ -21,11 +22,16 @@ const SessionText = ({
   k: string;
   val: Maybe<string | number>;
 }) => (
-  <div className="grid grid-cols-6 gap-4 py-1">
-    <span className="text-gray-600 font-medium col-span-2">{k}:</span>
+  <div className="flex flex-col gap-1 lg:grid lg:grid-cols-6 lg:gap-4 py-2 lg:py-1">
+    <span className="text-gray-600 font-bold lg:font-medium col-span-2">
+      {k}:
+    </span>
     <span className="text-gray-800 col-span-4">
       <CustomEditor initialValue={val?.toString() || '-'} disabled />
     </span>
+    <div className="block lg:hidden">
+      <Divider />
+    </div>
   </div>
 );
 
@@ -36,8 +42,10 @@ const Diagnosis = ({
 }) => {
   const { data } = useOrderQuery();
   return (
-    <div className="grid grid-cols-6 gap-4 py-1">
-      <span className="text-gray-800 font-medium col-span-2">Diagnosis:</span>
+    <div className="flex flex-col gap-1 lg:grid lg:grid-cols-6 lg:gap-4 py-2 lg:py-1">
+      <span className="text-gray-600 font-bold lg:font-medium col-span-2">
+        Diagnosis:
+      </span>
       <span className="text-gray-600  col-span-4">
         {diagnosis?.map((d) => (
           <div key={d.diagnosisId} className="flex flex-col gap-1">
@@ -50,6 +58,9 @@ const Diagnosis = ({
           </div>
         ))}
       </span>
+      <div className="block lg:hidden">
+        <Divider />
+      </div>
     </div>
   );
 };

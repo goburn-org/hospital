@@ -2,6 +2,7 @@ import { ArrowLeftCircleIcon } from '@heroicons/react/24/outline';
 import { ensure } from '@hospital/shared';
 import { useState } from 'react';
 import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
+import { Body } from '../../component/body';
 import Breadcrumbs from '../../component/breadcrumbs';
 import { Tabs } from '../../component/page-tabs';
 import { PatientAssessment } from '../../features/patient/patient-assessment';
@@ -44,50 +45,52 @@ export const Component = () => {
     },
   ];
   return (
-    <div className="flex flex-col gap-4 -mt-6 sm:px-6">
-      <div className="">
-        <div className="flex justify-between">
-          <Breadcrumbs pages={breadcrumbsPages} />
-          {isCheckout ? (
-            <Link className="btn-primary" to={`${routerConfig.Patient}`}>
-              Back
-              <ArrowLeftCircleIcon width={24} className="w-5 h-5" />
-            </Link>
-          ) : (
-            <button
-              className="btn-danger"
-              onClick={async () => {
-                navigte(routerConfig.Checkout);
-              }}
-            >
-              Checkout
-              <ArrowLeftCircleIcon width={24} className="w-5 h-5" />
-            </button>
-          )}
-        </div>
-        <div className="mt-2">
-          <Tabs
-            defaultTab={activeTab}
-            tabs={tabs.map((tab) => ({
-              onClick: () => setActiveTab(tab),
-              active: tab === activeTab,
-              name: tab,
-            }))}
-          />
-        </div>
-      </div>
-      <div className="mt-1 flow-root">
-        <div className="-my-2 sm:-mx-6 lg:-mx-8">
-          <div className="inline-block py-2 align-middle sm:px-6 lg:px-8 w-[100vw] sm:w-[85vw] 2xl:w-[70vw]">
-            <VisitHistory patientId={patientId} />
-            {activeTab === 'Vitals' && <PatientVitals />}
-            {activeTab === 'Assessment' && <PatientAssessment />}
-            {activeTab === 'Orders' && <PatientOrder />}
-            {activeTab === 'Prescription' && <PatientPrescription />}
+    <Body>
+      <div className="flex flex-col gap-4 -mt-6 sm:px-6">
+        <div className="">
+          <div className="flex justify-between">
+            <Breadcrumbs pages={breadcrumbsPages} />
+            {isCheckout ? (
+              <Link className="btn-primary" to={`${routerConfig.Patient}`}>
+                Back
+                <ArrowLeftCircleIcon width={24} className="w-5 h-5" />
+              </Link>
+            ) : (
+              <button
+                className="btn-danger"
+                onClick={async () => {
+                  navigte(routerConfig.Checkout);
+                }}
+              >
+                Checkout
+                <ArrowLeftCircleIcon width={24} className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+          <div className="mt-2 ">
+            <Tabs
+              defaultTab={activeTab}
+              tabs={tabs.map((tab) => ({
+                onClick: () => setActiveTab(tab),
+                active: tab === activeTab,
+                name: tab,
+              }))}
+            />
           </div>
         </div>
-        <Outlet />
+        <div className="mt-1 flow-root">
+          <div className="-my-2 sm:-mx-6 lg:-mx-8">
+            <div className="inline-block py-2 align-middle sm:px-6 lg:px-8 w-[100vw] sm:w-[85vw] 2xl:w-[70vw]">
+              <VisitHistory patientId={patientId} />
+              {activeTab === 'Vitals' && <PatientVitals />}
+              {activeTab === 'Assessment' && <PatientAssessment />}
+              {activeTab === 'Orders' && <PatientOrder />}
+              {activeTab === 'Prescription' && <PatientPrescription />}
+            </div>
+          </div>
+          <Outlet />
+        </div>
       </div>
-    </div>
+    </Body>
   );
 };

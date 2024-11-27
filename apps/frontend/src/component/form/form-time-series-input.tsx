@@ -131,6 +131,7 @@ export const FormTimeSeriesInput = <T extends FieldValues = FieldValues>({
           />
           <div className="flex gap-1">
             <button
+              tabIndex={-1}
               type="button"
               className={classNames(
                 editId ? 'btn-primary' : 'btn-text',
@@ -154,6 +155,7 @@ export const FormTimeSeriesInput = <T extends FieldValues = FieldValues>({
               <button
                 type="button"
                 className="btn-text"
+                tabIndex={-1}
                 onClick={() => {
                   setEditId(undefined);
                   const values = (getValues(id) as TimeSeriesType) || [];
@@ -191,6 +193,7 @@ export const FormTimeSeriesInput = <T extends FieldValues = FieldValues>({
                 <button
                   type="button"
                   className="btn-text"
+                  tabIndex={-1}
                   onClick={() => {
                     setEditId(v.id);
                     if (ref.current) {
@@ -224,7 +227,7 @@ export const FormTimeSeriesInput = <T extends FieldValues = FieldValues>({
                 </div>
               }
             >
-              <button type="button" className="text-blue-700">
+              <button type="button" className="text-blue-700" tabIndex={-1}>
                 Show All
               </button>
             </Tooltip>
