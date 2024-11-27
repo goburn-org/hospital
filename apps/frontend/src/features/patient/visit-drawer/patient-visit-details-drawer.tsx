@@ -120,16 +120,14 @@ export const PatientVisitDetailsDrawer = () => {
               <XMarkIcon className="w-6 h-6" />
             </button>
           </div>
-          <div className="p-4">
-            {data.loading && <div>Loading...</div>}
-            {data.error ? <div>Something went wrong</div> : null}
-            {data.data ? (
-              <VisitDrawerDetails
-                data={data.data}
-                patientId={state?.show ? state.patientId : ''}
-              />
-            ) : null}
-          </div>
+          {data.loading && <div className="p-4">Loading...</div>}
+          {data.error ? <div className="p-4">Something went wrong</div> : null}
+          {data.data ? (
+            <VisitDrawerDetails
+              data={data.data}
+              patientId={state?.show ? state.patientId : ''}
+            />
+          ) : null}
         </div>
       </OutsideClick>
       {isOpen && (

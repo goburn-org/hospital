@@ -66,7 +66,7 @@ export const FormTimeSeriesInput = <T extends FieldValues = FieldValues>({
       return v;
     });
   };
-  const data = [...watch(id)]?.reverse();
+  const data = [...(watch(id) ?? [])].reverse();
 
   return (
     <div className={'sm:col-span-4'}>

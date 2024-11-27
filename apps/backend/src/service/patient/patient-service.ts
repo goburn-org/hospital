@@ -23,7 +23,7 @@ class PatientService {
         dob: data.dob ? new Date(data.dob) : undefined,
         hospitalId: authUser.hospitalId,
         updatedBy: authUser.id,
-        uhid: `${hospital.hospitalCode}-${date}-${randomDigit}`,
+        uhid: `${hospital.hospitalCode}-${date}${randomDigit}`,
       },
     });
     return {

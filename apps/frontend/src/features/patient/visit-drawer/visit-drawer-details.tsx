@@ -7,6 +7,7 @@ import {
   DetailedPatientVisit,
   humanizedDate,
   Maybe,
+  TimeSeriesType,
 } from '@hospital/shared';
 import { Divider } from '@mui/material';
 import { useState } from 'react';
@@ -20,15 +21,38 @@ const SessionText = ({
   val,
 }: {
   k: string;
-  val: Maybe<string | number>;
+  val: Maybe<string | number | TimeSeriesType>;
 }) => (
-  <div className="flex flex-col gap-1 lg:grid lg:grid-cols-6 lg:gap-4 py-2 lg:py-1">
+  <div
+    className={classNames(
+      'flex flex-col gap-1 lg:grid lg:grid-cols-6 lg:gap-4 py-2 lg:py-1',
+    )}
+  >
     <span className="text-gray-600 font-bold lg:font-medium col-span-2">
       {k}:
     </span>
     <span className="text-gray-800 col-span-4">
-      <CustomEditor initialValue={val?.toString() || '-'} disabled />
+      {Array.isArray(val) ? (
+        <div className="flex flex-col ">
+          {val.reverse().map((v) => (
+            <div className="flex items-center w-full ">
+              <span key={v.id} className="text-lg font-semibold  ">
+                {v.reading}
+              </span>
+              <span key={v.id} className="text-sm font-semibold text-gray-500">
+                {'('} {humanizedDate(v.updatedAt)}
+                {')'}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <CustomEditor initialValue={val?.toString() || '-'} disabled />
+      )}
     </span>
+    <div className={Array.isArray(val) ? 'hidden lg:block' : 'hidden'}>
+      <Divider />
+    </div>
     <div className="block lg:hidden">
       <Divider />
     </div>
@@ -95,7 +119,7 @@ export const VisitDrawerDetails = ({
   };
 
   return (
-    <div className=" bg-gray-50 h-screen shadow-lg flex flex-col overflow-auto">
+    <div className=" bg-gray-50 h-screen shadow-lg flex flex-col overflow-auto p-4">
       {/* Header */}
       <div className="flex flex-row w-full justify-center items-center gap-1 my-6">
         <div className=" flex flex-row gap-1 items-center">
