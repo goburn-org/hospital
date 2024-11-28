@@ -23,22 +23,25 @@ model Hospital {
   User         User[]
   Vendor       Vendor[]
   Order        Order[]
+  TaxCode      TaxCode[]
+  OrderGroups  OrderGroups[]
 }
 
 model Department {
-  id                Int                 @id @default(autoincrement())
-  name              String
-  hospitalId        Int
-  updatedBy         String?
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  Hospital          Hospital            @relation(fields: [hospitalId], references: [id])
-  PatientVisit      PatientVisit[]
-  ProductDepartment ProductDepartment[]
-  User              User[]
-  Order             Order[]
-  Role              Role?               @relation(fields: [roleId], references: [id])
-  roleId            Int?
+  id           Int            @id @default(autoincrement())
+  name         String
+  hospitalId   Int
+  updatedBy    String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Hospital     Hospital       @relation(fields: [hospitalId], references: [id])
+  PatientVisit PatientVisit[]
+  User         User[]
+  Order        Order[]
+  Role         Role?          @relation(fields: [roleId], references: [id])
+  roleId       Int?
+  Product      Product?       @relation(fields: [productId], references: [id])
+  productId    String?
 }
 
 model User {
@@ -56,6 +59,7 @@ model User {
   Department   Department     @relation(fields: [department], references: [id])
   Hospital     Hospital       @relation(fields: [hospitalId], references: [id])
   UserLogin    UserLogin?
+  DoctorCut    DoctorCut[]
 
   @@unique([email, hospitalId])
 }
@@ -124,38 +128,27 @@ model Vendor {
 }
 
 model Product {
-  id                String              @id @default(uuid())
-  name              String
-  sku               String
-  hsnCode           String
-  genericName       String
-  brandName         String
-  manufacturer      String
-  dosageForm        String
-  strength          String
-  purchaseRate      Float
-  saleRate          Float
-  mrp               Float
-  maxDiscount       Float
-  hospitalId        Int
-  updatedBy         String?
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  Hospital          Hospital            @relation(fields: [hospitalId], references: [id])
-  ProductDepartment ProductDepartment[]
-}
-
-model ProductDepartment {
-  id           Int        @id @default(autoincrement())
-  productId    String
-  departmentId Int
+  id           String       @id @default(uuid())
+  name         String
+  sku          String
+  hsnCode      String
+  genericName  String?
+  brandName    String?
+  manufacturer String?
+  dosageForm   String?
+  strength     String?
+  purchaseRate Float
+  saleRate     Float
+  mrp          Float
+  maxDiscount  Float
+  hospitalId   Int
+  taxCodeId    Int
+  TaxCode      TaxCode      @relation(fields: [taxCodeId], references: [id])
   updatedBy    String?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  Department   Department @relation(fields: [departmentId], references: [id])
-  Product      Product    @relation(fields: [productId], references: [id])
-
-  @@unique([productId, departmentId])
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  Hospital     Hospital     @relation(fields: [hospitalId], references: [id])
+  Department   Department[]
 }
 
 model Patient {
@@ -223,18 +216,67 @@ model Assessment {
 }
 
 model Order {
-  id                  String        @id @default(uuid())
-  hospitalId          Int
-  hospital            Hospital      @relation(fields: [hospitalId], references: [id])
-  name                String
-  description         String?
-  departmentId        Int
-  department          Department    @relation(fields: [departmentId], references: [id])
+  id                   String      @id @default(uuid())
+  hospitalId           Int
+  hospital             Hospital    @relation(fields: [hospitalId], references: [id])
+  name                 String
+  description          String?
+  departmentId         Int?
+  department           Department? @relation(fields: [departmentId], references: [id])
+  baseAmount           Float
+  taxCodeId            Int
+  taxCode              TaxCode     @relation(fields: [taxCodeId], references: [id])
+  maxDiscount          Float?
+  consultationRequired Boolean
+  tags                 String[]
+
   updatedBy           String?
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
   PatientOrder        PatientOrder? @relation(fields: [patientOrderVisitId], references: [visitId])
   patientOrderVisitId String?
+  DoctorCut           DoctorCut[]
+  OrderGroup          OrderGroups[] @relation("OrderGroups-Order")
+}
+
+model OrderGroups {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  hospitalId  Int
+  hospital    Hospital @relation(fields: [hospitalId], references: [id])
+  updatedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Order       Order[]  @relation("OrderGroups-Order")
+}
+
+model DoctorCut {
+  userId     String
+  orderId    String
+  user       User     @relation(fields: [userId], references: [id])
+  order      Order    @relation(fields: [orderId], references: [id])
+  flatFee    Float
+  percentFee Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  updatedBy  String?
+
+  @@unique([userId, orderId])
+}
+
+model TaxCode {
+  id          Int       @id @default(autoincrement())
+  hospitalId  Int
+  hospital    Hospital  @relation(fields: [hospitalId], references: [id])
+  taxCode     String
+  taxRate     Float
+  description String?
+  updatedBy   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Order       Order[]
+  Product     Product[]
 }
 
 model PatientOrder {

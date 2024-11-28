@@ -12,6 +12,7 @@ export * from './patient/patient-visit-util';
 export * from './patient/patient-vital-util';
 export * from './product-util';
 export * from './role-util';
+export * from './tax-code-util';
 export * from './time-series-util';
 export * from './ts-util';
 export * from './user-util';

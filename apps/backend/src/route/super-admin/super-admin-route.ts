@@ -1,4 +1,8 @@
-import { ensure, hospitalCreateInputSchema } from '@hospital/shared';
+import {
+  ensure,
+  hospitalCreateInputSchema,
+  taxCodeSchema,
+} from '@hospital/shared';
 import { Router } from 'express';
 import { superAdminMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
@@ -20,8 +24,20 @@ route.post(
     ensure(req.body.role.roleName, 'Role Name is required');
     ensure(req.body.department.name, 'Department Name is required');
     ensure(req.body.password, 'Password is required');
+    const _taxes = req.body.taxes;
+    ensure(Array.isArray(_taxes), 'Taxes should be an array');
+    ensure(_taxes.length > 0, 'Taxes should not be empty');
+    const taxes = _taxes.map((t: unknown) => taxCodeSchema.parse(t));
     const userInput = req.body.user;
     const hospital = await hospitalService.create(hospitalInput);
+    const tax = taxes.map((t) =>
+      dbClient.taxCode.create({
+        data: {
+          ...t,
+          hospitalId: hospital.id,
+        },
+      }),
+    );
     const role = await dbClient.role.create({
       data: {
         roleName: req.body.role.roleName,
@@ -57,6 +73,7 @@ route.post(
       role,
       department,
       user,
+      tax,
     });
   }),
 );
@@ -99,11 +116,16 @@ route.post(
     ensure(
       orders.every(
         (d) =>
-          typeof d.orderDeptName === 'string' && typeof d.name === 'string',
+          typeof d.name === 'string' &&
+          typeof d.taxCodeId === 'number' &&
+          typeof d.baseAmount === 'number' &&
+          typeof d.consultationRequired === 'boolean',
       ),
-      'Array should contain orderDeptName and name',
+      'Array should contain taxCodeId and name and baseAmount and consultationRequired',
     );
-    const uniqueDepartment = [...new Set(orders.map((o) => o.orderDeptName))];
+    const uniqueDepartment = [
+      ...new Set(orders.map((o) => o.departmentName)),
+    ].filter(Boolean);
     const departments = await dbClient.department.findMany({
       where: {
         hospitalId,
@@ -116,13 +138,17 @@ route.post(
       },
       {} as Record<string, number>,
     );
-    console.log('Department Map', departmentMap);
 
     const result = await dbClient.order.createMany({
       data: orders.map((o) => ({
         name: o.name,
-        departmentId: departmentMap[o.orderDeptName],
+        departmentId: o.departmentName
+          ? departmentMap[o.departmentName]
+          : undefined,
         hospitalId,
+        taxCodeId: o.taxCodeId,
+        baseAmount: o.baseAmount,
+        consultationRequired: o.consultationRequired,
       })),
     });
     return res.json(result);

@@ -55,7 +55,7 @@ const OrderEditor = () => {
             return (
               <div key={deptId}>
                 <h3 className="text-base/7 font-semibold text-gray-500 border-b border-gray-900/10 pb-1">
-                  {deptOrders?.[0].orderDeptName}
+                  {deptOrders?.[0].departmentName}
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
                   {deptOrders

@@ -26,40 +26,22 @@ class ProductService {
         sku: data.sku,
         strength: data.strength,
         hospitalId: authUser.hospitalId,
-        ProductDepartment: {
-          createMany: {
-            data: data.departmentIds.map((departmentId) => ({
-              departmentId,
-            })),
-          },
-        },
         updatedBy: authUser.id,
+        taxCodeId: data.taxCodeId,
+        Department: {
+          connect: data.departmentIds.map((departmentId) => ({
+            id: departmentId,
+          })),
+        },
       },
       include: {
-        ProductDepartment: true,
+        Department: true,
       },
-    });
-  }
-
-  async updateDepartment(productId: string, departmentIds: number[]) {
-    const authUser = useAuthUser();
-    await dbClient.productDepartment.deleteMany({
-      where: {
-        productId: productId,
-      },
-    });
-    return await dbClient.productDepartment.createMany({
-      data: departmentIds.map((departmentId) => ({
-        departmentId,
-        productId,
-        updatedBy: authUser.id,
-      })),
     });
   }
 
   async update(data: UpdateProductInput): Promise<ProductResponse> {
     const { departmentIds, id, ...rest } = data;
-    await this.updateDepartment(id, departmentIds);
     return dbClient.product.update({
       where: {
         id,
@@ -67,9 +49,14 @@ class ProductService {
       data: {
         ...rest,
         updatedBy: useAuthUser().id,
+        Department: {
+          set: departmentIds.map((departmentId) => ({
+            id: departmentId,
+          })),
+        },
       },
       include: {
-        ProductDepartment: true,
+        Department: true,
       },
     });
   }
@@ -107,7 +94,7 @@ class ProductService {
         ],
       },
       include: {
-        ProductDepartment: true,
+        Department: true,
       },
       orderBy: sort
         ? {
@@ -158,7 +145,7 @@ class ProductService {
         id,
       },
       include: {
-        ProductDepartment: true,
+        Department: true,
       },
     });
   }

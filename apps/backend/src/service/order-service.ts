@@ -15,8 +15,8 @@ class OrderService {
       description: r.description,
       id: r.id,
       name: r.name,
-      departmentId: r.department.id,
-      orderDeptName: r.department.name,
+      departmentId: r.department?.id,
+      departmentName: r.department?.name,
     }));
   }
 }

@@ -20,7 +20,7 @@ export const Component = () => {
         mode="edit"
         defaultValues={{
           ...data,
-          departmentIds: data.ProductDepartment.map((d) => d.departmentId),
+          departmentIds: data.Department.map((d) => d.id),
         }}
         departmentId={id}
       />
