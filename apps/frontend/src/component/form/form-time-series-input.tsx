@@ -15,7 +15,6 @@ export const FormTimeSeriesInput = <T extends FieldValues = FieldValues>({
   isReadOnly,
   disabled,
   placeholder,
-  defaultValue,
 }: {
   id: Path<T>;
   labelName: string;
@@ -24,7 +23,6 @@ export const FormTimeSeriesInput = <T extends FieldValues = FieldValues>({
   disabled?: boolean;
   isReadOnly?: boolean;
   placeholder: string;
-  defaultValue?: HTMLInputTypeAttribute;
 }) => {
   const { setValue, formState, watch, getValues } = useFormContext<T>();
   const [editId, setEditId] = useState<TimeSeriesType[number]['id']>();
@@ -69,102 +67,117 @@ export const FormTimeSeriesInput = <T extends FieldValues = FieldValues>({
   const data = [...(watch(id) ?? [])].reverse();
 
   return (
-    <div className={'sm:col-span-4'}>
-      <label htmlFor={id} className="font-medium text-gray-900 text-base">
-        {labelName} {isRequired && <span className="text-red-500">*</span>}
-      </label>
-      <div>
-        <div className="flex gap-2">
-          <input
-            id={id}
-            type={type}
-            disabled={isReadOnly || disabled}
-            autoComplete="off"
-            ref={ref}
-            className={classNames(
-              'w-full p-2',
-              'rounded-md border disabled:bg-gray-100 bg-white',
-            )}
-            placeholder={placeholder}
-            onKeyDown={(e) => {
-              if (e.key !== 'Enter') {
-                return;
-              }
-              console.log('enter');
-              e.preventDefault();
-              setEditId(undefined);
-              const value = ref.current?.value;
-              if (ref.current) {
-                ref.current.value = '';
-              }
-              ref.current?.focus();
-              if (value === '' || value == null) {
-                const updatedValue = getUpdatedValue(undefined);
-                setValue(id, updatedValue as PathValue<T, Path<T>>, {
-                  shouldValidate: true,
-                  shouldTouch: true,
-                });
-                return;
-              }
-              if (type === 'number') {
-                const updatedValue = getUpdatedValue(Number(value));
-                setValue(id, updatedValue as PathValue<T, Path<T>>, {
-                  shouldValidate: true,
-                  shouldTouch: true,
-                });
-                return;
-              }
-              if (type === 'date' || type === 'datetime-local') {
-                const updatedValue = getUpdatedValue(new Date(value!));
-                setValue(id, updatedValue as PathValue<T, Path<T>>, {
-                  shouldValidate: true,
-                  shouldTouch: true,
-                });
-                return;
-              }
-              const updatedValue = getUpdatedValue(value);
-              setValue(id, updatedValue as PathValue<T, Path<T>>, {
-                shouldValidate: true,
-                shouldTouch: true,
-              });
-            }}
-          />
-          <div className="flex gap-1">
-            <button
-              tabIndex={-1}
-              type="button"
+    <div
+      onBlur={(event) => {
+        if (
+          event.relatedTarget &&
+          event.currentTarget.contains(event.relatedTarget)
+        ) {
+          return; // Do nothing if the new focus is inside the parent
+        }
+        const value = ref.current?.value;
+        if (ref.current) {
+          ref.current.value = '';
+        }
+        if (value === '' || value == null) {
+          return;
+        }
+        if (type === 'number') {
+          const updatedValue = getUpdatedValue(Number(value));
+          setValue(id, updatedValue as PathValue<T, Path<T>>, {
+            shouldValidate: true,
+            shouldTouch: true,
+          });
+        } else if (type === 'date' || type === 'datetime-local') {
+          const updatedValue = getUpdatedValue(new Date(value!));
+          setValue(id, updatedValue as PathValue<T, Path<T>>, {
+            shouldValidate: true,
+            shouldTouch: true,
+          });
+        } else {
+          const updatedValue = getUpdatedValue(value);
+          setValue(id, updatedValue as PathValue<T, Path<T>>, {
+            shouldValidate: true,
+            shouldTouch: true,
+          });
+        }
+        setEditId(undefined);
+      }}
+    >
+      <div className={'sm:col-span-4'}>
+        <label htmlFor={id} className="font-medium text-gray-900 text-base">
+          {labelName} {isRequired && <span className="text-red-500">*</span>}
+        </label>
+        <div>
+          <div className="flex gap-2">
+            <input
+              id={id}
+              type={type}
+              disabled={isReadOnly || disabled}
+              autoComplete="off"
+              ref={ref}
               className={classNames(
-                editId ? 'btn-primary' : 'btn-text',
-                'text-nowrap',
+                'w-full p-2',
+                'rounded-md border disabled:bg-gray-100 bg-white',
               )}
-              onClick={() => {
+              placeholder={placeholder}
+              onKeyDown={(e) => {
+                if (e.key !== 'Enter') {
+                  return;
+                }
+                e.preventDefault();
                 setEditId(undefined);
-                setValue(
-                  id,
-                  getUpdatedValue(undefined) as PathValue<T, Path<T>>,
-                  {
+                const value = ref.current?.value;
+                if (ref.current) {
+                  ref.current.value = '';
+                }
+                ref.current?.focus();
+                if (value === '' || value == null) {
+                  return;
+                }
+                if (type === 'number') {
+                  const updatedValue = getUpdatedValue(Number(value));
+                  setValue(id, updatedValue as PathValue<T, Path<T>>, {
                     shouldValidate: true,
                     shouldTouch: true,
-                  },
-                );
+                  });
+                  return;
+                }
+                if (type === 'date' || type === 'datetime-local') {
+                  const updatedValue = getUpdatedValue(new Date(value!));
+                  setValue(id, updatedValue as PathValue<T, Path<T>>, {
+                    shouldValidate: true,
+                    shouldTouch: true,
+                  });
+                  return;
+                }
+                const updatedValue = getUpdatedValue(value);
+                setValue(id, updatedValue as PathValue<T, Path<T>>, {
+                  shouldValidate: true,
+                  shouldTouch: true,
+                });
               }}
-            >
-              {editId === undefined ? `Add ${nextId}` : `Edit ${editValue?.id}`}
-            </button>
-            {editId !== undefined && (
+            />
+            <div className="flex gap-1">
               <button
-                type="button"
-                className="btn-text"
                 tabIndex={-1}
+                type="button"
+                className={classNames(
+                  editId ? 'btn-primary' : 'btn-text',
+                  'text-nowrap',
+                )}
                 onClick={() => {
                   setEditId(undefined);
-                  const values = (getValues(id) as TimeSeriesType) || [];
+                  const value = ref.current?.value;
+                  if (ref.current) {
+                    ref.current.value = '';
+                  }
+                  if (value === '' || value == null) {
+                    return;
+                  }
                   setValue(
                     id,
-                    values.filter((v) => v.id !== editId) as PathValue<
-                      T,
-                      Path<T>
-                    >,
+                    getUpdatedValue(value) as PathValue<T, Path<T>>,
                     {
                       shouldValidate: true,
                       shouldTouch: true,
@@ -172,66 +185,99 @@ export const FormTimeSeriesInput = <T extends FieldValues = FieldValues>({
                   );
                 }}
               >
-                <TrashIcon className="h-5 w-5 text-red-500" />
+                {editId === undefined
+                  ? `Add ${nextId}`
+                  : `Edit ${editValue?.id}`}
               </button>
-            )}
-          </div>
-        </div>
-        <p className="text-base text-red-500">
-          {getNestedValue(formState.errors, id)?.message as unknown as string}
-        </p>
-        <div className="w-full overflow-auto flex flex-col gap-1 py-2 pb-4">
-          <div className="flex gap-2">
-            {data.map((v: TimeSeriesType[number]) => (
-              <div key={v.id} className="flex gap-2  bg-slate-200 p-2">
-                <div className="flex flex-col gap-1 ">
-                  <p className="">{v.reading}</p>
-                  <p className="text-xs text-gray-500 whitespace-nowrap text-nowrap">
-                    {humanizedDate(v.createdAt)}
-                  </p>
-                </div>
+              {editId !== undefined && (
                 <button
                   type="button"
                   className="btn-text"
                   tabIndex={-1}
                   onClick={() => {
-                    setEditId(v.id);
+                    setEditId(undefined);
                     if (ref.current) {
-                      ref.current.value = v.reading.toString();
-                      ref.current.focus();
+                      ref.current.value = '';
                     }
+                    const values = (getValues(id) as TimeSeriesType) || [];
+                    setValue(
+                      id,
+                      values.filter((v) => v.id !== editId) as PathValue<
+                        T,
+                        Path<T>
+                      >,
+                      {
+                        shouldValidate: true,
+                        shouldTouch: true,
+                      },
+                    );
                   }}
                 >
-                  <PencilIcon className="h-5 w-5 text-blue-500" />
+                  <TrashIcon className="h-5 w-5 text-red-500" />
                 </button>
-              </div>
-            ))}
+              )}
+            </div>
           </div>
-          {nextId > 2 ? (
-            <Tooltip
-              bgColor="bg-black"
-              text={
-                <div className="flex flex-col gap-1 bg-black w-full p-4">
-                  <p className="text-lg text-white">All Readings</p>
-                  {data.map((v: TimeSeriesType[number]) => (
-                    <div
-                      key={v.id}
-                      className="flex gap-2 items-center justify-between "
-                    >
-                      <p className="text-lg text-white">{v.reading}</p>
-                      <p className="text-xs text-gray-400 whitespace-nowrap text-nowrap">
-                        {humanizedDate(v.createdAt)}
-                      </p>
-                    </div>
-                  ))}
+          <p className="text-base text-red-500">
+            {getNestedValue(formState.errors, id)?.message as unknown as string}
+          </p>
+          <div className=" flex flex-col gap-1 py-2">
+            <div className="flex gap-2 w-full overflow-auto py-2 pb-4">
+              {data.map((v: TimeSeriesType[number]) => (
+                <div key={v.id} className="flex gap-2  bg-slate-200 p-2">
+                  <div className="flex flex-col gap-1 ">
+                    <p className="">{v.reading}</p>
+                    <p className="text-xs text-gray-500 whitespace-nowrap text-nowrap">
+                      {humanizedDate(v.createdAt)}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-text"
+                    tabIndex={-1}
+                    onClick={() => {
+                      setEditId(v.id);
+                      if (ref.current) {
+                        ref.current.value = v.reading.toString();
+                        ref.current.focus();
+                      }
+                    }}
+                  >
+                    <PencilIcon className="h-5 w-5 text-blue-500" />
+                  </button>
                 </div>
-              }
-            >
-              <button type="button" className="text-blue-700" tabIndex={-1}>
-                Show All
-              </button>
-            </Tooltip>
-          ) : null}
+              ))}
+            </div>
+            {nextId > 2 ? (
+              <Tooltip
+                bgColor="bg-black"
+                text={
+                  <div className="flex flex-col gap-1 bg-black w-full p-4">
+                    <p className="text-lg text-white">All Readings</p>
+                    {data.map((v: TimeSeriesType[number]) => (
+                      <div
+                        key={v.id}
+                        className="flex gap-2 items-center justify-between "
+                      >
+                        <p className="text-lg text-white">{v.reading}</p>
+                        <p className="text-xs text-gray-400 whitespace-nowrap text-nowrap">
+                          {humanizedDate(v.createdAt)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                }
+              >
+                <button
+                  type="button"
+                  className="text-blue-700 -mt-2"
+                  tabIndex={-1}
+                >
+                  Show All
+                </button>
+              </Tooltip>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>

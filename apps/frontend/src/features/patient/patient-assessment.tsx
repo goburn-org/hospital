@@ -235,13 +235,7 @@ const Form = ({
           </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-end gap-x-6">
-          <button
-            type="reset"
-            className="text-sm/6 font-semibold text-gray-900"
-          >
-            Reset
-          </button>
+        <div className="mt-6 flex items-center flex-row-reverse gap-x-6">
           <button type="submit" className="btn-primary" disabled={isPending}>
             {saved ? (
               <>
@@ -251,6 +245,12 @@ const Form = ({
             ) : (
               'Save'
             )}
+          </button>
+          <button
+            type="reset"
+            className="text-sm/6 font-semibold text-gray-900"
+          >
+            Reset
           </button>
         </div>
       </form>

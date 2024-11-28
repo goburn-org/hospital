@@ -16,11 +16,9 @@ model Hospital {
   updatedAt       DateTime          @updatedAt
   hospitalImg     String
   Department      Department[]
-  IntentTrack     IntentTrack[]
   PatientVisit    PatientVisit[]
   Permission      Permission[]
   Product         Product[]
-  ProductIntent   ProductIntent[]
   Role            Role[]
   User            User[]
   Vendor          Vendor[]
@@ -159,7 +157,6 @@ model Product {
   updatedAt         DateTime            @updatedAt
   Hospital          Hospital            @relation(fields: [hospitalId], references: [id])
   ProductDepartment ProductDepartment[]
-  ProductIntent     ProductIntent[]
 }
 
 model ProductDepartment {
@@ -173,44 +170,6 @@ model ProductDepartment {
   Product      Product    @relation(fields: [productId], references: [id])
 
   @@unique([productId, departmentId])
-}
-
-model IntentTrack {
-  id            Int             @id @default(autoincrement())
-  hospitalId    Int
-  statusId      Int
-  color         String
-  updatedBy     String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  Hospital      Hospital        @relation(fields: [hospitalId], references: [id])
-  IntentStatus  IntentStatus    @relation(fields: [statusId], references: [id])
-  ProductIntent ProductIntent[]
-}
-
-model IntentStatus {
-  id            Int             @id @default(autoincrement())
-  name          String
-  updatedBy     String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  tracks        IntentTrack[]
-  ProductIntent ProductIntent[]
-}
-
-model ProductIntent {
-  id         String       @id @default(uuid())
-  productId  String
-  intentId   Int
-  trackId    Int
-  hospitalId Int
-  updatedBy  String?
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  Hospital   Hospital     @relation(fields: [hospitalId], references: [id])
-  Intent     IntentStatus @relation(fields: [intentId], references: [id])
-  Product    Product      @relation(fields: [productId], references: [id])
-  Track      IntentTrack  @relation(fields: [trackId], references: [id])
 }
 
 model Patient {

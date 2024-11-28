@@ -229,7 +229,10 @@ const Form = ({
               />
             </div>
           </div>
-          <div className="flex items-center justify-end gap-x-6 p-4">
+          <div className="flex items-center flex-row-reverse gap-x-6 p-4">
+            <button type="submit" className="btn-primary">
+              {typeof editId === 'number' ? 'Edit' : 'Add'}
+            </button>
             <button
               type="reset"
               className={
@@ -248,9 +251,6 @@ const Form = ({
               }}
             >
               {typeof editId === 'number' ? 'Delete' : 'clear'}
-            </button>
-            <button type="submit" className="btn-primary">
-              {typeof editId === 'number' ? 'Edit' : 'Add'}
             </button>
           </div>
         </form>

@@ -81,6 +81,13 @@ const Tooltip: FC<TooltipProps> = ({ text, children, bgColor }) => {
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onTouchStart={() => {
+        setStop(false);
+      }}
+      onBlur={() => {
+        setStop(true);
+        setIsTooltipVisible(false);
+      }}
       onClick={() => {
         setStop(true);
         setIsTooltipVisible(true);

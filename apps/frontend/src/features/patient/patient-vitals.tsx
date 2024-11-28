@@ -97,10 +97,7 @@ const Form = ({
             />
           </div>
         </div>
-        <div className="flex items-center justify-end gap-x-6 p-4">
-          <button type="reset" className="btn-text">
-            clear
-          </button>
+        <div className="flex flex-row-reverse items-center gap-x-6 p-4">
           <button type="submit" className="btn-primary">
             {saved ? (
               <>
@@ -110,6 +107,9 @@ const Form = ({
             ) : (
               'Save'
             )}
+          </button>
+          <button type="reset" className="btn-text">
+            clear
           </button>
         </div>
       </form>
