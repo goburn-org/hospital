@@ -139,18 +139,6 @@ export const EmployeeDrawer = ({
                   isLoading={isDepartmentLoading}
                 />
               </div>
-              <div className="sm:col-span-3">
-                <FormSelect<CreateEmployeeInput>
-                  multiple
-                  id="roles"
-                  labelName="Role"
-                  options={roles?.data.map((d) => ({
-                    label: d.roleName,
-                    id: Number(d.id),
-                  }))}
-                  isLoading={isRoleLoading}
-                />
-              </div>
             </div>
             {mode === 'view' ? <ViewFooter /> : null}
             {mode === 'create' ? <CreateFooter /> : null}

@@ -60,27 +60,7 @@ class EmployeeService {
       },
       data.password.newPassword,
     );
-    if (data.roles) {
-      return await this.updateRoles(user, data.roles);
-    }
     return user;
-  }
-
-  async updateRoles(employee: User, roles: number[]) {
-    const user = useAuthUser();
-    await dbClient.userRole.deleteMany({
-      where: {
-        userId: employee.id,
-      },
-    });
-    await dbClient.userRole.createMany({
-      data: roles.map((roleId) => ({
-        roleId,
-        userId: employee.id,
-        updatedBy: user.id,
-      })),
-    });
-    return await userService.getUserById(user.id);
   }
 
   async update(data: UpdateEmployeeInput) {
@@ -95,9 +75,6 @@ class EmployeeService {
       department: data.department,
       id: data.id,
     });
-    if (data.roles) {
-      return await this.updateRoles(user, data.roles);
-    }
     return user;
   }
 
@@ -116,7 +93,6 @@ class EmployeeService {
       },
       include: {
         Department: true,
-        UserRole: true,
       },
       orderBy: sort
         ? {

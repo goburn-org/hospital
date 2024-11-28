@@ -133,6 +133,7 @@ route.get(
     ensure(patientId, 'Invalid patientId params');
     const visitId = req.params.visitId;
     ensure(visitId, 'Invalid visitId params');
+    console.log('getting visit id', visitId);
     const data = await patientVisitService.getById(visitId);
     res.send(data);
   }),

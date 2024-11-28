@@ -8,37 +8,37 @@ datasource db {
 }
 
 model Hospital {
-  id              Int               @id @default(autoincrement())
-  hospitalName    String
-  hospitalCode    String
-  phoneNumber     String
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  hospitalImg     String
-  Department      Department[]
-  PatientVisit    PatientVisit[]
-  Permission      Permission[]
-  Product         Product[]
-  Role            Role[]
-  User            User[]
-  Vendor          Vendor[]
-  OrderDepartment OrderDepartment[]
-  Order           Order[]
+  id           Int            @id @default(autoincrement())
+  hospitalName String
+  hospitalCode String
+  phoneNumber  String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  hospitalImg  String
+  Department   Department[]
+  PatientVisit PatientVisit[]
+  Permission   Permission[]
+  Product      Product[]
+  Role         Role[]
+  User         User[]
+  Vendor       Vendor[]
+  Order        Order[]
 }
 
 model Department {
   id                Int                 @id @default(autoincrement())
   name              String
   hospitalId        Int
-  roleId            Int
   updatedBy         String?
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
   Hospital          Hospital            @relation(fields: [hospitalId], references: [id])
-  Role              Role                @relation(fields: [roleId], references: [id])
   PatientVisit      PatientVisit[]
   ProductDepartment ProductDepartment[]
   User              User[]
+  Order             Order[]
+  Role              Role?               @relation(fields: [roleId], references: [id])
+  roleId            Int?
 }
 
 model User {
@@ -56,7 +56,6 @@ model User {
   Department   Department     @relation(fields: [department], references: [id])
   Hospital     Hospital       @relation(fields: [hospitalId], references: [id])
   UserLogin    UserLogin?
-  UserRole     UserRole[]
 
   @@unique([email, hospitalId])
 }
@@ -82,21 +81,8 @@ model Role {
   Department   Department[]
   Hospital     Hospital         @relation(fields: [hospitalId], references: [id])
   permissions  RolePermission[]
-  roleUsers    UserRole[]
 
   @@unique([roleName, hospitalId])
-}
-
-model UserRole {
-  id        Int      @id @default(autoincrement())
-  userId    String
-  roleId    Int
-  updatedBy String?
-  createdAt DateTime @default(now())
-  role      Role     @relation(fields: [roleId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@unique([userId, roleId])
 }
 
 model Permission {
@@ -236,29 +222,18 @@ model Assessment {
   PatientVisit        PatientVisit @relation(fields: [visitId], references: [id])
 }
 
-model OrderDepartment {
-  id         Int      @id @default(autoincrement())
-  nane       String
-  hospitalId Int
-  Hospital   Hospital @relation(fields: [hospitalId], references: [id])
-  updatedBy  String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  Order      Order[]
-}
-
 model Order {
-  id                  String          @id @default(uuid())
+  id                  String        @id @default(uuid())
   hospitalId          Int
-  hospital            Hospital        @relation(fields: [hospitalId], references: [id])
+  hospital            Hospital      @relation(fields: [hospitalId], references: [id])
   name                String
   description         String?
-  orderDeptId         Int
-  orderDept           OrderDepartment @relation(fields: [orderDeptId], references: [id])
+  departmentId        Int
+  department          Department    @relation(fields: [departmentId], references: [id])
   updatedBy           String?
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-  PatientOrder        PatientOrder?   @relation(fields: [patientOrderVisitId], references: [visitId])
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  PatientOrder        PatientOrder? @relation(fields: [patientOrderVisitId], references: [visitId])
   patientOrderVisitId String?
 }
 

@@ -47,7 +47,6 @@ route.post(
       },
       include: {
         Department: true,
-        UserRole: true,
         Hospital: true,
       },
     });
@@ -78,10 +77,10 @@ route.post(
       departmentNames.every((d) => typeof d === 'string'),
       'departmentNames should be an array of strings',
     );
-    const department = await dbClient.orderDepartment.createMany({
+    const department = await dbClient.department.createMany({
       data: departmentNames.map((name) => ({
         hospitalId,
-        nane: name,
+        name: name,
       })),
     });
     res.json(department);
@@ -105,14 +104,14 @@ route.post(
       'Array should contain orderDeptName and name',
     );
     const uniqueDepartment = [...new Set(orders.map((o) => o.orderDeptName))];
-    const departments = await dbClient.orderDepartment.findMany({
+    const departments = await dbClient.department.findMany({
       where: {
         hospitalId,
       },
     });
     const departmentMap = uniqueDepartment.reduce(
       (acc, d) => {
-        acc[d] = departments.find((dept) => dept.nane === d)?.id;
+        acc[d] = departments.find((dept) => dept.name === d)?.id;
         return acc;
       },
       {} as Record<string, number>,
@@ -122,7 +121,7 @@ route.post(
     const result = await dbClient.order.createMany({
       data: orders.map((o) => ({
         name: o.name,
-        orderDeptId: departmentMap[o.orderDeptName],
+        departmentId: departmentMap[o.orderDeptName],
         hospitalId,
       })),
     });

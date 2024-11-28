@@ -12,7 +12,6 @@ export type UserLoginInput = z.infer<typeof userLoginSchema>;
 export type UserWithRolesAndDepartment = Prisma.UserGetPayload<{
   include: {
     Department: true; // Include the Department
-    UserRole: true; // Include the UserRole
     Hospital: true; // Include the Hospital
   };
 }>;

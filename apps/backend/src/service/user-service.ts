@@ -72,7 +72,6 @@ class UserService {
       },
       include: {
         Department: true,
-        UserRole: true,
         Hospital: true,
       },
     });
@@ -89,7 +88,6 @@ class UserService {
       },
       include: {
         Department: true,
-        UserRole: true,
         Hospital: true,
       },
     });
@@ -111,7 +109,6 @@ class UserService {
       },
       include: {
         Department: true,
-        UserRole: true,
         Hospital: true,
       },
     });

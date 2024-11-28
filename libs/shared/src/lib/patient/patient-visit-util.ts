@@ -28,7 +28,7 @@ export const DetailedPatientVisitGetPayload = {
           select: {
             id: true,
             name: true,
-            orderDeptId: true,
+            departmentId: true,
           },
         },
       },

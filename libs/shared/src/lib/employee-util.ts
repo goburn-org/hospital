@@ -12,7 +12,6 @@ export const createEmployeeSchema = z.object({
       message: 'Invalid phone number',
     }),
   department: z.number(),
-  roles: z.array(z.number()).optional(),
   password: z
     .object({
       newPassword: z.string().min(8, 'Password must be at least 8 characters'),

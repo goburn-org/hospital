@@ -24,7 +24,9 @@ const OrderEditor = () => {
     useFormContext<CreatePatientOrderRequest>();
   const { data } = useOrderQuery();
   const error = formState.errors['order'];
-  const uniqueDepartment = Array.from(new Set(data?.map((d) => d.orderDeptId)));
+  const uniqueDepartment = Array.from(
+    new Set(data?.map((d) => d.departmentId)),
+  );
   const { param } = useParam<'q'>();
   const search = param.q ?? '';
   return (
@@ -43,13 +45,13 @@ const OrderEditor = () => {
         )}
         {uniqueDepartment
           .filter((id) => {
-            const deptOrders = data?.filter((d) => d.orderDeptId === id) ?? [];
+            const deptOrders = data?.filter((d) => d.departmentId === id) ?? [];
             return deptOrders.some((order) =>
               order.name.toLowerCase().includes(search.toLowerCase()),
             );
           })
           .map((deptId) => {
-            const deptOrders = data?.filter((d) => d.orderDeptId === deptId);
+            const deptOrders = data?.filter((d) => d.departmentId === deptId);
             return (
               <div key={deptId}>
                 <h3 className="text-base/7 font-semibold text-gray-500 border-b border-gray-900/10 pb-1">

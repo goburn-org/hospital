@@ -8,15 +8,15 @@ class OrderService {
         hospitalId,
       },
       include: {
-        orderDept: true,
+        department: true,
       },
     });
     return res.map((r) => ({
       description: r.description,
       id: r.id,
       name: r.name,
-      orderDeptId: r.orderDept.id,
-      orderDeptName: r.orderDept.nane,
+      departmentId: r.department.id,
+      orderDeptName: r.department.name,
     }));
   }
 }
