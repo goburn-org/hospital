@@ -14,17 +14,17 @@ export const createPatientSchema = z.object({
     .regex(/^[6-9]\d{9}$/, 'Invalid Phone Number')
     .min(10, 'Invalid Phone Number')
     .max(10, 'Invalid Phone Number'),
-  dob: z.preprocess((v) => new Date(v as string), z.date()).optional(),
-  bornYear: z
-    .number()
-    .min(1900, 'Invalid born year')
-    .max(new Date().getFullYear(), 'Invalid born year')
-    .optional(),
+  dob: z
+    .preprocess((v) => new Date(v as string), z.date())
+    .optional()
+    .nullable(),
+  age: z.number().min(0, 'Invalid Age').optional().nullable(),
   aadharNumber: z
     .string()
     .regex(/^\d{12}$/, 'Invalid Aadhar Number')
-    .optional(),
-  aadharName: z.string().min(3, 'At least 3 characters').optional(),
+    .optional()
+    .nullable(),
+  aadharName: z.string().min(3, 'At least 3 characters').optional().nullable(),
   bloodGroup: z
     .string()
     .refine(
@@ -34,13 +34,15 @@ export const createPatientSchema = z.object({
         message: 'Invalid Blood Group',
       },
     )
-    .optional(),
-  address: z.string().min(5, 'Address too short').optional(),
-  city: z.string().min(2, 'City name too short').optional(),
+    .optional()
+    .nullable(),
+  address: z.string().min(5, 'Address too short').optional().nullable(),
+  city: z.string().min(2, 'City name too short').optional().nullable(),
   pincode: z
     .string()
     .regex(/^\d{6}$/, 'Invalid Pincode')
-    .optional(),
+    .optional()
+    .nullable(),
 });
 
 export const updatePatientSchema = createPatientSchema.extend({
@@ -57,5 +59,6 @@ export type UpdatePatientInput = NullOrUndefined<
 export type PatientResponse = NullOrUndefined<
   Patient & {
     lastVisit: PatientVisitResponse;
+    age?: number;
   }
 >;

@@ -2,6 +2,7 @@ import { XMarkIcon } from '@heroicons/react/20/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreatePatientInput, createPatientSchema } from '@hospital/shared';
 import { Divider } from '@mui/material';
+import { useEffect } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
@@ -32,6 +33,16 @@ export const PatientDrawer = ({
     resolver: zodResolver(createPatientSchema),
     defaultValues,
   });
+  const dob = formProvider.watch('dob');
+  useEffect(() => {
+    if (dob) {
+      const age = new Date().getFullYear() - new Date(dob).getFullYear();
+      console.log(age);
+      formProvider.setValue('age', age, {
+        shouldValidate: true,
+      });
+    }
+  }, [dob, formProvider]);
   useEsc(() => {
     navigate('..', {
       replace: true,
@@ -76,8 +87,8 @@ export const PatientDrawer = ({
               <div className="sm:col-span-2">
                 <FormInput<CreatePatientInput>
                   isRequired
-                  id="bornYear"
-                  labelName="Born Year"
+                  id="age"
+                  labelName="Age"
                   placeholder="1996"
                   autoComplete="off"
                   type="number"

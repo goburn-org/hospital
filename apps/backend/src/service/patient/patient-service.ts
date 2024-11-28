@@ -12,23 +12,33 @@ import { patientVisitService } from './patient-visit-service';
 
 class PatientService {
   async create(data: CreatePatientInput): Promise<PatientResponse> {
+    const { age, ...rest } = data;
     const authUser = useAuthUser();
     const hospital = await hospitalService.getById(authUser.hospitalId);
     ensure(hospital, 'Hospital not found');
     const date = Date.now();
     const randomDigit = Math.floor(Math.random() * 100);
+    const bornYear = data.dob
+      ? new Date(data.dob).getFullYear()
+      : data.age
+        ? new Date().getFullYear() - data.age
+        : undefined;
     const response = await dbClient.patient.create({
       data: {
-        ...data,
+        ...rest,
         dob: data.dob ? new Date(data.dob) : undefined,
         hospitalId: authUser.hospitalId,
         updatedBy: authUser.id,
+        bornYear: bornYear,
         uhid: `${hospital.hospitalCode}-${date}${randomDigit}`,
       },
     });
     return {
       ...response,
       lastVisit: null,
+      age: response.bornYear
+        ? new Date().getFullYear() - response.bornYear
+        : undefined,
     };
   }
 
@@ -73,6 +83,7 @@ class PatientService {
       result.push({
         ...rest,
         lastVisit: d.PatientVisit[0] ?? null,
+        age: d.bornYear ? new Date().getFullYear() - d.bornYear : undefined,
       });
     }
     return {
@@ -101,6 +112,9 @@ class PatientService {
     return {
       ...patient,
       lastVisit,
+      age: patient.bornYear
+        ? new Date().getFullYear() - patient.bornYear
+        : undefined,
     };
   }
 }

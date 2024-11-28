@@ -43,6 +43,7 @@ export const FormInput = <T extends FieldValues = FieldValues>({
   twoColumn,
   inputClassName,
   defaultValue,
+  allowZero,
 }: {
   labelName: string;
   placeholder?: string;
@@ -54,6 +55,7 @@ export const FormInput = <T extends FieldValues = FieldValues>({
   twoColumn?: boolean;
   inputClassName?: string;
   defaultValue?: PathValue<T, Path<T>>;
+  allowZero?: boolean;
 }) => {
   const { setValue, formState, control } = useFormContext<T>();
   const isReadOnly = useFormMode() === FormMode.ReadOnly;
@@ -115,7 +117,7 @@ export const FormInput = <T extends FieldValues = FieldValues>({
                   'rounded-md border disabled:bg-gray-100 bg-white',
                 )}
                 placeholder={placeholder}
-                value={value || ''}
+                value={value !== null ? value : ''}
                 onChange={(e) => {
                   if (e.target.value === '') {
                     setValue(id, undefined as any, {
@@ -124,6 +126,7 @@ export const FormInput = <T extends FieldValues = FieldValues>({
                     });
                     return;
                   }
+
                   if (type === 'number') {
                     setValue(
                       id,
