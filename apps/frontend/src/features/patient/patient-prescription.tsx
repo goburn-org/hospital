@@ -101,6 +101,7 @@ const ShowPrescription = ({
     columns,
     data: data || [],
     initialState: { showColumnFilters: true },
+    enablePagination: false,
     rowCount: data.length,
     state: {
       isLoading: false,
@@ -177,7 +178,7 @@ const Form = ({
                   });
                 })}
               />
-              <div className="w-full lg:w-1/2">
+              <div className="w-full mt-8 flex items-end justify-end">
                 <button
                   className="btn-primary"
                   onClick={async (e) => {
