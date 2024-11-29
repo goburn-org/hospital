@@ -79,7 +79,7 @@ export const CustomTable = <T extends MRT_RowData>({
 
   return (
     <div className="flex flex-col">
-      <div className="overflow-hidden shadow-md ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+      <div className="overflow-auto shadow-md ring-1 ring-black ring-opacity-5 sm:rounded-lg">
         <table className="min-w-full divide-y divide-gray-300">
           {/* Use your own markup, customize however you want using the power of TanStack Table */}
           <thead className="bg-gray-50">

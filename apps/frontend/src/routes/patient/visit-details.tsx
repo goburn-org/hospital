@@ -7,7 +7,7 @@ import Breadcrumbs from '../../component/breadcrumbs';
 import { Tabs } from '../../component/page-tabs';
 import { PatientAssessment } from '../../features/patient/patient-assessment';
 import { PatientOrder } from '../../features/patient/patient-order';
-import { PatientPrescription } from '../../features/patient/patient-prescription';
+import { PatientPrescription } from '../../features/patient/patient-prescription/patient-prescription';
 import { PatientVitals } from '../../features/patient/patient-vitals';
 import { usePatientByIdQuery } from '../../features/patient/use-patient-query';
 import { VisitHistory } from '../../features/patient/visit-history';

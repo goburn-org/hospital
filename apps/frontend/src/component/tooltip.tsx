@@ -1,32 +1,59 @@
+import { Maybe } from '@hospital/shared';
 import { FC, ReactNode, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { classNames } from '../utils/classNames';
+import { useTimer } from '../utils/use-timer';
 
 interface TooltipProps {
   text: ReactNode;
   children: ReactNode;
   bgColor?: string;
+  fix?: boolean;
+  stopAfter?: number;
 }
 
-const Tooltip: FC<TooltipProps> = ({ text, children, bgColor }) => {
+const checkAnyParentIsToolTip = (target: Maybe<HTMLElement>) => {
+  if (target?.parentElement == null) {
+    return false;
+  }
+  if (target.parentElement.id === 'tooltip') {
+    return true;
+  }
+  return checkAnyParentIsToolTip(target.parentElement);
+};
+
+const Tooltip: FC<TooltipProps> = ({
+  text,
+  children,
+  bgColor,
+  fix,
+  stopAfter,
+}) => {
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [tooltipPlacement, setTooltipPlacement] = useState<
     'top' | 'bottom' | 'left' | 'right'
   >('top');
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const [stop, setStop] = useState(false);
+  const [positionCalculated, setPositionCalculated] = useState(false);
+  const [startTimer, stopTimer] = useTimer(stopAfter || 0);
 
   const handleMouseEnter = (e: React.MouseEvent) => {
     updateTooltipPosition(e);
     setIsTooltipVisible(true);
+    stopTimer();
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     updateTooltipPosition(e);
+    stopTimer();
   };
 
   const handleMouseLeave = () => {
-    setIsTooltipVisible(false);
+    startTimer(() => {
+      setStop(true);
+      setIsTooltipVisible(false);
+    });
   };
 
   const updateTooltipPosition = (e: React.MouseEvent) => {
@@ -34,20 +61,22 @@ const Tooltip: FC<TooltipProps> = ({ text, children, bgColor }) => {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     if (stop) return;
+    if (fix && positionCalculated) return;
 
     let placement: 'top' | 'bottom' | 'left' | 'right' = 'top';
 
     // Dynamically adjust placement based on viewport space
-    if (mouseY < 50)
-      placement = 'bottom'; // If close to the top, place below
-    else if (viewportHeight - mouseY < 50)
-      placement = 'top'; // If close to the bottom, place above
-    else if (mouseX < 50)
+    if (mouseX < 50)
       placement = 'right'; // If close to the left, place to the right
-    else if (viewportWidth - mouseX < 50) placement = 'left'; // If close to the right, place to the left
+    else if (viewportWidth - mouseX < 50)
+      placement = 'left'; // If close to the right, place to the left
+    else if (mouseY < 50)
+      placement = 'bottom'; // If close to the top, place below
+    else if (viewportHeight - mouseY < 50) placement = 'top'; // If close to the bottom, place above
 
     setTooltipPlacement(placement);
     setTooltipPosition({ x: mouseX, y: mouseY });
+    setPositionCalculated(true);
   };
 
   const tooltipStyle = () => {
@@ -69,6 +98,7 @@ const Tooltip: FC<TooltipProps> = ({ text, children, bgColor }) => {
         bgColor ? bgColor : 'bg-black',
         'fixed z-50 whitespace-nowrap rounded  px-2 py-1 text-sm text-white',
       )}
+      id="tooltip"
       style={tooltipStyle()}
     >
       {text}
@@ -81,10 +111,23 @@ const Tooltip: FC<TooltipProps> = ({ text, children, bgColor }) => {
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      tabIndex={-1}
       onTouchStart={() => {
         setStop(false);
       }}
-      onBlur={() => {
+      onBlur={(event) => {
+        const anyParent = checkAnyParentIsToolTip(
+          event.nativeEvent.target as Maybe<HTMLElement>,
+        );
+        if (anyParent) {
+          return;
+        }
+        if (
+          event.relatedTarget &&
+          event.currentTarget.contains(event.relatedTarget)
+        ) {
+          return; // Do nothing if the new focus is inside the parent
+        }
         setStop(true);
         setIsTooltipVisible(false);
       }}
