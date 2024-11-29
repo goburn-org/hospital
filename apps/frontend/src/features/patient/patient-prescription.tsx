@@ -1,4 +1,8 @@
-import { CheckIcon, PencilIcon } from '@heroicons/react/24/outline';
+import {
+  CheckIcon,
+  Cog6ToothIcon,
+  PencilIcon,
+} from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   CreatePatientPrescriptionRequest,
@@ -224,6 +228,7 @@ const Form = ({
                         return;
                       }
                       formProvider.setValue('generic', product?.genericName);
+                      formProvider.setValue('form', product?.dosageForm);
                       document.getElementById('dosage')?.focus();
                     }}
                   />
@@ -237,7 +242,7 @@ const Form = ({
                     placeholder="Paracetamol"
                   />
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-3 2xl:col-span-2">
                   <FormInput<CreatePatientPrescriptionForm>
                     autoComplete="off"
                     id="dosage"
@@ -246,16 +251,335 @@ const Form = ({
                     placeholder="500mg"
                   />
                 </div>
-                <div className="col-span-2">
-                  <FormInput<CreatePatientPrescriptionForm>
-                    autoComplete="off"
-                    id="frequency"
-                    labelName="Frequency"
-                    type="text"
-                    placeholder="1-0-1"
-                  />
+                <div className="col-span-3 2xl:col-span-2">
+                  <div className="flex flex-col gap-1">
+                    <FormInput<CreatePatientPrescriptionForm>
+                      autoComplete="off"
+                      id="frequency"
+                      labelName="Frequency"
+                      type="text"
+                      placeholder="1-0-1"
+                    />
+                    <div className="flex flex-row gap-2">
+                      {[
+                        {
+                          label: 'OD',
+                          value: '1-0-0',
+                        },
+                        {
+                          label: 'BD',
+                          value: '1-0-1',
+                        },
+                        {
+                          label: 'TDS',
+                          value: '1-1-1',
+                        },
+                        {
+                          label: 'HS',
+                          value: '0-0-1',
+                        },
+                      ].map((v) => (
+                        <button
+                          key={v.value}
+                          tabIndex={-1}
+                          className="btn-text btn-small"
+                          type="button"
+                          onClick={() => {
+                            formProvider.setValue('frequency', v.value);
+                          }}
+                        >
+                          {v.label}
+                        </button>
+                      ))}
+                      <Tooltip
+                        text={
+                          <div className="flex flex-col gap-4 p-4">
+                            <div className="flex flex-col gap-1">
+                              <p className="text-white">Early Morning</p>
+                              <div className="flex gap-2">
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1/2
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1½
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  2
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  3
+                                </button>
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <p className="text-white">Morning</p>
+                              <div className="flex gap-2">
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1/2
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1½
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  2
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  3
+                                </button>
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <p className="text-white">Afternoon</p>
+                              <div className="flex gap-2">
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1/2
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1½
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  2
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  3
+                                </button>
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <p className="text-white">Evening</p>
+                              <div className="flex gap-2">
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1/2
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1½
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  2
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  3
+                                </button>
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <p className="text-white">Dinner</p>
+                              <div className="flex gap-2">
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1/2
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  1½
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  2
+                                </button>
+                                <button
+                                  tabIndex={-1}
+                                  className="btn-outline btn-small"
+                                  type="button"
+                                  onClick={() => {
+                                    formProvider.setValue('frequency', '1');
+                                  }}
+                                >
+                                  3
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                      >
+                        <p className="btn-text btn-small">
+                          <Cog6ToothIcon className="h-6 w-6" />
+                        </p>
+                      </Tooltip>
+                    </div>
+                  </div>
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-3 2xl:col-span-2">
                   <FormInput<CreatePatientPrescriptionForm>
                     autoComplete="off"
                     id="duration"
@@ -264,7 +588,7 @@ const Form = ({
                     placeholder="30 days"
                   />
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-3 2xl:col-span-2">
                   <FormInput<CreatePatientPrescriptionForm>
                     autoComplete="off"
                     id="form"
@@ -273,16 +597,42 @@ const Form = ({
                     placeholder="Tablet"
                   />
                 </div>
-                <div className="col-span-2">
-                  <FormInput<CreatePatientPrescriptionForm>
-                    autoComplete="off"
-                    id="instruction"
-                    labelName="Instruction"
-                    type="text"
-                    placeholder="Before meal"
-                  />
+                <div className="col-span-3 2xl:col-span-2">
+                  <div className="flex flex-col gap-1">
+                    <FormInput<CreatePatientPrescriptionForm>
+                      autoComplete="off"
+                      id="instruction"
+                      labelName="Instruction"
+                      type="text"
+                      placeholder="Before meal"
+                    />
+                    <div className="flex flex-row gap-2">
+                      {[
+                        {
+                          label: 'BF',
+                          value: 'Before Food',
+                        },
+                        {
+                          label: 'AF',
+                          value: 'After Food',
+                        },
+                      ].map((v) => (
+                        <button
+                          key={v.value}
+                          tabIndex={-1}
+                          className="btn-text btn-small"
+                          type="button"
+                          onClick={() => {
+                            formProvider.setValue('instruction', v.value);
+                          }}
+                        >
+                          {v.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-3 2xl:col-span-2">
                   <FormInput<CreatePatientPrescriptionForm>
                     autoComplete="off"
                     id="quantity"

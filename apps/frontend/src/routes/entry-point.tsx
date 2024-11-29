@@ -7,7 +7,7 @@ export function Component() {
   return (
     <div>
       <Sidebar />
-      <div className="sm:pl-20">
+      <div className="sm:pl-16">
         <Outlet />
       </div>
     </div>
