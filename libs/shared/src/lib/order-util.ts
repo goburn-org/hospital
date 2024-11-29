@@ -6,4 +6,8 @@ export type AvailableOrder = {
   departmentId?: number;
   departmentName?: string;
   description?: Maybe<string>;
+  baseAmount: number;
+  taxCodeId: number;
+  maxDiscount: Maybe<number>;
+  consultationRequired: boolean;
 };

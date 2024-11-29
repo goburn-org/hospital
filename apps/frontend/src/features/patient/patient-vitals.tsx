@@ -8,6 +8,7 @@ import {
 } from '@hospital/shared';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
 import { FormTimeSeriesInput } from '../../component/form/form-time-series-input';
@@ -41,6 +42,7 @@ const Form = ({
         onSubmit={formProvider.handleSubmit(async (data) => {
           await mutateAsync({ patientId, visitId, ...data });
           setSaved(true);
+          toast.success('Vitals saved');
           start(() => {
             setSaved(false);
           });
@@ -129,10 +131,12 @@ export const PatientVitals = () => {
     return <div>Visit Not not found</div>;
   }
   return (
-    <Form
-      patientId={patientId}
-      visitId={visitId}
-      defaultValue={data.PatientVital}
-    />
+    <div className="w-[100vw] sm:w-[85vw] 2xl:w-[70vw]">
+      <Form
+        patientId={patientId}
+        visitId={visitId}
+        defaultValue={data.PatientVital}
+      />
+    </div>
   );
 };

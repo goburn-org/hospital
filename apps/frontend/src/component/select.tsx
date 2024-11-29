@@ -9,6 +9,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { ReactNode, useState } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import { classNames } from '../utils/classNames';
+import Tooltip from './tooltip';
 
 export type SelectOption = {
   id: string | number;
@@ -35,6 +36,7 @@ type Props<Option extends SelectOption> = {
   multiple?: boolean;
   error?: string;
   onRawChange?: (value: string) => void;
+  clearButton?: boolean;
 };
 
 export const CustomSelect = <Option extends SelectOption>({
@@ -50,6 +52,7 @@ export const CustomSelect = <Option extends SelectOption>({
   multiple,
   error,
   onRawChange,
+  clearButton,
 }: Props<Option>) => {
   const [searchTerm, setSearchTerm] = useState('');
   const filteredOptions = options?.filter((option) =>
@@ -69,16 +72,31 @@ export const CustomSelect = <Option extends SelectOption>({
       }}
       multiple={multiple}
     >
-      {labelName ? (
-        <Label
-          as="label"
-          htmlFor={htmlFor}
-          className="block text-base font-medium leading-6 text-gray-900"
-        >
-          {labelName}{' '}
-          {isRequired ? <span className="text-red-500">*</span> : ''}
-        </Label>
-      ) : null}
+      <div className="flex justify-between">
+        {labelName ? (
+          <Label
+            as="label"
+            htmlFor={htmlFor}
+            className="block text-base font-medium leading-6 text-gray-900"
+          >
+            {labelName}{' '}
+            {isRequired ? <span className="text-red-500">*</span> : ''}
+          </Label>
+        ) : null}
+        {clearButton && initialValue !== value && value ? (
+          <button
+            type="button"
+            tabIndex={-1}
+            onClick={(e) => {
+              e.preventDefault();
+              onChange(initialValue as any);
+            }}
+            className="!text-red-600 btn-text btn-small"
+          >
+            Clear
+          </button>
+        ) : null}
+      </div>
       <div className="relative">
         <ListboxButton
           disabled={disabled}
@@ -112,7 +130,7 @@ export const CustomSelect = <Option extends SelectOption>({
 
         <ListboxOptions
           transition
-          className="absolute z-10 mt-1 max-h-60 w-full min-w-[150px] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+          className="absolute z-10 mt-1 w-full overflow-x-hidden min-w-[150px] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
         >
           {/* Search Input */}
           <div className="sticky top-0 z-10 bg-white p-2">
@@ -163,7 +181,7 @@ export const CustomSelect = <Option extends SelectOption>({
               height={192}
               itemCount={filteredOptions.length}
               itemSize={35}
-              width={400}
+              width="100%"
             >
               {({ index, style }) => (
                 <ListboxOption
@@ -185,8 +203,10 @@ export const CustomSelect = <Option extends SelectOption>({
                     ) : null}
                     <div className="flex w-full flex-col">
                       <div className="flex w-full justify-between">
-                        <p className="font-normal group-data-[selected]:font-semibold">
-                          {filteredOptions[index].label}
+                        <p className="font-normal group-data-[selected]:font-semibold text-nowrap whitespace-nowrap overflow-hidden text-ellipsis">
+                          <Tooltip text={filteredOptions[index].label}>
+                            {filteredOptions[index].label}
+                          </Tooltip>
                         </p>
                         <span className="text-indigo-600 group-data-[focus]:text-white [.group:not([data-selected])_&]:hidden">
                           <CheckIcon aria-hidden="true" className="h-5 w-5" />

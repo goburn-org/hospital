@@ -24,11 +24,15 @@ export const DetailedPatientVisitGetPayload = {
     Doctor: true,
     PatientOrder: {
       select: {
+        remark: true,
         order: {
           select: {
             id: true,
             name: true,
             departmentId: true,
+            consultationRequired: true,
+            baseAmount: true,
+            taxCodeId: true,
           },
         },
       },

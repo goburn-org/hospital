@@ -320,10 +320,12 @@ export const PatientPrescription = () => {
     return <div>Visit Not not found</div>;
   }
   return (
-    <Form
-      patientId={patientId}
-      visitId={visitId}
-      defaultValue={data.PatientPrescription}
-    />
+    <div className="w-[100vw] sm:w-[85vw] 2xl:w-[70vw]">
+      <Form
+        patientId={patientId}
+        visitId={visitId}
+        defaultValue={data.PatientPrescription}
+      />
+    </div>
   );
 };

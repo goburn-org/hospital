@@ -5,13 +5,7 @@ import {
   useEffect,
   useRef,
 } from 'react';
-import {
-  Controller,
-  FieldValues,
-  Path,
-  PathValue,
-  useFormContext,
-} from 'react-hook-form';
+import { FieldValues, Path, PathValue, useFormContext } from 'react-hook-form';
 import {
   FormMode,
   useFormMode,
@@ -28,6 +22,9 @@ const parseValue = (value: string, type: HTMLInputTypeAttribute) => {
   }
   if (type === 'datetime-local' && value) {
     return moment(value).format('YYYY-MM-DDTHH:mm');
+  }
+  if (value === undefined) {
+    return '';
   }
   return value;
 };
@@ -57,9 +54,10 @@ export const FormInput = <T extends FieldValues = FieldValues>({
   defaultValue?: PathValue<T, Path<T>>;
   allowZero?: boolean;
 }) => {
-  const { setValue, formState, control } = useFormContext<T>();
+  const { setValue, formState, watch } = useFormContext<T>();
   const isReadOnly = useFormMode() === FormMode.ReadOnly;
   const defaultSet = useRef(false);
+  const value = parseValue(watch(id), type ?? 'text');
   useEffect(() => {
     if (defaultValue) {
       if (defaultSet.current) {
@@ -90,72 +88,48 @@ export const FormInput = <T extends FieldValues = FieldValues>({
       <div
         className={classNames(twoColumn ? 'mt-2 sm:col-span-2 sm:mt-0' : '')}
       >
-        <Controller
-          name={id}
-          control={control}
-          render={({ formState, field }) => {
-            const value = parseValue(field.value, type ?? 'text');
+        <input
+          id={id}
+          type={type}
+          disabled={isReadOnly || disabled}
+          autoComplete={autoComplete}
+          className={classNames(
+            inputClassName ? inputClassName : twoColumn ? 'sm:max-w-xs' : '',
+            getNestedValue(formState.errors, id)
+              ? 'border-red-500'
+              : 'border-gray-300',
+            twoColumn ? 'block w-full py-1.5  sm:text-sm/6 ' : 'w-full  p-2 ',
+            'rounded-md border disabled:bg-gray-100 bg-white',
+          )}
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => {
+            if (e.target.value === '') {
+              setValue(id, undefined as any, {
+                shouldValidate: true,
+                shouldTouch: true,
+              });
+              return;
+            }
 
-            return (
-              <input
-                id={id}
-                type={type}
-                disabled={isReadOnly || disabled}
-                autoComplete={autoComplete}
-                className={classNames(
-                  inputClassName
-                    ? inputClassName
-                    : twoColumn
-                      ? 'sm:max-w-xs'
-                      : '',
-                  getNestedValue(formState.errors, id)
-                    ? 'border-red-500'
-                    : 'border-gray-300',
-                  twoColumn
-                    ? 'block w-full py-1.5  sm:text-sm/6 '
-                    : 'w-full  p-2 ',
-                  'rounded-md border disabled:bg-gray-100 bg-white',
-                )}
-                placeholder={placeholder}
-                value={value !== null ? value : ''}
-                onChange={(e) => {
-                  if (e.target.value === '') {
-                    setValue(id, undefined as any, {
-                      shouldValidate: true,
-                      shouldTouch: true,
-                    });
-                    return;
-                  }
-
-                  if (type === 'number') {
-                    setValue(
-                      id,
-                      Number(e.target.value) as PathValue<T, Path<T>>,
-                      {
-                        shouldValidate: true,
-                        shouldTouch: true,
-                      },
-                    );
-                    return;
-                  }
-                  if (type === 'date' || type === 'datetime-local') {
-                    setValue(
-                      id,
-                      new Date(e.target.value) as PathValue<T, Path<T>>,
-                      {
-                        shouldValidate: true,
-                        shouldTouch: true,
-                      },
-                    );
-                    return;
-                  }
-                  setValue(id, e.target.value as PathValue<T, Path<T>>, {
-                    shouldValidate: true,
-                    shouldTouch: true,
-                  });
-                }}
-              />
-            );
+            if (type === 'number') {
+              setValue(id, Number(e.target.value) as PathValue<T, Path<T>>, {
+                shouldValidate: true,
+                shouldTouch: true,
+              });
+              return;
+            }
+            if (type === 'date' || type === 'datetime-local') {
+              setValue(id, new Date(e.target.value) as PathValue<T, Path<T>>, {
+                shouldValidate: true,
+                shouldTouch: true,
+              });
+              return;
+            }
+            setValue(id, e.target.value as PathValue<T, Path<T>>, {
+              shouldValidate: true,
+              shouldTouch: true,
+            });
           }}
         />
         {getNestedValue(formState.errors, id) && (

@@ -127,6 +127,12 @@ class PatientVisitService {
         data.PatientPrescription.list,
       ) as any;
     }
+    if (data.PatientOrder?.order) {
+      result.PatientOrder!.order = data.PatientOrder.order.map((o) => ({
+        ...o,
+        remark: (data.PatientOrder?.remark as any)?.[o.id],
+      }));
+    }
     return result;
   }
 }

@@ -6,6 +6,7 @@ export const createPatientOrderSchema = z.object({
     .array(
       z.object({
         id: z.string(),
+        remark: z.string().optional().nullable(),
       }),
     )
     .nullable()

@@ -79,8 +79,8 @@ export const Component = () => {
           </div>
         </div>
         <div className="mt-1 flow-root">
-          <div className="-my-2 sm:-mx-6 lg:-mx-8">
-            <div className="inline-block py-2 align-middle sm:px-6 lg:px-8 w-[100vw] sm:w-[85vw] 2xl:w-[70vw]">
+          <div className="sm:-mx-6 lg:-mx-8">
+            <div className="inline-block py-2 align-middle sm:px-6 lg:px-8 ">
               <VisitHistory patientId={patientId} />
               {activeTab === 'Vitals' && <PatientVitals />}
               {activeTab === 'Assessment' && <PatientAssessment />}

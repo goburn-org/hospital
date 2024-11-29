@@ -17,6 +17,10 @@ class OrderService {
       name: r.name,
       departmentId: r.department?.id,
       departmentName: r.department?.name,
+      baseAmount: r.baseAmount,
+      consultationRequired: r.consultationRequired,
+      maxDiscount: r.maxDiscount,
+      taxCodeId: r.taxCodeId,
     }));
   }
 }

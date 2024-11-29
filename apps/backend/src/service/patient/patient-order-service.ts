@@ -1,5 +1,6 @@
 import {
   CreatePatientOrderRequest,
+  Maybe,
   PatientOrderResponse,
 } from '@hospital/shared';
 import { logger } from '../../logger/logger-service';
@@ -26,15 +27,23 @@ class PatientOrderService {
         order: {
           connect: body.order?.map((o) => ({ id: o.id })),
         },
+        remark: body.order?.reduce(
+          (acc, o) => ({
+            ...acc,
+            [o.id]: o.remark,
+          }),
+          {},
+        ),
       },
       include: {
         order: true,
         PatientVisit: true,
       },
     });
+    const remarks = (res.remark as Record<string, Maybe<string>>) || {};
     return {
       ...res,
-      order: res.order.map((o) => ({ id: o.id })),
+      order: res.order.map((o) => ({ id: o.id, remark: remarks[o.id] })),
       patientId: res.PatientVisit.uhid,
       visitId: res.visitId,
     };

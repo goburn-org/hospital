@@ -1,4 +1,4 @@
-export const Checkbox = ({
+export const Radio = ({
   id,
   label,
   checked,
@@ -9,36 +9,43 @@ export const Checkbox = ({
   checked: boolean;
   onChange: () => void;
 }) => (
-  <label className="flex items-center space-x-3 cursor-pointer">
-    <input type="checkbox" id={id} checked={checked} onChange={onChange} />
+  <label className="flex items-center space-x-1 cursor-pointer">
+    <input type="radio" id={id} checked={checked} onChange={onChange} />
     <span className="text-gray-700">{label}</span>
   </label>
 );
 
-export const CheckboxGroup = ({
+export const RadioGroup = ({
   options,
-  selectedValues,
+  selectedValue,
   onChange,
+  label,
+  error,
 }: {
   options: { label: string; value: string }[];
-  selectedValues: string[];
-  onChange: (value: string[]) => void;
+  selectedValue: string;
+  onChange: (value: string) => void;
+  label: string;
+  error?: string;
 }) => (
-  <div className="space-y-2 flex flex-wrap items-start gap-2">
-    {options.map((option) => (
-      <Checkbox
-        key={option.value}
-        id={option.value}
-        label={option.label}
-        checked={selectedValues.includes(option.value)}
-        onChange={() => {
-          if (selectedValues.includes(option.value)) {
-            onChange(selectedValues.filter((v) => v !== option.value));
-          } else {
-            onChange([...selectedValues, option.value]);
-          }
-        }}
-      />
-    ))}
-  </div>
+  <fieldset className="flex flex-wrap items-start gap-2 w-full flex-col">
+    <div className="flex gap-1">
+      <legend className="text-gray-800 font-semibold mb-2">{label} </legend>
+      {error ? <p className="text-base text-red-500">{error}</p> : null}
+    </div>
+
+    <div className="flex gap-2">
+      {options.map((option) => (
+        <Radio
+          key={option.value}
+          id={option.value}
+          label={option.label}
+          checked={selectedValue === option.value}
+          onChange={() => {
+            onChange(option.value);
+          }}
+        />
+      ))}
+    </div>
+  </fieldset>
 );
