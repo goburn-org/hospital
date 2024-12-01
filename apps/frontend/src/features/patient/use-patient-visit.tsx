@@ -1,7 +1,6 @@
 import {
   AssessmentResponse,
   CreateAssessmentRequest,
-  CreatePatientBillingRequest,
   CreatePatientOrderRequest,
   CreatePatientPrescriptionRequest,
   CreatePatientVisitRequest,
@@ -146,39 +145,6 @@ export const usePatientVisitByIdQuery = (
         `/v1/visit/${param.patientId}/${param.visitId}`,
       ),
     ...options,
-  });
-};
-
-export const usePatientVisitCheckoutMutation = (
-  options: UseMutationOptions<
-    CreatePatientVisit,
-    unknown,
-    CreatePatientBillingRequest & VisitIdPatientId
-  >,
-) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    ...options,
-    mutationFn: (param) =>
-      HttpService.post<CreatePatientVisit>(
-        `/v1/visit/checkout/${param.patientId}/${param.visitId}`,
-        param,
-      ),
-    onSuccess: (res, req, ctx) => {
-      options.onSuccess?.(res, req, ctx);
-      queryClient.invalidateQueries({
-        queryKey: VisitQueryKey({
-          visitId: req.visitId,
-          patientId: req.patientId,
-        }),
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['patient-visit', req.patientId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['patient', req.patientId],
-      });
-    },
   });
 };
 

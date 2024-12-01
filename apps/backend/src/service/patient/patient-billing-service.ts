@@ -5,6 +5,7 @@ import {
   HttpError,
   PaginatedResponse,
   PaginateParamsWithSort,
+  VisitBill,
   VisitBillingAggregationByPatientId,
 } from '@hospital/shared';
 import { dbClient } from '../../prisma';
@@ -106,8 +107,11 @@ class PatientBillingService {
       },
       skip: paginate ? paginate.limit * (paginate.page - 1) : undefined,
     });
-    const total = await dbClient.patient.count({
+    const total = await dbClient.patientVisit.count({
       where: {
+        checkInTime: {
+          gte: last24Hours,
+        },
         hospitalId: authUser.hospitalId,
         isDeleted: false,
       },
@@ -133,6 +137,39 @@ class PatientBillingService {
         page: paginate?.page ?? 1,
         limit: paginate?.limit ?? total,
       },
+    };
+  }
+
+  async getBill(visitId: string): Promise<VisitBill | null> {
+    const data = await dbClient.bill.findFirst({
+      where: {
+        visitId,
+      },
+      include: {
+        BillingConsultationOrderLineItem: {
+          include: {
+            order: true,
+          },
+        },
+        BillingPatientOrderLineItem: {
+          include: {
+            order: true,
+          },
+        },
+        Visit: true,
+      },
+    });
+    if (!data) {
+      return null;
+    }
+    const receipt = await dbClient.receipt.findMany({
+      where: {
+        visitId,
+      },
+    });
+    return {
+      ...data,
+      Receipt: receipt,
     };
   }
 
@@ -195,7 +232,26 @@ class PatientBillingService {
         },
       });
     } else {
-      const billing = await dbClient.billingPatientOrderLineItem.create({
+      console.log('order to connect', order.id);
+      await dbClient.bill.upsert({
+        where: {
+          id: `out-${visitId}`,
+        },
+        create: {
+          id: `out-${visitId}`,
+          hospitalId: authUser.hospitalId,
+          updatedBy: authUser.id,
+          totalAmount,
+          visitId: visitId,
+          items: {},
+        },
+        update: {
+          totalAmount: {
+            increment: totalAmount,
+          },
+        },
+      });
+      await dbClient.billingPatientOrderLineItem.create({
         data: {
           discount: 0,
           quantity: 1,
@@ -206,34 +262,7 @@ class PatientBillingService {
           hospitalId: authUser.hospitalId,
           updatedBy: authUser.id,
           totalAmount,
-        },
-      });
-      await dbClient.bill.upsert({
-        where: {
-          id: `out-${visitId}`,
-        },
-        create: {
-          id: `out-${visitId}`,
-          hospitalId: authUser.hospitalId,
-          updatedBy: authUser.id,
-          BillingPatientOrderLineItem: {
-            connect: {
-              id: billing.id,
-            },
-          },
-          totalAmount,
-          visitId: visitId,
-          items: {},
-        },
-        update: {
-          totalAmount: {
-            increment: totalAmount,
-          },
-          BillingConsultationOrderLineItem: {
-            set: {
-              id: billing.id,
-            },
-          },
+          billId: `out-${visitId}`,
         },
       });
     }

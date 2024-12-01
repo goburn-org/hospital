@@ -256,6 +256,7 @@ model Order {
   patientOrderVisitId              String?
   consultationOrderId              String?
   BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
+  BillingPatientOrderLineItem      BillingPatientOrderLineItem[]
 }
 
 model OrderGroups {
@@ -299,15 +300,14 @@ model TaxCode {
 }
 
 model PatientOrder {
-  visitId                     String                        @unique
-  order                       Order[]
-  orderDate                   DateTime
-  updatedBy                   String?
-  remark                      Json?
-  createdAt                   DateTime                      @default(now())
-  updatedAt                   DateTime                      @updatedAt
-  PatientVisit                PatientVisit                  @relation(fields: [visitId], references: [id])
-  BillingPatientOrderLineItem BillingPatientOrderLineItem[]
+  visitId      String       @unique
+  order        Order[]
+  orderDate    DateTime
+  updatedBy    String?
+  remark       Json?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  PatientVisit PatientVisit @relation(fields: [visitId], references: [id])
 }
 
 model BillingPatientOrderLineItem {
@@ -315,7 +315,7 @@ model BillingPatientOrderLineItem {
   visitId     String
   Visit       PatientVisit @relation(fields: [visitId], references: [id])
   orderId     String
-  order       PatientOrder @relation(fields: [orderId], references: [visitId])
+  order       Order        @relation(fields: [orderId], references: [id])
   hospitalId  Int
   hospital    Hospital     @relation(fields: [hospitalId], references: [id])
   quantity    Int

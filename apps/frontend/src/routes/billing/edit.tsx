@@ -1,7 +1,7 @@
 import { ensure } from '@hospital/shared';
 import { useParams } from 'react-router-dom';
 import { CustomDialog } from '../../component/custom-dialog';
-import { PatientDrawer } from '../../features/patient/patient-drawer';
+import { CheckoutDrawer } from '../../features/patient/checkout-drawer';
 import { usePatientByIdQuery } from '../../features/patient/use-patient-query';
 
 export const Component = () => {
@@ -16,7 +16,7 @@ export const Component = () => {
   }
   return (
     <CustomDialog open={true}>
-      <PatientDrawer mode="edit" defaultValues={data} patientId={patientId} />
+      <CheckoutDrawer mode="create" patientId={patientId} />
     </CustomDialog>
   );
 };

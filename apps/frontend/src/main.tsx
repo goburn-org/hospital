@@ -18,15 +18,15 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <StrictMode>
-    <PatientVisitDrawerProvider>
-      <ZoomProvider>
-        <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <PatientVisitDrawerProvider>
+        <ZoomProvider>
           <RouterProvider router={router} fallbackElement={<PageLoader />} />
           <PatientVisitDetailsDrawer />
           <ReactQueryDevtools initialIsOpen={false} />
           <Toaster position="top-center" gutter={3} />
-        </QueryClientProvider>
-      </ZoomProvider>
-    </PatientVisitDrawerProvider>
+        </ZoomProvider>
+      </PatientVisitDrawerProvider>
+    </QueryClientProvider>
   </StrictMode>,
 );

@@ -9,7 +9,6 @@ import { Fragment, useEffect, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FormInput } from '../../component/form/form-input';
 import {
   FormMode,
   FormModeProvider,
@@ -18,7 +17,11 @@ import { classNames } from '../../utils/classNames';
 import { routerConfig } from '../../utils/constants';
 import { useEsc } from '../../utils/use-esc';
 import { TIMER_L, useTimer } from '../../utils/use-timer';
-import { usePatientVisitCheckoutMutation } from './use-patient-visit';
+import {
+  usePatientBillingAutoGenerateMutation,
+  usePatientBillingAutoGenerateQuery,
+  usePatientVisitCheckoutMutation,
+} from './use-patient-query';
 
 export const CheckoutDrawer = ({
   defaultValues,
@@ -66,15 +69,6 @@ export const CheckoutDrawer = ({
         <FormProvider {...formProvider}>
           <form className="flex max-h-[90vh] flex-col gap-12">
             <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div className="sm:col-span-4">
-                <FormInput<CreatePatientBillingRequest>
-                  isRequired
-                  autoComplete="off"
-                  id="details"
-                  labelName="Details"
-                  placeholder=""
-                />
-              </div>
               <div className="sm:col-span-6">
                 <Items />
               </div>
@@ -102,6 +96,40 @@ const Items = () => {
   const { setValue, watch } = useFormContext<CreatePatientBillingRequest>();
   const items = watch('items');
   const totalAmount = items?.reduce((acc, i) => i.itemAmount + acc, 0);
+  const { patientId, visitId } = useParams();
+  ensure(patientId, 'Patient id is required');
+  ensure(visitId, 'Visit id is required');
+  const { mutateAsync } = usePatientBillingAutoGenerateMutation({
+    patientId,
+    visitId,
+  });
+  const { data } = usePatientBillingAutoGenerateQuery({
+    patientId,
+    visitId,
+  });
+  const noItem = data ? data.BillingPatientOrderLineItem.length === 0 : false;
+  const alreadyPaid = data?.Receipt.reduce((acc, i) => i.paid + acc, 0);
+  useEffect(() => {
+    if (noItem) {
+      mutateAsync();
+    }
+  }, [mutateAsync, noItem]);
+  useEffect(() => {
+    console.log({ data });
+    if (!data) {
+      return;
+    }
+    setTimeout(() => {
+      setValue(
+        'items',
+        data.BillingPatientOrderLineItem.map((i) => ({
+          itemId: `${i.id}`,
+          itemAmount: i.totalAmount,
+          itemName: i.order.name,
+        })),
+      );
+    }, 10);
+  }, [data, setValue]);
   useEffect(() => {
     setValue('totalAmount', totalAmount);
   }, [setValue, totalAmount]);
@@ -109,8 +137,6 @@ const Items = () => {
     <div className="sm:col-span-6">
       <div className="flex flex-col items-center justify-center ">
         <div className="w-full max-w-2xl p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Billing Details</h2>
-
           <div className="grid grid-cols-6 gap-4 mb-4">
             {items?.map((item, index) => (
               <Fragment key={index}>
@@ -153,25 +179,36 @@ const Items = () => {
               </Fragment>
             ))}
           </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              const oldArrary = items || [];
-              const updatedItem = [
-                ...oldArrary,
-                {
-                  itemId: Date.now().toString(),
-                  itemAmount: 0,
-                  itemName: '',
-                },
-              ];
-              setValue('items', updatedItem);
-            }}
-            className="btn-outline"
-          >
-            Add Item
-          </button>
+          <div className="flex flex-row justify-between w-full gap-2 px-3">
+            <button
+              type="button"
+              onClick={() => {
+                const oldArrary = items || [];
+                const updatedItem = [
+                  ...oldArrary,
+                  {
+                    itemId: Date.now().toString(),
+                    itemAmount: 0,
+                    itemName: '',
+                  },
+                ];
+                setValue('items', updatedItem);
+              }}
+              className="btn-text"
+            >
+              Add Item
+            </button>
+            <div className="flex flex-col ">
+              <div className="flex w-full items-end gap-2">
+                <p className="font-semibold text-gray-400">Total Amount</p>
+                <p className="font-semibold text-black">Rs. {totalAmount}</p>
+              </div>
+              <div className="flex w-full items-end gap-2">
+                <p className="font-semibold text-gray-400">Already Paid</p>
+                <p className="font-semibold text-black">Rs. {alreadyPaid}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -184,12 +221,6 @@ const PaidBy = () => {
   const totalAmount = watch('totalAmount');
   return (
     <div className="flex items-center gap-x-4">
-      <div>
-        <div className="flex w-full items-end gap-2">
-          <p className="font-semibold text-gray-500">Total Amount</p>
-          <p className="text-black">Rs. {totalAmount}</p>
-        </div>
-      </div>
       <div className="flex items-center gap-x-4">
         <input
           type="radio"
@@ -266,11 +297,11 @@ const CreateFooter = () => {
   const { mutateAsync, isSuccess } = usePatientVisitCheckoutMutation({
     onError: (err) => {
       if (err instanceof Error) {
-        formProvider.setError('details', {
+        formProvider.setError('items', {
           message: err.message,
         });
       }
-      formProvider.setError('details', {
+      formProvider.setError('items', {
         message: String(err),
       });
     },

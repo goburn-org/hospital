@@ -1,4 +1,5 @@
 import {
+  AvailableOrder,
   CreatePatientOrderRequest,
   Maybe,
   PatientOrderResponse,
@@ -47,6 +48,22 @@ class PatientOrderService {
       patientId: res.PatientVisit.uhid,
       visitId: res.visitId,
     };
+  }
+
+  async getByVisitId(visitId: string): Promise<AvailableOrder[]> {
+    const res = await dbClient.patientOrder.findFirst({
+      where: {
+        visitId,
+      },
+      include: {
+        order: true,
+        PatientVisit: true,
+      },
+    });
+    if (!res) {
+      return [];
+    }
+    return res.order;
   }
 }
 

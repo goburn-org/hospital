@@ -133,7 +133,7 @@ export const PatientBillingTable = () => {
         Cell: ({ row }) => {
           return (
             <Link
-              to={`${row.original.patient.uhid}`}
+              to={`${row.original.patient.uhid}/${row.original.lastVisit.visitId}`}
               className="btn-text-tertiary btn-small"
             >
               Close Billing

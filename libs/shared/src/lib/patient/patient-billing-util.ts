@@ -1,11 +1,12 @@
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { DateLike, Maybe } from '../ts-util';
 
 export const createPatientBillingSchema = z.object({
-  details: z.string().nullable().optional(),
   cashAmount: z.number(),
   cardAmount: z.number(),
   totalAmount: z.number(),
+  billId: z.string().nullable().optional(),
   items: z.array(
     z.object({
       itemId: z.string(),
@@ -43,6 +44,23 @@ export type AllPatientVisitBillingResponse = {
     receipt: VisitBillingAggregationByPatientId['receipt'];
   };
 };
+
+export type VisitBill = Prisma.BillGetPayload<{
+  include: {
+    BillingConsultationOrderLineItem: {
+      include: {
+        order: true;
+      };
+    };
+    BillingPatientOrderLineItem: {
+      include: {
+        order: true;
+      };
+    };
+    Receipt: true;
+    Visit: true;
+  };
+}>;
 
 export type CreatePatientBillingRequest = z.infer<
   typeof createPatientBillingSchema

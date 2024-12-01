@@ -7,6 +7,7 @@ import { Router } from 'express';
 import { authMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
 import { patientBillingService } from '../../service/patient/patient-billing-service';
+import { patientOrderService } from '../../service/patient/patient-order-service';
 import { patientReceiptService } from '../../service/patient/patient-receipt-service';
 import { patientVisitService } from '../../service/patient/patient-visit-service';
 
@@ -38,6 +39,25 @@ route.post(
   }),
 );
 
+route.post(
+  `${baseVersion}${baseRoute}/:patientId/:visitId`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const patientId = req.params.patientId;
+    ensure(patientId, 'Invalid patientId params');
+    const visitId = req.params.visitId;
+    ensure(visitId, 'Invalid visitId params');
+    const orders = await patientOrderService.getByVisitId(visitId);
+    await Promise.all(
+      orders.map((o) =>
+        patientBillingService.createOutpatientBilling(visitId, false, o),
+      ),
+    );
+    const data = await patientBillingService.getBill(visitId);
+    res.json(data);
+  }),
+);
+
 route.get(
   `${baseVersion}${baseRoute}/:patientId`,
   authMiddleware,
@@ -45,6 +65,17 @@ route.get(
     const patientId = req.params.patientId;
     ensure(patientId, 'Invalid patientId');
     const data = await patientBillingService.getByPatientId(patientId);
+    res.json(data);
+  }),
+);
+
+route.get(
+  `${baseVersion}${baseRoute}/:patientId/:visitId`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const visitId = req.params.visitId;
+    ensure(visitId, 'Invalid visitId params');
+    const data = await patientBillingService.getBill(visitId);
     res.json(data);
   }),
 );

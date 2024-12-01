@@ -15,7 +15,6 @@ const Role = 'role';
 const Visit = 'visit';
 const Employee = 'employee';
 const Checkout = 'checkout';
-const Advance = 'advance';
 const Receipt = 'receipt';
 const Report = 'report';
 
@@ -36,7 +35,6 @@ export const routerConfig = {
   Visit,
   Checkout,
   Billing,
-  Advance,
   Receipt,
   Report,
 };

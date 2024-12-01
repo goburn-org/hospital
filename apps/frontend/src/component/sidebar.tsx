@@ -37,10 +37,6 @@ const navigation = [
         href: `${routerConfig.Billing}`,
       },
       {
-        name: 'Receipt',
-        href: `${routerConfig.Billing}/${routerConfig.Receipt}`,
-      },
-      {
         name: 'Report',
         href: `${routerConfig.Billing}/${routerConfig.Report}`,
       },

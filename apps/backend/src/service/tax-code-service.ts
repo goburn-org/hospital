@@ -13,6 +13,23 @@ class TaxCodeService {
       },
     });
   }
+
+  async getTaxCodes(ids: number[]): Promise<Record<string, TaxCodeResponse>> {
+    const taxCodes = await dbClient.taxCode.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+    return taxCodes.reduce(
+      (acc, taxCode) => {
+        acc[taxCode.id] = taxCode;
+        return acc;
+      },
+      {} as Record<string, TaxCodeResponse>,
+    );
+  }
 }
 
 export const taxCodeService = new TaxCodeService();

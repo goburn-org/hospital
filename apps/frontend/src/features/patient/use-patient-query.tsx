@@ -1,10 +1,12 @@
 import {
   AllPatientVisitBillingResponse,
+  CreatePatientBillingRequest,
   CreatePatientInput,
   PaginatedResponse,
   PaginateParamsWithSort,
   PatientResponse,
   UpdatePatientInput,
+  VisitBill,
   VisitBillingAggregationByPatientId,
 } from '@hospital/shared';
 import {
@@ -15,6 +17,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { HttpService } from '../../utils/http';
+import { VisitIdPatientId } from './use-patient-visit';
 
 const queryKey = ['patient'];
 
@@ -60,6 +63,35 @@ export const useAllPatientBillingQuery = (
           params: queryParams,
         },
       ),
+  });
+};
+
+export const usePatientBillingAutoGenerateQuery = (param: VisitIdPatientId) => {
+  return useQuery({
+    queryKey: [...queryKey, 'billing', param.patientId, param.visitId],
+    queryFn: () =>
+      HttpService.get<VisitBill>(
+        `/v1/billing/${param.patientId}/${param.visitId}`,
+      ),
+  });
+};
+
+export const usePatientBillingAutoGenerateMutation = (
+  param: VisitIdPatientId,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      HttpService.post<VisitBill>(
+        `/v1/billing/${param.patientId}/${param.visitId}`,
+      ),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        predicate(query) {
+          return query.queryKey.includes('billing');
+        },
+      });
+    },
   });
 };
 
@@ -120,6 +152,36 @@ export const useUpdatePatientMutation = (
         },
       });
       options?.onSuccess?.(...args);
+    },
+  });
+};
+
+export const usePatientVisitCheckoutMutation = (
+  options: UseMutationOptions<
+    VisitBillingAggregationByPatientId,
+    unknown,
+    CreatePatientBillingRequest & VisitIdPatientId
+  >,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    ...options,
+    mutationFn: (param) =>
+      HttpService.post<VisitBillingAggregationByPatientId>(
+        `/v1/receipt/${param.patientId}/${param.visitId}`,
+        param,
+      ),
+    onSuccess: (res, req, ctx) => {
+      options.onSuccess?.(res, req, ctx);
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey.includes('billing'),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['patient-visit', req.patientId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['patient', req.patientId],
+      });
     },
   });
 };
