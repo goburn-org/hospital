@@ -2,7 +2,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { Body } from '../../component/body';
 import { Header } from '../../component/header';
 import { PageSubHeader } from '../../component/page-sub-header';
-import { PatientTable } from '../../features/patient/patient-table';
+import { PatientBillingTable } from '../../features/patient/patient-billing-table';
 import { routerConfig } from '../../utils/constants';
 
 export const Component = () => {
@@ -14,7 +14,7 @@ export const Component = () => {
         <div className="flex flex-col gap-8 px-4 sm:px-6">
           <div className="">
             <PageSubHeader
-              title="Billing"
+              title="Outpatient Billing"
               newButton={{
                 label: 'New Billing',
                 onClick: () => navigate(routerConfig.New),
@@ -23,7 +23,7 @@ export const Component = () => {
             <div className="mt-8 flow-root">
               <div className="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
                 <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                  <PatientTable />
+                  <PatientBillingTable />
                 </div>
               </div>
             </div>

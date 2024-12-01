@@ -1,9 +1,11 @@
 import {
+  AllPatientVisitBillingResponse,
   CreatePatientInput,
   PaginatedResponse,
   PaginateParamsWithSort,
   PatientResponse,
   UpdatePatientInput,
+  VisitBillingAggregationByPatientId,
 } from '@hospital/shared';
 import {
   QueryOptions,
@@ -27,6 +29,37 @@ export const usePatientQuery = (
       HttpService.get<PaginatedResponse<PatientResponse>>('/v1/patient', {
         params: queryParams,
       }),
+  });
+};
+
+export const usePatientBillingQueryById = (
+  patientId: string,
+  options?: QueryOptions<VisitBillingAggregationByPatientId[]>,
+) => {
+  return useQuery({
+    ...(options || {}),
+    queryKey: [...queryKey, 'billing', patientId, options],
+    queryFn: () =>
+      HttpService.get<VisitBillingAggregationByPatientId[]>(
+        `/v1/billing/${patientId}`,
+      ),
+  });
+};
+
+export const useAllPatientBillingQuery = (
+  queryParams: PaginateParamsWithSort,
+  options?: QueryOptions<PaginatedResponse<AllPatientVisitBillingResponse>>,
+) => {
+  return useQuery({
+    ...(options || {}),
+    queryKey: [...queryKey, 'billing', 'all', options],
+    queryFn: () =>
+      HttpService.get<PaginatedResponse<AllPatientVisitBillingResponse>>(
+        `/v1/billing`,
+        {
+          params: queryParams,
+        },
+      ),
   });
 };
 

@@ -33,8 +33,8 @@ const navigation = [
     current: false,
     children: [
       {
-        name: 'Advance',
-        href: `${routerConfig.Billing}/${routerConfig.Advance}`,
+        name: 'Outpatient Billing',
+        href: `${routerConfig.Billing}`,
       },
       {
         name: 'Receipt',
