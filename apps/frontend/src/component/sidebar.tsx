@@ -11,7 +11,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useRef, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import PatientIcon from '../asset/patient.svg?react';
 import { useAccountConfig } from '../provider/account/use-account-config';
 import { classNames } from '../utils/classNames';
@@ -157,7 +157,6 @@ const MobileSidebar = ({
 const DesktopSidebar = () => {
   const { pathname } = useLocation();
   const { data } = useAccountConfig();
-  const navigate = useNavigate();
   const ref = useRef<Record<string, TooltipRef | null>>({});
   return (
     <>
@@ -186,15 +185,15 @@ const DesktopSidebar = () => {
                     <ul className="flex flex-col gap-y-1">
                       {item.children.map((child) => (
                         <li key={child.name}>
-                          <button
+                          <Link
+                            to={child.href}
                             onClick={() => {
-                              navigate(child.href);
                               ref.current[item.name]?.stop();
                             }}
                             className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-800 hover:bg-indigo-900 hover:text-white"
                           >
                             {child.name}
-                          </button>
+                          </Link>
                         </li>
                       ))}
                     </ul>

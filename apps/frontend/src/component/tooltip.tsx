@@ -62,7 +62,10 @@ const Tooltip = forwardRef<TooltipRef, TooltipProps>(
       ref,
       () => ({
         stop: () => {
-          setIsTooltipVisible(false);
+          setTimeout(() => {
+            // parent action like on click should register
+            setIsTooltipVisible(false);
+          }, 5);
         },
       }),
       [],
