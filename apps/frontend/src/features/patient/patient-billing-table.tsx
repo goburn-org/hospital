@@ -71,10 +71,8 @@ export const PatientBillingTable = () => {
                 className="px-4 text-blue-600 hover:text-blue-300 flex gap-2"
               >
                 {renderedCellValue}
-                {billing === receipt ? (
-                  <span className="text-green-500">Paid</span>
-                ) : (
-                  <span className="text-red-500">Unpaid</span>
+                {billing === receipt ? null : (
+                  <span className="text-red-500 bg-red-100 px-2">Unpaid</span>
                 )}
               </Link>
             </div>

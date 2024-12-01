@@ -168,10 +168,17 @@ export const FormAutoCompleteInput = <T extends FieldValues = FieldValues>({
                             'p-2 cursor-pointer hover:bg-gray-100 w-full text-left',
                           )}
                           onClick={() => {
-                            setValue(id, option as PathValue<T, Path<T>>, {
-                              shouldValidate: true,
-                              shouldTouch: true,
-                            });
+                            setValue(
+                              id,
+                              options[currentSelected].label as PathValue<
+                                T,
+                                Path<T>
+                              >,
+                              {
+                                shouldValidate: true,
+                                shouldTouch: true,
+                              },
+                            );
                             showOptions && setShowOptions(false);
                           }}
                         >
