@@ -190,7 +190,7 @@ model PatientVisit {
   Patient                          Patient                            @relation(fields: [uhid], references: [uhid])
   Department                       Department?                        @relation(fields: [departmentId], references: [id])
   departmentId                     Int?
-  PatientOrder                     PatientOrder[]
+  PatientOrder                     PatientOrder?
   PatientVital                     PatientVital?
   PatientPrescription              PatientPrescription?
   VisitBilling                     VisitBilling?
