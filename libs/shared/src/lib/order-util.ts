@@ -10,4 +10,5 @@ export type AvailableOrder = {
   taxCodeId: number;
   maxDiscount: Maybe<number>;
   consultationRequired: boolean;
+  tags: string[];
 };

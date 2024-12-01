@@ -102,6 +102,24 @@ const patientRoutes = (
   </>
 );
 
+const billingRoutes = (
+  <Route path={routerConfig.Billing} lazy={() => import('./routes/billing')}>
+    <Route
+      path={routerConfig.Advance}
+      lazy={() => import('./routes/billing/new')}
+    />
+    <Route path={`:patientId`} lazy={() => import('./routes/billing/edit')} />
+    <Route
+      path={routerConfig.Receipt}
+      lazy={() => import('./routes/billing/new-visit')}
+    />
+    <Route
+      path={routerConfig.Receipt}
+      lazy={() => import('./routes/billing/visit-details')}
+    />
+  </Route>
+);
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
@@ -110,6 +128,7 @@ export const router = createBrowserRouter(
         {settingRoutes}
         {inventoryRoutes}
         {patientRoutes}
+        {billingRoutes}
       </Route>
     </Route>,
   ),

@@ -14,6 +14,7 @@ import {
   FormMode,
   FormModeProvider,
 } from '../../provider/form-context-provider/form-mode-provider';
+import { useOrderQuery } from '../../provider/use-order';
 import { classNames } from '../../utils/classNames';
 import { routerConfig, TypingSpeed } from '../../utils/constants';
 import { useDebounce } from '../../utils/use-debounce';
@@ -74,6 +75,14 @@ export const PatientVisitDrawer = ({
                   defaultValue={new Date()}
                 />
               </div>
+              <div className="sm:col-span-5">
+                <FormInput<CreatePatientVisitRequest>
+                  id="advanceAmount"
+                  labelName="Advance Amount"
+                  autoComplete="off"
+                  type="number"
+                />
+              </div>
             </div>
             <CreateFooter />
           </form>
@@ -86,6 +95,7 @@ export const PatientVisitDrawer = ({
 const DoctorSelect = () => {
   const [search, setSearch] = useState('');
   const searchDebounce = useDebounce(search, TypingSpeed);
+  const { data: orders } = useOrderQuery();
   const { data } = useEmployeeQuery({
     search: searchDebounce,
     paginate: {
@@ -99,23 +109,34 @@ const DoctorSelect = () => {
       id: item.id,
     })) ?? [];
   const { watch, setValue } = useFormContext<CreatePatientVisitRequest>();
+  const consultationOrder = orders?.find((o) =>
+    o.tags.includes('consultation'),
+  );
+  const doctorId = watch('doctorId');
   return (
-    <CustomSelect
-      options={res}
-      value={watch('doctorId')}
-      onRawChange={(value) => {
-        setSearch(value);
-      }}
-      labelName="Doctor Name"
-      htmlFor="doctorId"
-      onChange={(value) => {
-        setValue('doctorId', value, {
-          shouldValidate: true,
-          shouldTouch: true,
-          shouldDirty: true,
-        });
-      }}
-    />
+    <div className="flex flex-col gap-1">
+      <CustomSelect
+        options={res}
+        value={watch('doctorId')}
+        onRawChange={(value) => {
+          setSearch(value);
+        }}
+        labelName="Doctor Name"
+        htmlFor="doctorId"
+        onChange={(value) => {
+          setValue('doctorId', value, {
+            shouldValidate: true,
+            shouldTouch: true,
+            shouldDirty: true,
+          });
+        }}
+      />
+      {consultationOrder && doctorId ? (
+        <p className="text-sm text-gray-400">
+          <span>Consultation Fee: Rs.{consultationOrder.baseAmount}</span>
+        </p>
+      ) : null}
+    </div>
   );
 };
 
@@ -193,7 +214,7 @@ const CreateFooter = () => {
             />
           </svg>
         ) : null}
-        Create
+        CheckIn
       </button>
     </div>
   );

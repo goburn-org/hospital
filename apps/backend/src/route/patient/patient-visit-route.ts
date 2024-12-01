@@ -16,6 +16,7 @@ import { assessmentService } from '../../service/patient/assessment-service';
 import { patientBillingService } from '../../service/patient/patient-billing-service';
 import { patientOrderService } from '../../service/patient/patient-order-service';
 import { patientPrescriptionService } from '../../service/patient/patient-prescription-service';
+import { patientReceiptService } from '../../service/patient/patient-receipt-service';
 import { patientVisitService } from '../../service/patient/patient-visit-service';
 import { patientVitalService } from '../../service/patient/patient-vital-service';
 
@@ -33,7 +34,15 @@ route.post(
       ...req.body,
       checkInTime: new Date(req.body.checkInTime),
     });
-    const data = await patientVisitService.create(patientId, body);
+    const { advanceAmount, ...rest } = body;
+    const data = await patientVisitService.create(patientId, rest);
+    if (advanceAmount) {
+      await patientReceiptService.create({
+        visitId: data.id,
+        paid: advanceAmount,
+        reason: 'Advance Payment',
+      });
+    }
     res.json(data);
   }),
 );

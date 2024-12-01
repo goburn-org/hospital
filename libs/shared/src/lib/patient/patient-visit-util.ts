@@ -8,6 +8,7 @@ import { CreatePatientVitalResponse } from './patient-vital-util';
 export const createPatientVisitSchema = z.object({
   doctorId: z.string(),
   checkInTime: z.preprocess((v) => new Date(v as string), z.date()),
+  advanceAmount: z.number().optional().nullable(),
 });
 
 export type CreatePatientVisitRequest = z.infer<

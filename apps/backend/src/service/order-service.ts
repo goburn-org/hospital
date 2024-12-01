@@ -21,6 +21,7 @@ class OrderService {
       consultationRequired: r.consultationRequired,
       maxDiscount: r.maxDiscount,
       taxCodeId: r.taxCodeId,
+      tags: r.tags,
     }));
   }
 }

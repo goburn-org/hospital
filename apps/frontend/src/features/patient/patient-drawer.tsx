@@ -260,8 +260,8 @@ const CreateFooter = () => {
         message: String(err),
       });
     },
-    onSuccess: () => {
-      navigate('..', {
+    onSuccess: (data) => {
+      navigate(`../${data.uhid}/${routerConfig.Visit}/${routerConfig.New}`, {
         replace: true,
       });
     },

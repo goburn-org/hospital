@@ -9,7 +9,7 @@ import {
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
-import { FormSelect } from '../../component/form/form-select';
+import { CustomSelect, SelectOption } from '../../component/select';
 import {
   FormMode,
   FormModeProvider,
@@ -85,6 +85,24 @@ export const EmployeeDrawer = ({
                 />
               </div>
               <div className="sm:col-span-3">
+                <CustomSelect
+                  isRequired
+                  disabled={!editable}
+                  htmlFor="department"
+                  labelName="Department"
+                  options={department?.data.map(
+                    (d): SelectOption => ({
+                      id: d.id,
+                      label: d.name,
+                    }),
+                  )}
+                  value={formProvider.watch('department')}
+                  onChange={(value) => {
+                    formProvider.setValue('department', value as number);
+                  }}
+                />
+              </div>
+              <div className="sm:col-span-3">
                 <FormInput<CreateEmployeeInput>
                   isRequired
                   disabled={mode !== 'create'}
@@ -94,7 +112,8 @@ export const EmployeeDrawer = ({
                   placeholder=" abc@example.com"
                 />
               </div>
-              <div className="sm:col-span-4">
+
+              <div className="sm:col-span-3">
                 <FormInput<CreateEmployeeInput>
                   isRequired
                   autoComplete="off"
@@ -103,6 +122,7 @@ export const EmployeeDrawer = ({
                   placeholder=" 1234567890"
                 />
               </div>
+
               <div className="sm:col-span-3">
                 <FormInput<CreateEmployeeInput>
                   isRequired
@@ -126,18 +146,6 @@ export const EmployeeDrawer = ({
                     Passwords do not match
                   </span>
                 )}
-              </div>
-              <div className="sm:col-span-3">
-                <FormSelect<CreateEmployeeInput>
-                  isRequired
-                  id="department"
-                  labelName="Department"
-                  options={department?.data.map((d) => ({
-                    label: d.name,
-                    id: d.id,
-                  }))}
-                  isLoading={isDepartmentLoading}
-                />
               </div>
             </div>
             {mode === 'view' ? <ViewFooter /> : null}

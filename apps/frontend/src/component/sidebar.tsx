@@ -6,6 +6,7 @@ import {
 } from '@headlessui/react';
 import {
   Cog6ToothIcon,
+  ReceiptPercentIcon,
   ShoppingCartIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -15,6 +16,7 @@ import PatientIcon from '../asset/patient.svg?react';
 import { useAccountConfig } from '../provider/account/use-account-config';
 import { classNames } from '../utils/classNames';
 import { ProjectName, routerConfig } from '../utils/constants';
+import { TIMER_XS } from '../utils/use-timer';
 import Tooltip from './tooltip';
 
 const navigation = [
@@ -23,6 +25,26 @@ const navigation = [
     href: routerConfig.Patient,
     icon: PatientIcon,
     current: false,
+  },
+  {
+    name: 'Billing',
+    href: routerConfig.Billing,
+    icon: ReceiptPercentIcon,
+    current: false,
+    children: [
+      {
+        name: 'Advance',
+        href: `${routerConfig.Billing}/${routerConfig.Advance}`,
+      },
+      {
+        name: 'Receipt',
+        href: `${routerConfig.Billing}/${routerConfig.Receipt}`,
+      },
+      {
+        name: 'Report',
+        href: `${routerConfig.Billing}/${routerConfig.Report}`,
+      },
+    ],
   },
   {
     name: 'Inventory',
@@ -84,7 +106,7 @@ const MobileSidebar = ({
                   {navigation.map((item) => (
                     <li key={item.name}>
                       <Link
-                        to={item.href}
+                        to={item.children ? '#' : item.href}
                         className={
                           pathname === item.href ||
                           pathname.startsWith(item.href)
@@ -113,7 +135,12 @@ const MobileSidebar = ({
                 <li className="mt-auto">
                   <Link
                     to={routerConfig.SettingRoute}
-                    className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-300 hover:bg-indigo-700 hover:text-white"
+                    className={classNames(
+                      pathname.includes(routerConfig.SettingRoute)
+                        ? 'bg-indigo-700'
+                        : '',
+                      'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-300 hover:bg-indigo-700 hover:text-white',
+                    )}
                   >
                     <Cog6ToothIcon
                       aria-hidden="true"
@@ -148,24 +175,47 @@ const DesktopSidebar = () => {
           {/* Navigation Items */}
           <ul className="flex flex-col items-center space-y-1">
             {navigation.map((item) => (
-              <li key={item.name}>
-                <Link
-                  to={item.href}
-                  className={classNames(
-                    pathname === item.href || pathname.startsWith(item.href)
-                      ? 'bg-gray-800 text-white'
-                      : 'text-gray-400 hover:bg-gray-800 hover:text-white',
-                    'group flex gap-x-3 rounded-md p-3 text-sm/6 font-semibold',
-                  )}
-                >
-                  <Tooltip text={item.name}>
+              <Tooltip
+                fix
+                key={item.name}
+                stopAfter={TIMER_XS}
+                text={
+                  item.children ? (
+                    <ul className="flex flex-col gap-y-1">
+                      {item.children.map((child) => (
+                        <li key={child.name}>
+                          <Link
+                            to={child.href}
+                            className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-800 hover:bg-indigo-900 hover:text-white"
+                          >
+                            {child.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    item.name
+                  )
+                }
+                bgColor={item.children ? 'bg-gray-200' : ''}
+              >
+                <li>
+                  <Link
+                    to={item.children ? '#' : item.href}
+                    className={classNames(
+                      pathname === item.href || pathname.startsWith(item.href)
+                        ? 'bg-gray-800 text-white'
+                        : 'text-gray-400 hover:bg-gray-800 hover:text-white',
+                      'group flex gap-x-3 rounded-md p-3 text-sm/6 font-semibold',
+                    )}
+                  >
                     <item.icon
                       aria-hidden="true"
                       className="h-6 w-6 shrink-0"
                     />
-                  </Tooltip>
-                </Link>
-              </li>
+                  </Link>
+                </li>
+              </Tooltip>
             ))}
           </ul>
 
@@ -176,7 +226,12 @@ const DesktopSidebar = () => {
           <li className="flex flex-col items-center space-y-1">
             <Link
               to={routerConfig.SettingRoute}
-              className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-300 hover:bg-indigo-900 hover:text-white"
+              className={classNames(
+                pathname.includes(routerConfig.SettingRoute)
+                  ? 'bg-indigo-700'
+                  : '',
+                'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-300 hover:bg-indigo-700 hover:text-white',
+              )}
             >
               <Cog6ToothIcon
                 aria-hidden="true"

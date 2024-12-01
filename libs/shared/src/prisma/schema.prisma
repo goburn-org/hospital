@@ -174,26 +174,31 @@ model Patient {
 }
 
 model PatientVisit {
-  id                  String               @id @default(uuid())
-  uhid                String
-  hospitalId          Int
-  doctorId            String
-  checkInTime         DateTime
-  checkOutTime        DateTime?
-  isDeleted           Boolean              @default(false)
-  updatedBy           String?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  Assessment          Assessment?
-  Doctor              User                 @relation(fields: [doctorId], references: [id])
-  Hospital            Hospital             @relation(fields: [hospitalId], references: [id])
-  Patient             Patient              @relation(fields: [uhid], references: [uhid])
-  Department          Department?          @relation(fields: [departmentId], references: [id])
-  departmentId        Int?
-  PatientOrder        PatientOrder?
-  PatientVital        PatientVital?
-  PatientPrescription PatientPrescription?
-  VisitBilling        VisitBilling?
+  id                               String                             @id @default(uuid())
+  uhid                             String
+  hospitalId                       Int
+  doctorId                         String
+  checkInTime                      DateTime
+  checkOutTime                     DateTime?
+  isDeleted                        Boolean                            @default(false)
+  updatedBy                        String?
+  createdAt                        DateTime                           @default(now())
+  updatedAt                        DateTime                           @updatedAt
+  Assessment                       Assessment?
+  Doctor                           User                               @relation(fields: [doctorId], references: [id])
+  Hospital                         Hospital                           @relation(fields: [hospitalId], references: [id])
+  Patient                          Patient                            @relation(fields: [uhid], references: [uhid])
+  Department                       Department?                        @relation(fields: [departmentId], references: [id])
+  departmentId                     Int?
+  PatientOrder                     PatientOrder[]
+  PatientVital                     PatientVital?
+  PatientPrescription              PatientPrescription?
+  VisitBilling                     VisitBilling?
+  ConsultationOrder                ConsultationOrder[]
+  BillingPatientOrderLineItem      BillingPatientOrderLineItem[]
+  BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
+  Bill                             Bill[]
+  Receipt                          Receipt[]
 }
 
 model Assessment {
@@ -215,6 +220,13 @@ model Assessment {
   PatientVisit        PatientVisit @relation(fields: [visitId], references: [id])
 }
 
+enum OrderWorkflow {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
 model Order {
   id                   String      @id @default(uuid())
   hospitalId           Int
@@ -231,12 +243,15 @@ model Order {
   tags                 String[]
 
   updatedBy           String?
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
-  PatientOrder        PatientOrder? @relation(fields: [patientOrderVisitId], references: [visitId])
-  patientOrderVisitId String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
   DoctorCut           DoctorCut[]
-  OrderGroup          OrderGroups[] @relation("OrderGroups-Order")
+  OrderGroup          OrderGroups[]      @relation("OrderGroups-Order")
+  patientOrderId      Int?
+  PatientOrder        PatientOrder?      @relation(fields: [patientOrderVisitId], references: [visitId])
+  patientOrderVisitId String?
+  ConsultationOrder   ConsultationOrder? @relation(fields: [consultationOrderId], references: [id])
+  consultationOrderId String?
 }
 
 model OrderGroups {
@@ -280,14 +295,93 @@ model TaxCode {
 }
 
 model PatientOrder {
-  visitId      String       @unique
-  order        Order[]
-  orderDate    DateTime
-  updatedBy    String?
-  remark       Json?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  PatientVisit PatientVisit @relation(fields: [visitId], references: [id])
+  visitId                     String                        @unique
+  order                       Order[]
+  orderDate                   DateTime
+  updatedBy                   String?
+  remark                      Json?
+  createdAt                   DateTime                      @default(now())
+  updatedAt                   DateTime                      @updatedAt
+  PatientVisit                PatientVisit                  @relation(fields: [visitId], references: [id])
+  BillingPatientOrderLineItem BillingPatientOrderLineItem[]
+}
+
+model ConsultationOrder {
+  id                               String                             @id @default(uuid())
+  visitId                          String
+  order                            Order[]
+  orderDate                        DateTime
+  updatedBy                        String?
+  remark                           Json?
+  createdAt                        DateTime                           @default(now())
+  updatedAt                        DateTime                           @updatedAt
+  PatientVisit                     PatientVisit                       @relation(fields: [visitId], references: [id])
+  BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
+}
+
+model BillingPatientOrderLineItem {
+  id          Int          @id @default(autoincrement())
+  visitId     String
+  Visit       PatientVisit @relation(fields: [visitId], references: [id])
+  orderId     String
+  order       PatientOrder @relation(fields: [orderId], references: [visitId])
+  quantity    Int
+  rate        Float
+  discount    Float
+  tax         Float
+  totalAmount Float
+  updatedBy   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  Bill        Bill?        @relation(fields: [billId], references: [id])
+  billId      String?
+}
+
+model BillingConsultationOrderLineItem {
+  id          Int               @id @default(autoincrement())
+  visitId     String
+  Visit       PatientVisit      @relation(fields: [visitId], references: [id])
+  orderId     String
+  order       ConsultationOrder @relation(fields: [orderId], references: [id])
+  quantity    Int
+  rate        Float
+  discount    Float
+  tax         Float
+  totalAmount Float
+  updatedBy   String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  Bill        Bill?             @relation(fields: [billId], references: [id])
+  billId      String?
+}
+
+model Bill {
+  id                               String                             @id @default(uuid())
+  visitId                          String
+  Visit                            PatientVisit                       @relation(fields: [visitId], references: [id])
+  BillingPatientOrderLineItem      BillingPatientOrderLineItem[]
+  BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
+  items                            Json
+  totalAmount                      Float
+  details                          String?
+  updatedBy                        String?
+  createdAt                        DateTime                           @default(now())
+  updatedAt                        DateTime                           @updatedAt
+  Receipt                          Receipt[]
+}
+
+model Receipt {
+  id        String       @id @default(uuid())
+  visitId   String
+  Visit     PatientVisit @relation(fields: [visitId], references: [id])
+  billId    String?
+  Bill      Bill?        @relation(fields: [billId], references: [id])
+  reason    String?
+  items     Json?
+  paid      Float
+  updatedBy String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 }
 
 model PatientVital {

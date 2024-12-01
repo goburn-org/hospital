@@ -2,6 +2,7 @@ export const ProjectName = 'Apollo Health';
 const SettingRoute = '/setting';
 const DashboardRoute = '/dashboard';
 const Inventory = '/inventory';
+const Billing = '/billing';
 const Patient = '/patient';
 const New = 'new';
 const Edit = 'edit';
@@ -14,6 +15,9 @@ const Role = 'role';
 const Visit = 'visit';
 const Employee = 'employee';
 const Checkout = 'checkout';
+const Advance = 'advance';
+const Receipt = 'receipt';
+const Report = 'report';
 
 export const routerConfig = {
   SettingRoute,
@@ -31,6 +35,10 @@ export const routerConfig = {
   Patient,
   Visit,
   Checkout,
+  Billing,
+  Advance,
+  Receipt,
+  Report,
 };
 
 export const TypingSpeed = 700;

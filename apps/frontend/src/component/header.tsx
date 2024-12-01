@@ -154,7 +154,7 @@ export const Header = () => {
       <button
         type="button"
         onClick={() => Sidebar.open()}
-        className="-m-2.5 p-2.5 text-gray-700 "
+        className="ml-1.5 p-2.5 text-gray-700 "
       >
         <span className="sr-only">Open sidebar</span>
         <Bars3Icon aria-hidden="true" className="h-6 w-6" />
