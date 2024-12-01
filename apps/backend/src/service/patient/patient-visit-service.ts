@@ -38,7 +38,10 @@ class PatientVisitService {
     });
   }
 
-  create(uhid: string, data: CreatePatientVisitRequest): Promise<PatientVisit> {
+  create(
+    uhid: string,
+    data: Omit<CreatePatientVisitRequest, 'billing'>,
+  ): Promise<PatientVisit> {
     const authUser = useAuthUser();
     return dbClient.patientVisit.create({
       data: {

@@ -20,8 +20,6 @@ export type VisitBillingAggregationByPatientId = {
   billing: {
     billId: string;
     total: number;
-    cardAmount: number;
-    cashAmount: number;
   }[];
   receipt: {
     receiptId: string;

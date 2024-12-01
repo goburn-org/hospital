@@ -1,6 +1,8 @@
 import {
   AllPatientVisitBillingResponse,
+  AvailableOrder,
   CreatePatientBillingRequest,
+  HttpError,
   PaginatedResponse,
   PaginateParamsWithSort,
   VisitBillingAggregationByPatientId,
@@ -10,18 +12,60 @@ import { useAuthUser } from '../../provider/async-context';
 
 class PatientBillingService {
   async upsert(visitId: string, data: CreatePatientBillingRequest) {
+    const user = useAuthUser();
     return dbClient.visitBilling.upsert({
       where: {
         visitId,
       },
       create: {
         visitId,
+        hospitalId: user.hospitalId,
         ...data,
       },
       update: {
         ...data,
       },
     });
+  }
+
+  async getBillingAndReceipt(visitIds: string[]) {
+    const billingPromise = dbClient.bill.findMany({
+      where: {
+        visitId: {
+          in: visitIds.map((v) => v),
+        },
+      },
+    });
+    const receiptPromise = dbClient.receipt.findMany({
+      where: {
+        visitId: {
+          in: visitIds.map((v) => v),
+        },
+      },
+    });
+    const [billing, receipt] = await Promise.all([
+      billingPromise,
+      receiptPromise,
+    ]);
+    const byVisit = visitIds.map((v) => ({
+      visitId: v,
+      billing: billing
+        .filter((b) => b.visitId === v)
+        .map((b) => ({
+          billId: b.visitId,
+          total: b.totalAmount,
+        })),
+      receipt: receipt
+        .filter((r) => r.visitId === v)
+        .map((r) => ({
+          receiptId: r.id,
+          billId: r.billId,
+          paid: r.paid,
+          reason: r.reason,
+          mode: r.paymentMode,
+        })),
+    }));
+    return byVisit;
   }
 
   async getByPatientId(
@@ -32,40 +76,8 @@ class PatientBillingService {
         uhid: patientId,
       },
     });
-    const billing = await dbClient.visitBilling.findMany({
-      where: {
-        visitId: {
-          in: visits.map((v) => v.id),
-        },
-      },
-    });
-    const receipt = await dbClient.receipt.findMany({
-      where: {
-        visitId: {
-          in: visits.map((v) => v.id),
-        },
-      },
-    });
-    const byVisit = visits.map((v) => ({
-      visitId: v.id,
-      billing: billing
-        .filter((b) => b.visitId === v.id)
-        .map((b) => ({
-          billId: b.visitId,
-          total: b.totalAmount,
-          cardAmount: b.cardAmount,
-          cashAmount: b.cashAmount,
-        })),
-      receipt: receipt
-        .filter((r) => r.visitId === v.id)
-        .map((r) => ({
-          receiptId: r.id,
-          billId: r.billId,
-          paid: r.paid,
-          reason: r.reason,
-        })),
-    }));
-    return byVisit;
+
+    return this.getBillingAndReceipt(visits.map((v) => v.id));
   }
 
   async getAll(
@@ -100,43 +112,7 @@ class PatientBillingService {
         isDeleted: false,
       },
     });
-    const billingPromise = dbClient.visitBilling.findMany({
-      where: {
-        visitId: {
-          in: visits.map((v) => v.id),
-        },
-      },
-    });
-    const receiptPromise = dbClient.receipt.findMany({
-      where: {
-        visitId: {
-          in: visits.map((v) => v.id),
-        },
-      },
-    });
-    const [billing, receipt] = await Promise.all([
-      billingPromise,
-      receiptPromise,
-    ]);
-    const byVisit = visits.map((v) => ({
-      visitId: v.id,
-      billing: billing
-        .filter((b) => b.visitId === v.id)
-        .map((b) => ({
-          billId: b.visitId,
-          total: b.totalAmount,
-          cardAmount: b.cardAmount,
-          cashAmount: b.cashAmount,
-        })),
-      receipt: receipt
-        .filter((r) => r.visitId === v.id)
-        .map((r) => ({
-          receiptId: r.id,
-          billId: r.billId,
-          paid: r.paid,
-          reason: r.reason,
-        })),
-    }));
+    const byVisit = await this.getBillingAndReceipt(visits.map((v) => v.id));
     return {
       data: visits.map((v) => ({
         patient: {
@@ -158,6 +134,109 @@ class PatientBillingService {
         limit: paginate?.limit ?? total,
       },
     };
+  }
+
+  async createOutpatientBilling(
+    visitId: string,
+    isConsultation: boolean,
+    order: AvailableOrder,
+  ) {
+    const authUser = useAuthUser();
+    const taxCode = await dbClient.taxCode.findFirst({
+      where: {
+        id: order.taxCodeId,
+      },
+    });
+    if (!taxCode) {
+      throw new HttpError('Invalid tax code', 400);
+    }
+    const totalAmount = order.baseAmount * taxCode.taxRate + order.baseAmount;
+    if (isConsultation) {
+      const consultation =
+        await dbClient.billingConsultationOrderLineItem.create({
+          data: {
+            discount: 0,
+            quantity: 1,
+            orderId: order.id,
+            rate: order.baseAmount,
+            tax: taxCode?.taxRate ?? 0,
+            visitId,
+            hospitalId: authUser.hospitalId,
+            updatedBy: authUser.id,
+            totalAmount,
+          },
+        });
+      await dbClient.bill.upsert({
+        where: {
+          id: `out-${visitId}`,
+        },
+        create: {
+          id: `out-${visitId}`,
+          hospitalId: authUser.hospitalId,
+          updatedBy: authUser.id,
+          BillingConsultationOrderLineItem: {
+            connect: {
+              id: consultation.id,
+            },
+          },
+          totalAmount,
+          visitId: visitId,
+          items: {},
+        },
+        update: {
+          totalAmount: {
+            increment: totalAmount,
+          },
+          BillingConsultationOrderLineItem: {
+            set: {
+              id: consultation.id,
+            },
+          },
+        },
+      });
+    } else {
+      const billing = await dbClient.billingPatientOrderLineItem.create({
+        data: {
+          discount: 0,
+          quantity: 1,
+          orderId: order.id,
+          rate: order.baseAmount,
+          tax: taxCode?.taxRate ?? 0,
+          visitId,
+          hospitalId: authUser.hospitalId,
+          updatedBy: authUser.id,
+          totalAmount,
+        },
+      });
+      await dbClient.bill.upsert({
+        where: {
+          id: `out-${visitId}`,
+        },
+        create: {
+          id: `out-${visitId}`,
+          hospitalId: authUser.hospitalId,
+          updatedBy: authUser.id,
+          BillingPatientOrderLineItem: {
+            connect: {
+              id: billing.id,
+            },
+          },
+          totalAmount,
+          visitId: visitId,
+          items: {},
+        },
+        update: {
+          totalAmount: {
+            increment: totalAmount,
+          },
+          BillingConsultationOrderLineItem: {
+            set: {
+              id: billing.id,
+            },
+          },
+        },
+      });
+    }
   }
 }
 

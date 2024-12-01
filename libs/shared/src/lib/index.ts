@@ -1,3 +1,4 @@
+export * from './consultation-util';
 export * from './department-util';
 export * from './employee-util';
 export * from './hospital-util';

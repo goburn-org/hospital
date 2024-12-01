@@ -1,11 +1,12 @@
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  CONSULTATION_ORDER_TAG,
   CreatePatientVisitRequest,
   createPatientVisitSchema,
   ensure,
 } from '@hospital/shared';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
@@ -62,10 +63,10 @@ export const PatientVisitDrawer = ({
         <FormProvider {...formProvider}>
           <form className="flex flex-col gap-12">
             <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div className="sm:col-span-5">
+              <div className="sm:col-span-3">
                 <DoctorSelect />
               </div>
-              <div className="sm:col-span-5">
+              <div className="sm:col-span-3">
                 <FormInput<CreatePatientVisitRequest>
                   isRequired
                   id="checkInTime"
@@ -75,19 +76,70 @@ export const PatientVisitDrawer = ({
                   defaultValue={new Date()}
                 />
               </div>
-              <div className="sm:col-span-5">
+              <div className="sm:col-span-3">
                 <FormInput<CreatePatientVisitRequest>
-                  id="advanceAmount"
+                  id="billing.advanceAmount"
                   labelName="Advance Amount"
                   autoComplete="off"
                   type="number"
                 />
+              </div>
+              <div className="sm:col-span-3">
+                <PaidBy />
               </div>
             </div>
             <CreateFooter />
           </form>
         </FormProvider>
       </FormModeProvider>
+    </div>
+  );
+};
+
+const PaidBy = () => {
+  const { setValue, watch } = useFormContext<CreatePatientVisitRequest>();
+  useEffect(() => {
+    setValue('billing.isCash', false);
+  }, [setValue]);
+  return (
+    <div className="flex flex-col items-start gap-2">
+      <div>
+        <div className="flex w-full items-end gap-2">
+          <p className="leading-6  font-medium text-gray-900 text-base">
+            Paid By
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-row gap-x-4">
+        <div className="flex gap-x-2">
+          <input
+            type="radio"
+            id="cash"
+            name="paidBy"
+            value="cash"
+            checked={watch('billing.isCash')}
+            onChange={() => {
+              setValue('billing.isCash', true);
+            }}
+            className="h-5 w-5 text-primary"
+          />
+          <label htmlFor="cash">Cash</label>
+        </div>
+        <div className="flex items-center gap-x-2">
+          <input
+            type="radio"
+            id="card"
+            name="paidBy"
+            value="card"
+            checked={watch('billing.isCash') === false}
+            onChange={() => {
+              setValue('billing.isCash', false);
+            }}
+            className="h-5 w-5 text-primary"
+          />
+          <label htmlFor="card">Card</label>
+        </div>
+      </div>
     </div>
   );
 };
@@ -110,7 +162,7 @@ const DoctorSelect = () => {
     })) ?? [];
   const { watch, setValue } = useFormContext<CreatePatientVisitRequest>();
   const consultationOrder = orders?.find((o) =>
-    o.tags.includes('consultation'),
+    o.tags.includes(CONSULTATION_ORDER_TAG),
   );
   const doctorId = watch('doctorId');
   return (
@@ -166,16 +218,7 @@ const CreateFooter = () => {
   });
   const navigate = useNavigate();
   return (
-    <div className="flex mt-24 w-[95%] items-center justify-end gap-x-6">
-      <button
-        type="button"
-        className="btn-text btn-text-secondary"
-        onClick={() => {
-          window.history.back();
-        }}
-      >
-        Cancel
-      </button>
+    <div className="flex mt-24 w-[95%] items-center flex-row-reverse gap-x-6">
       <button
         type={'button'}
         className={classNames(
@@ -215,6 +258,15 @@ const CreateFooter = () => {
           </svg>
         ) : null}
         CheckIn
+      </button>
+      <button
+        type="button"
+        className="btn-text btn-text-secondary"
+        onClick={() => {
+          window.history.back();
+        }}
+      >
+        Cancel
       </button>
     </div>
   );

@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import PageLoading from '../../component/page-loader';
 import { CustomTable } from '../../component/table';
 import Tooltip from '../../component/tooltip';
+import { classNames } from '../../utils/classNames';
 import { TypingSpeed } from '../../utils/constants';
 import { toPagination, toSortField } from '../../utils/sort-transform';
 import { useDebounce } from '../../utils/use-debounce';
@@ -54,13 +55,27 @@ export const PatientBillingTable = () => {
           );
         },
         Cell: ({ renderedCellValue, row }) => {
+          const billing = row.original.lastVisit.billing.reduce(
+            (acc, r) => acc + r.total,
+            0,
+          );
+          const receipt = row.original.lastVisit.receipt.reduce(
+            (acc, r) => acc + r.paid,
+            0,
+          );
+
           return (
-            <div className="flex items-center">
+            <div className={classNames('flex items-center')}>
               <Link
                 to={`${row?.original.patient.uhid}`}
-                className="px-4 text-blue-600 hover:text-blue-300"
+                className="px-4 text-blue-600 hover:text-blue-300 flex gap-2"
               >
                 {renderedCellValue}
+                {billing === receipt ? (
+                  <span className="text-green-500">Paid</span>
+                ) : (
+                  <span className="text-red-500">Unpaid</span>
+                )}
               </Link>
             </div>
           );

@@ -19,18 +19,19 @@ route.post(
   authMiddleware,
   errorHandler(async (req, res) => {
     const patientId = req.params.patientId;
-    ensure(patientId, 'Invalid sort params');
+    ensure(patientId, 'Invalid patientId params');
     const body = createPatientVisitSchema.parse({
       ...req.body,
       checkInTime: new Date(req.body.checkInTime),
     });
-    const { advanceAmount, ...rest } = body;
+    const { billing, ...rest } = body;
     const data = await patientVisitService.create(patientId, rest);
-    if (advanceAmount) {
+    if (billing.advanceAmount) {
       await patientReceiptService.create({
         visitId: data.id,
-        paid: advanceAmount,
+        paid: billing.advanceAmount,
         reason: 'Advance Payment',
+        isCash: billing.isCash,
       });
     }
     res.json(data);

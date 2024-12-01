@@ -5,9 +5,12 @@ import { useAuthUser } from '../../provider/async-context';
 class PatientReceiptService {
   create(data: CreatePatientVisitReceiptRequest) {
     const user = useAuthUser();
+    const { isCash, ...rest } = data;
     return dbClient.receipt.create({
       data: {
-        ...data,
+        ...rest,
+        paymentMode: isCash ? 'CASH' : 'CARD',
+        hospitalId: user.hospitalId,
         updatedBy: user.id,
       },
     });

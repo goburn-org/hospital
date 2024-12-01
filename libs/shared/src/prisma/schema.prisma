@@ -8,23 +8,28 @@ datasource db {
 }
 
 model Hospital {
-  id           Int            @id @default(autoincrement())
-  hospitalName String
-  hospitalCode String
-  phoneNumber  String
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  hospitalImg  String
-  Department   Department[]
-  PatientVisit PatientVisit[]
-  Permission   Permission[]
-  Product      Product[]
-  Role         Role[]
-  User         User[]
-  Vendor       Vendor[]
-  Order        Order[]
-  TaxCode      TaxCode[]
-  OrderGroups  OrderGroups[]
+  id                               Int                                @id @default(autoincrement())
+  hospitalName                     String
+  hospitalCode                     String
+  phoneNumber                      String
+  createdAt                        DateTime                           @default(now())
+  updatedAt                        DateTime                           @updatedAt
+  hospitalImg                      String
+  Department                       Department[]
+  PatientVisit                     PatientVisit[]
+  Permission                       Permission[]
+  Product                          Product[]
+  Role                             Role[]
+  User                             User[]
+  Vendor                           Vendor[]
+  Order                            Order[]
+  TaxCode                          TaxCode[]
+  OrderGroups                      OrderGroups[]
+  VisitBilling                     VisitBilling[]
+  Receipt                          Receipt[]
+  Bill                             Bill[]
+  BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
+  BillingPatientOrderLineItem      BillingPatientOrderLineItem[]
 }
 
 model Department {
@@ -194,7 +199,6 @@ model PatientVisit {
   PatientVital                     PatientVital?
   PatientPrescription              PatientPrescription?
   VisitBilling                     VisitBilling?
-  ConsultationOrder                ConsultationOrder[]
   BillingPatientOrderLineItem      BillingPatientOrderLineItem[]
   BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
   Bill                             Bill[]
@@ -242,16 +246,16 @@ model Order {
   consultationRequired Boolean
   tags                 String[]
 
-  updatedBy           String?
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
-  DoctorCut           DoctorCut[]
-  OrderGroup          OrderGroups[]      @relation("OrderGroups-Order")
-  patientOrderId      Int?
-  PatientOrder        PatientOrder?      @relation(fields: [patientOrderVisitId], references: [visitId])
-  patientOrderVisitId String?
-  ConsultationOrder   ConsultationOrder? @relation(fields: [consultationOrderId], references: [id])
-  consultationOrderId String?
+  updatedBy                        String?
+  createdAt                        DateTime                           @default(now())
+  updatedAt                        DateTime                           @updatedAt
+  DoctorCut                        DoctorCut[]
+  OrderGroup                       OrderGroups[]                      @relation("OrderGroups-Order")
+  patientOrderId                   Int?
+  PatientOrder                     PatientOrder?                      @relation(fields: [patientOrderVisitId], references: [visitId])
+  patientOrderVisitId              String?
+  consultationOrderId              String?
+  BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
 }
 
 model OrderGroups {
@@ -306,25 +310,14 @@ model PatientOrder {
   BillingPatientOrderLineItem BillingPatientOrderLineItem[]
 }
 
-model ConsultationOrder {
-  id                               String                             @id @default(uuid())
-  visitId                          String
-  order                            Order[]
-  orderDate                        DateTime
-  updatedBy                        String?
-  remark                           Json?
-  createdAt                        DateTime                           @default(now())
-  updatedAt                        DateTime                           @updatedAt
-  PatientVisit                     PatientVisit                       @relation(fields: [visitId], references: [id])
-  BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
-}
-
 model BillingPatientOrderLineItem {
   id          Int          @id @default(autoincrement())
   visitId     String
   Visit       PatientVisit @relation(fields: [visitId], references: [id])
   orderId     String
   order       PatientOrder @relation(fields: [orderId], references: [visitId])
+  hospitalId  Int
+  hospital    Hospital     @relation(fields: [hospitalId], references: [id])
   quantity    Int
   rate        Float
   discount    Float
@@ -338,21 +331,24 @@ model BillingPatientOrderLineItem {
 }
 
 model BillingConsultationOrderLineItem {
-  id          Int               @id @default(autoincrement())
-  visitId     String
-  Visit       PatientVisit      @relation(fields: [visitId], references: [id])
-  orderId     String
-  order       ConsultationOrder @relation(fields: [orderId], references: [id])
-  quantity    Int
-  rate        Float
-  discount    Float
-  tax         Float
-  totalAmount Float
-  updatedBy   String?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  Bill        Bill?             @relation(fields: [billId], references: [id])
-  billId      String?
+  id                  Int          @id @default(autoincrement())
+  visitId             String
+  Visit               PatientVisit @relation(fields: [visitId], references: [id])
+  orderId             String
+  order               Order        @relation(fields: [orderId], references: [id])
+  hospitalId          Int
+  hospital            Hospital     @relation(fields: [hospitalId], references: [id])
+  quantity            Int
+  rate                Float
+  discount            Float
+  tax                 Float
+  totalAmount         Float
+  updatedBy           String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  Bill                Bill?        @relation(fields: [billId], references: [id])
+  billId              String?
+  consultationOrderId String?
 }
 
 model Bill {
@@ -361,6 +357,8 @@ model Bill {
   Visit                            PatientVisit                       @relation(fields: [visitId], references: [id])
   BillingPatientOrderLineItem      BillingPatientOrderLineItem[]
   BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
+  hospitalId                       Int
+  hospital                         Hospital                           @relation(fields: [hospitalId], references: [id])
   items                            Json
   totalAmount                      Float
   details                          String?
@@ -370,18 +368,26 @@ model Bill {
   Receipt                          Receipt[]
 }
 
+enum PaymentMode {
+  CASH
+  CARD
+}
+
 model Receipt {
-  id        String       @id @default(uuid())
-  visitId   String
-  Visit     PatientVisit @relation(fields: [visitId], references: [id])
-  billId    String?
-  Bill      Bill?        @relation(fields: [billId], references: [id])
-  reason    String?
-  items     Json?
-  paid      Float
-  updatedBy String?
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id          String       @id @default(uuid())
+  visitId     String
+  Visit       PatientVisit @relation(fields: [visitId], references: [id])
+  hospitalId  Int
+  hospital    Hospital     @relation(fields: [hospitalId], references: [id])
+  billId      String?
+  Bill        Bill?        @relation(fields: [billId], references: [id])
+  reason      String?
+  items       Json?
+  paid        Float
+  paymentMode PaymentMode
+  updatedBy   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model PatientVital {
@@ -403,6 +409,8 @@ model VisitBilling {
   Visit       PatientVisit @relation(fields: [visitId], references: [id])
   items       Json?
   cashAmount  Float
+  hospitalId  Int
+  hospital    Hospital     @relation(fields: [hospitalId], references: [id])
   cardAmount  Float
   totalAmount Float
   details     String?

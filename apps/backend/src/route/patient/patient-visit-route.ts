@@ -12,6 +12,7 @@ import {
 import { Router } from 'express';
 import { authMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
+import { orderService } from '../../service/order-service';
 import { assessmentService } from '../../service/patient/assessment-service';
 import { patientBillingService } from '../../service/patient/patient-billing-service';
 import { patientOrderService } from '../../service/patient/patient-order-service';
@@ -29,18 +30,27 @@ route.post(
   authMiddleware,
   errorHandler(async (req, res) => {
     const patientId = req.params.patientId;
-    ensure(patientId, 'Invalid sort params');
+    ensure(patientId, 'Invalid patientId');
     const body = createPatientVisitSchema.parse({
       ...req.body,
       checkInTime: new Date(req.body.checkInTime),
     });
-    const { advanceAmount, ...rest } = body;
+    const { billing, ...rest } = body;
     const data = await patientVisitService.create(patientId, rest);
-    if (advanceAmount) {
+    if (billing.advanceAmount) {
+      const consultationOrder = await orderService.getConsultationOrder(
+        data.hospitalId,
+      );
+      await patientBillingService.createOutpatientBilling(
+        data.id,
+        true,
+        consultationOrder,
+      );
       await patientReceiptService.create({
         visitId: data.id,
-        paid: advanceAmount,
+        paid: billing.advanceAmount,
         reason: 'Advance Payment',
+        isCash: billing.isCash,
       });
     }
     res.json(data);
