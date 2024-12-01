@@ -16,7 +16,7 @@ export const Component = () => {
   }
   return (
     <CustomDialog open={true}>
-      <CheckoutDrawer mode="create" patientId={patientId} />
+      <CheckoutDrawer mode="create" />
     </CustomDialog>
   );
 };

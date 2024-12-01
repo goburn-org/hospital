@@ -72,7 +72,9 @@ export const PatientBillingTable = () => {
               >
                 {renderedCellValue}
                 {billing === receipt ? null : (
-                  <span className="text-red-500 bg-red-100 px-2">Unpaid</span>
+                  <p className="text-pink-500 bg-pink-100 px-2 text-xs flex items-center">
+                    UNPAID
+                  </p>
                 )}
               </Link>
             </div>
@@ -131,13 +133,28 @@ export const PatientBillingTable = () => {
         id: 'action',
         header: 'Action',
         Cell: ({ row }) => {
+          const billing = row.original.lastVisit.billing.reduce(
+            (acc, r) => acc + r.total,
+            0,
+          );
+          const receipt = row.original.lastVisit.receipt.reduce(
+            (acc, r) => acc + r.paid,
+            0,
+          );
+          if (billing !== receipt) {
+            return (
+              <Link
+                to={`${row.original.patient.uhid}/${row.original.lastVisit.visitId}`}
+                className="btn-text btn-small"
+              >
+                Close Billing
+              </Link>
+            );
+          }
           return (
-            <Link
-              to={`${row.original.patient.uhid}/${row.original.lastVisit.visitId}`}
-              className="btn-text-tertiary btn-small"
-            >
-              Close Billing
-            </Link>
+            <p className="text-green-900 bg-teal-100 px-2 text-xs flex items-center w-fit">
+              PAID
+            </p>
           );
         },
       },

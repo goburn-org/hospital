@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom';
 import { FormAutoCompleteInput } from '../../../component/form/form-auto-complete-input';
 import { FormInput } from '../../../component/form/form-input';
 import PageLoading from '../../../component/page-loader';
-import Tooltip from '../../../component/tooltip';
+import Tooltip, { TooltipRef } from '../../../component/tooltip';
 import { TIMER_S, useTimer } from '../../../utils/use-timer';
 import { useProductQuery } from '../../product/use-product-query';
 import {
@@ -40,6 +40,7 @@ const Form = ({
   const [list, setList] = useState<CreatePatientPrescriptionRequest>(
     defaultValue || [],
   );
+  const ref = useRef<TooltipRef>();
   const { data } = useProductQuery({
     search: formProvider.watch('medicineName'),
     paginate: {
@@ -203,7 +204,15 @@ const Form = ({
                       <div className="hidden 2xl:block">
                         <Tooltip
                           fix
-                          text={<FrequencyAdvance />}
+                          ref={ref}
+                          text={
+                            <div className="p-4">
+                              <FrequencyAdvance
+                                onDone={() => ref.current?.stop()}
+                                running={false}
+                              />
+                            </div>
+                          }
                           stopAfter={TIMER_S}
                           bgColor="bg-gray-200 shadow-sm"
                         >
@@ -214,7 +223,7 @@ const Form = ({
                       </div>
                     </div>
                     <div className="block 2xl:hidden">
-                      <FrequencyAdvance />
+                      <FrequencyAdvance running />
                     </div>
                   </div>
                 </div>

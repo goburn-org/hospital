@@ -10,14 +10,14 @@ import {
   ShoppingCartIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useRef, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import PatientIcon from '../asset/patient.svg?react';
 import { useAccountConfig } from '../provider/account/use-account-config';
 import { classNames } from '../utils/classNames';
 import { ProjectName, routerConfig } from '../utils/constants';
 import { TIMER_XS } from '../utils/use-timer';
-import Tooltip from './tooltip';
+import Tooltip, { TooltipRef } from './tooltip';
 
 const navigation = [
   {
@@ -157,6 +157,8 @@ const MobileSidebar = ({
 const DesktopSidebar = () => {
   const { pathname } = useLocation();
   const { data } = useAccountConfig();
+  const navigate = useNavigate();
+  const ref = useRef<Record<string, TooltipRef | null>>({});
   return (
     <>
       <div className="flex h-16 shrink-0 items-center justify-center px-2">
@@ -170,22 +172,29 @@ const DesktopSidebar = () => {
         <ul className="flex flex-1 flex-col gap-y-7">
           {/* Navigation Items */}
           <ul className="flex flex-col items-center space-y-1">
-            {navigation.map((item) => (
+            {navigation.map((item, idx) => (
               <Tooltip
                 fix
+                ref={(s) => {
+                  ref.current[item.name] = s;
+                }}
+                id={item.name}
                 key={item.name}
-                stopAfter={TIMER_XS}
+                stopAfter={item.children ? TIMER_XS : 0}
                 text={
                   item.children ? (
                     <ul className="flex flex-col gap-y-1">
                       {item.children.map((child) => (
                         <li key={child.name}>
-                          <Link
-                            to={child.href}
+                          <button
+                            onClick={() => {
+                              navigate(child.href);
+                              ref.current[item.name]?.stop();
+                            }}
                             className="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-800 hover:bg-indigo-900 hover:text-white"
                           >
                             {child.name}
-                          </Link>
+                          </button>
                         </li>
                       ))}
                     </ul>

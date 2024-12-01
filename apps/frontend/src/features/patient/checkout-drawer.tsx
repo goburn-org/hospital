@@ -20,23 +20,25 @@ import { TIMER_L, useTimer } from '../../utils/use-timer';
 import {
   usePatientBillingAutoGenerateMutation,
   usePatientBillingAutoGenerateQuery,
+  usePatientByIdQuery,
   usePatientVisitCheckoutMutation,
 } from './use-patient-query';
 
 export const CheckoutDrawer = ({
   defaultValues,
   mode,
-  patientId,
 }: {
   defaultValues?: CreatePatientBillingRequest;
   mode: 'create' | 'edit' | 'view';
-  patientId?: string;
 }) => {
   const navigate = useNavigate();
   const formProvider = useForm<CreatePatientBillingRequest>({
     resolver: zodResolver(createPatientBillingSchema),
     defaultValues,
   });
+  const { patientId } = useParams();
+  ensure(patientId, 'Patient id is required');
+  const { data } = usePatientByIdQuery(patientId);
   useEsc(() => {
     navigate('..', {
       replace: true,
@@ -46,9 +48,16 @@ export const CheckoutDrawer = ({
   return (
     <div className="w-[800px]">
       <div className="flex items-center justify-between">
-        <h1 className="mb-2 text-2xl font-semibold capitalize text-gray-400">
-          Close Billing
-        </h1>
+        <div className="flex flex-col items-start mb-2">
+          <h1 className="text-2xl font-semibold capitalize text-gray-700">
+            {data?.aadharName ?? data?.name}{' '}
+          </h1>
+          <div className="flex gap-1 items-center">
+            <p className="text-gray-500">{data?.mobile}</p>
+            <span className="rounded-full bg-gray-300 h-2 w-2" />
+            <p className="text-gray-500">{data?.city}</p>
+          </div>
+        </div>
         <button
           type="button"
           aria-label="Close panel"
@@ -67,8 +76,8 @@ export const CheckoutDrawer = ({
         oldId={patientId}
       >
         <FormProvider {...formProvider}>
-          <form className="flex max-h-[90vh] flex-col gap-12">
-            <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+          <form className="flex max-h-[90vh] flex-col ">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div className="sm:col-span-6">
                 <Items />
               </div>
@@ -95,7 +104,7 @@ export const CheckoutDrawer = ({
 const Items = () => {
   const { setValue, watch } = useFormContext<CreatePatientBillingRequest>();
   const items = watch('items');
-  const totalAmount = items?.reduce((acc, i) => i.itemAmount + acc, 0);
+
   const { patientId, visitId } = useParams();
   ensure(patientId, 'Patient id is required');
   ensure(visitId, 'Visit id is required');
@@ -109,30 +118,33 @@ const Items = () => {
   });
   const noItem = data ? data.BillingPatientOrderLineItem.length === 0 : false;
   const alreadyPaid = data?.Receipt.reduce((acc, i) => i.paid + acc, 0);
+  const totalAmount = items?.reduce((acc, i) => i.itemAmount + acc, 0);
+  const toBePaid =
+    items?.reduce((acc, i) => i.itemAmount + acc, 0) - (alreadyPaid || 0);
   useEffect(() => {
     if (noItem) {
       mutateAsync();
     }
   }, [mutateAsync, noItem]);
   useEffect(() => {
-    console.log({ data });
     if (!data) {
       return;
     }
     setTimeout(() => {
-      setValue(
-        'items',
-        data.BillingPatientOrderLineItem.map((i) => ({
-          itemId: `${i.id}`,
-          itemAmount: i.totalAmount,
-          itemName: i.order.name,
-        })),
-      );
+      const items = [
+        ...data.BillingConsultationOrderLineItem,
+        ...data.BillingPatientOrderLineItem,
+      ].map((i) => ({
+        itemId: `${i.id}`,
+        itemAmount: i.totalAmount,
+        itemName: i.order.name,
+      }));
+      setValue('items', items);
     }, 10);
   }, [data, setValue]);
   useEffect(() => {
-    setValue('totalAmount', totalAmount);
-  }, [setValue, totalAmount]);
+    setValue('totalAmount', toBePaid);
+  }, [setValue, toBePaid]);
   return (
     <div className="sm:col-span-6">
       <div className="flex flex-col items-center justify-center ">
@@ -160,8 +172,10 @@ const Items = () => {
                 />
                 <input
                   type="number"
+                  readOnly
+                  disabled
                   placeholder="Amount"
-                  className="col-span-2 p-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                  className="col-span-2 p-2 bg-gray-100 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
                   value={item.itemAmount === 0 ? '' : Number(item.itemAmount)}
                   onChange={(e) => {
                     const updatedItems = items?.map((i) => {
@@ -179,34 +193,26 @@ const Items = () => {
               </Fragment>
             ))}
           </div>
-          <div className="flex flex-row justify-between w-full gap-2 px-3">
-            <button
-              type="button"
-              onClick={() => {
-                const oldArrary = items || [];
-                const updatedItem = [
-                  ...oldArrary,
-                  {
-                    itemId: Date.now().toString(),
-                    itemAmount: 0,
-                    itemName: '',
-                  },
-                ];
-                setValue('items', updatedItem);
-              }}
-              className="btn-text"
-            >
-              Add Item
-            </button>
-            <div className="flex flex-col ">
-              <div className="flex w-full items-end gap-2">
-                <p className="font-semibold text-gray-400">Total Amount</p>
-                <p className="font-semibold text-black">Rs. {totalAmount}</p>
-              </div>
-              <div className="flex w-full items-end gap-2">
-                <p className="font-semibold text-gray-400">Already Paid</p>
-                <p className="font-semibold text-black">Rs. {alreadyPaid}</p>
-              </div>
+          <div className="flex flex-col items-end w-full gap-2 px-3">
+            <div className="flex gap-2">
+              <p className="font-semibold text-gray-400">Total Amount</p>
+              <p className="font-semibold text-black">Rs. {totalAmount}</p>
+            </div>
+            <div className="flex gap-2">
+              <p className="font-semibold text-gray-400">Already Paid</p>
+              <p className="font-semibold text-black">Rs. {alreadyPaid}</p>
+            </div>
+            <div className="flex items-center justify-end gap-2 mt-4">
+              {toBePaid ? (
+                <div className="flex items-center gap-2 bg-pink-200 px-2 py-1 rounded-sm">
+                  <p className="font-semibold text-pink-950">Pending</p>
+                  <p className="font-semibold text-pink-950">Rs. {toBePaid}</p>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 bg-teal-200 px-2 py-1 rounded-sm">
+                  <p className="font-semibold text-green-950">All Settled</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -219,9 +225,19 @@ const PaidBy = () => {
   const { setValue, watch } = useFormContext<CreatePatientBillingRequest>();
   const [mode, setMode] = useState<'cash' | 'card'>('cash');
   const totalAmount = watch('totalAmount');
+  useEffect(() => {
+    if (mode === 'cash') {
+      setValue('cashAmount', 0);
+      setValue('cardAmount', totalAmount);
+    }
+    if (mode === 'card') {
+      setValue('cashAmount', totalAmount);
+      setValue('cardAmount', 0);
+    }
+  }, [mode, setValue, totalAmount]);
   return (
-    <div className="flex items-center gap-x-4">
-      <div className="flex items-center gap-x-4">
+    <div className="flex items-center gap-x-4 mb-12">
+      <div className="flex items-center gap-x-2">
         <input
           type="radio"
           id="cash"
@@ -230,14 +246,12 @@ const PaidBy = () => {
           checked={mode === 'cash'}
           onChange={() => {
             setMode('cash');
-            setValue('cashAmount', 0);
-            setValue('cardAmount', totalAmount);
           }}
           className="h-5 w-5 text-primary"
         />
         <label htmlFor="cash">Cash</label>
       </div>
-      <div className="flex items-center gap-x-4">
+      <div className="flex items-center gap-x-2">
         <input
           type="radio"
           id="card"
@@ -246,8 +260,6 @@ const PaidBy = () => {
           checked={mode === 'card'}
           onChange={() => {
             setMode('card');
-            setValue('cashAmount', totalAmount);
-            setValue('cardAmount', 0);
           }}
           className="h-5 w-5 text-primary"
         />
@@ -306,8 +318,8 @@ const CreateFooter = () => {
       });
     },
     onSuccess: () => {
+      toast.success('Successfully checked out');
       show(() => {
-        toast.success('Successfully checked out');
         navigate('..', {
           replace: true,
         });
@@ -331,15 +343,13 @@ const CreateFooter = () => {
       <button
         type={'button'}
         className={classNames(
-          'btn-primary btn-danger capitalize',
+          'btn-primary capitalize',
           formProvider.formState.isSubmitting
-            ? 'cursor-not-allowed bg-red-400'
+            ? 'cursor-not-allowed'
             : 'cursor-pointer',
         )}
         disabled={formProvider.formState.isSubmitting}
         onClick={async () => {
-          console.log(formProvider.formState.errors);
-          console.log(formProvider.getValues());
           await formProvider.handleSubmit((data) => {
             return mutateAsync({
               ...data,
@@ -371,7 +381,7 @@ const CreateFooter = () => {
             />
           </svg>
         ) : null}
-        {isSuccess ? 'Done' : 'Checkout'}
+        {isSuccess ? 'Done' : 'Make Payment'}
       </button>
     </div>
   );

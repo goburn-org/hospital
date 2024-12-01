@@ -17,6 +17,7 @@ const Employee = 'employee';
 const Checkout = 'checkout';
 const Receipt = 'receipt';
 const Report = 'report';
+const Advance = 'advance';
 
 export const routerConfig = {
   SettingRoute,
@@ -37,6 +38,7 @@ export const routerConfig = {
   Billing,
   Receipt,
   Report,
+  Advance,
 };
 
 export const TypingSpeed = 700;
