@@ -10,6 +10,7 @@ import {
 } from '@hospital/shared';
 import { dbClient } from '../../prisma';
 import { useAuthUser } from '../../provider/async-context';
+import { taxCodeService } from '../tax-code-service';
 
 class PatientBillingService {
   async upsert(visitId: string, data: CreatePatientBillingRequest) {
@@ -141,7 +142,7 @@ class PatientBillingService {
   }
 
   async getBill(visitId: string): Promise<VisitBill | null> {
-    const data = await dbClient.bill.findFirst({
+    const bill = await dbClient.bill.findMany({
       where: {
         visitId,
       },
@@ -159,7 +160,7 @@ class PatientBillingService {
         Visit: true,
       },
     });
-    if (!data) {
+    if (!bill) {
       return null;
     }
     const receipt = await dbClient.receipt.findMany({
@@ -168,7 +169,7 @@ class PatientBillingService {
       },
     });
     return {
-      ...data,
+      bill,
       Receipt: receipt,
     };
   }
@@ -176,96 +177,166 @@ class PatientBillingService {
   async createOutpatientBilling(
     visitId: string,
     isConsultation: boolean,
-    order: AvailableOrder,
+    order: AvailableOrder[],
   ) {
     const authUser = useAuthUser();
-    const taxCode = await dbClient.taxCode.findFirst({
-      where: {
-        id: order.taxCodeId,
-      },
-    });
-    if (!taxCode) {
-      throw new HttpError('Invalid tax code', 400);
-    }
-    const totalAmount = order.baseAmount * taxCode.taxRate + order.baseAmount;
+    const taxCodes = await taxCodeService.getTaxCodes([
+      ...new Set(order.map((o) => o.taxCodeId)),
+    ]);
     if (isConsultation) {
-      const consultation =
-        await dbClient.billingConsultationOrderLineItem.create({
-          data: {
+      const consultations =
+        await dbClient.billingConsultationOrderLineItem.createManyAndReturn({
+          data: order.map((o) => ({
             discount: 0,
             quantity: 1,
-            orderId: order.id,
-            rate: order.baseAmount,
-            tax: taxCode?.taxRate ?? 0,
+            orderId: o.id,
+            isRemoved: false,
+            rate: o.baseAmount,
+            tax: taxCodes[o.taxCodeId].taxRate ?? 0,
             visitId,
             hospitalId: authUser.hospitalId,
             updatedBy: authUser.id,
-            totalAmount,
-          },
+            totalAmount:
+              o.baseAmount * taxCodes[o.taxCodeId].taxRate + o.baseAmount,
+          })),
         });
-      await dbClient.bill.upsert({
-        where: {
-          id: `out-${visitId}`,
-        },
-        create: {
-          id: `out-${visitId}`,
+      const totalAmount = consultations.reduce(
+        (acc, c) => acc + c.totalAmount,
+        0,
+      );
+      await dbClient.bill.create({
+        data: {
           hospitalId: authUser.hospitalId,
           updatedBy: authUser.id,
           BillingConsultationOrderLineItem: {
-            connect: {
-              id: consultation.id,
-            },
+            connect: consultations.map((c) => ({
+              id: c.id,
+            })),
           },
           totalAmount,
           visitId: visitId,
           items: {},
-        },
-        update: {
-          totalAmount: {
-            increment: totalAmount,
-          },
-          BillingConsultationOrderLineItem: {
-            set: {
-              id: consultation.id,
-            },
-          },
         },
       });
     } else {
-      console.log('order to connect', order.id);
-      await dbClient.bill.upsert({
-        where: {
-          id: `out-${visitId}`,
-        },
-        create: {
-          id: `out-${visitId}`,
+      const totalAmount = order.reduce(
+        (acc, c) =>
+          acc + (c.baseAmount * taxCodes[c.taxCodeId].taxRate + c.baseAmount),
+        0,
+      );
+      await dbClient.bill.create({
+        data: {
           hospitalId: authUser.hospitalId,
           updatedBy: authUser.id,
           totalAmount,
           visitId: visitId,
-          items: {},
-        },
-        update: {
-          totalAmount: {
-            increment: totalAmount,
+          BillingPatientOrderLineItem: {
+            createMany: {
+              data: order.map((o) => ({
+                discount: 0,
+                quantity: 1,
+                orderId: o.id,
+                rate: o.baseAmount,
+                isRemoved: false,
+                tax: taxCodes[o.taxCodeId].taxRate ?? 0,
+                visitId,
+                hospitalId: authUser.hospitalId,
+                updatedBy: authUser.id,
+                totalAmount:
+                  o.baseAmount * taxCodes[o.taxCodeId].taxRate + o.baseAmount,
+              })),
+            },
           },
-        },
-      });
-      await dbClient.billingPatientOrderLineItem.create({
-        data: {
-          discount: 0,
-          quantity: 1,
-          orderId: order.id,
-          rate: order.baseAmount,
-          tax: taxCode?.taxRate ?? 0,
-          visitId,
-          hospitalId: authUser.hospitalId,
-          updatedBy: authUser.id,
-          totalAmount,
-          billId: `out-${visitId}`,
+          items: {},
         },
       });
     }
+  }
+
+  async toggleLineItem(
+    visitId: string,
+    lineItemId: number,
+    isRemoved: boolean,
+  ) {
+    const authUser = useAuthUser();
+    let amount = 0;
+    const bill = await dbClient.bill.findFirst({
+      where: {
+        visitId,
+        OR: [
+          {
+            BillingConsultationOrderLineItem: {
+              some: {
+                id: lineItemId,
+              },
+            },
+          },
+          {
+            BillingPatientOrderLineItem: {
+              some: {
+                id: lineItemId,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        BillingConsultationOrderLineItem: true,
+        BillingPatientOrderLineItem: true,
+      },
+    });
+    if (!bill) {
+      throw new HttpError('Bill not found', 404);
+    }
+    try {
+      const consultationOrder =
+        await dbClient.billingConsultationOrderLineItem.update({
+          where: {
+            id: lineItemId,
+          },
+          data: {
+            isRemoved,
+            updatedBy: authUser.id,
+          },
+        });
+      amount = consultationOrder.totalAmount;
+    } catch (e) {
+      console.log(e);
+    }
+    try {
+      if (!amount) {
+        const billingOrder = await dbClient.billingPatientOrderLineItem.update({
+          where: {
+            id: lineItemId,
+          },
+          data: {
+            isRemoved,
+            updatedBy: authUser.id,
+          },
+        });
+        amount = billingOrder.totalAmount;
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+    if (!bill) {
+      return;
+    }
+    await dbClient.bill.update({
+      where: {
+        id: bill.id,
+      },
+      data: {
+        totalAmount: isRemoved
+          ? {
+              decrement: amount,
+            }
+          : {
+              increment: amount,
+            },
+      },
+    });
   }
 }
 

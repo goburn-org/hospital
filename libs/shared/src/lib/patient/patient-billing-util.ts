@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { PaymentMode, Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { DateLike, Maybe } from '../ts-util';
 
@@ -12,6 +12,7 @@ export const createPatientBillingSchema = z.object({
       itemId: z.string(),
       itemName: z.string(),
       itemAmount: z.number(),
+      isRemoved: z.boolean(),
     }),
   ),
 });
@@ -45,22 +46,32 @@ export type AllPatientVisitBillingResponse = {
   };
 };
 
-export type VisitBill = Prisma.BillGetPayload<{
-  include: {
-    BillingConsultationOrderLineItem: {
-      include: {
-        order: true;
-      };
-    };
-    BillingPatientOrderLineItem: {
-      include: {
-        order: true;
-      };
-    };
-    Receipt: true;
-    Visit: true;
-  };
-}>;
+export type VisitBill = {
+  bill: {
+    id: string;
+    visitId: string;
+    items: any;
+    totalAmount: number;
+    details: Maybe<string>;
+    BillingPatientOrderLineItem: Prisma.BillingPatientOrderLineItemGetPayload<{
+      include: { order: true };
+    }>[];
+    BillingConsultationOrderLineItem: Prisma.BillingConsultationOrderLineItemGetPayload<{
+      include: { order: true };
+    }>[];
+  }[];
+  Receipt: {
+    id: string;
+    createdAt: DateLike;
+    updatedAt: DateLike;
+    visitId: string;
+    billId: Maybe<string>;
+    paid: number;
+    reason: Maybe<string>;
+    items: any;
+    paymentMode: PaymentMode;
+  }[];
+};
 
 export type CreatePatientBillingRequest = z.infer<
   typeof createPatientBillingSchema

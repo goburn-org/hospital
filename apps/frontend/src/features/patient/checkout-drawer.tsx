@@ -1,4 +1,5 @@
 import { XMarkIcon } from '@heroicons/react/20/solid';
+import { PlusIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   CreatePatientBillingRequest,
@@ -20,6 +21,7 @@ import { TIMER_L, useTimer } from '../../utils/use-timer';
 import {
   usePatientBillingAutoGenerateMutation,
   usePatientBillingAutoGenerateQuery,
+  usePatientBillingRemoveLineItemMutation,
   usePatientByIdQuery,
   usePatientVisitCheckoutMutation,
 } from './use-patient-query';
@@ -116,32 +118,70 @@ const Items = () => {
     patientId,
     visitId,
   });
-  const noItem = data ? data.BillingPatientOrderLineItem.length === 0 : false;
+  const { mutateAsync: removeMutation } =
+    usePatientBillingRemoveLineItemMutation();
   const alreadyPaid = data?.Receipt.reduce((acc, i) => i.paid + acc, 0);
-  const totalAmount = items?.reduce((acc, i) => i.itemAmount + acc, 0);
+  const totalAmount =
+    (data?.bill
+      .map((o) => o.BillingConsultationOrderLineItem)
+      .flat()
+      .map((i) => i.totalAmount)
+      .reduce((acc, i) => i + acc, 0) ?? 0) +
+    (data?.bill
+      .map((o) => o.BillingPatientOrderLineItem)
+      .flat()
+      .filter((i) => !i.isRemoved)
+      .map((i) => i.totalAmount)
+      .reduce((acc, i) => i + acc, 0) ?? 0);
+  const [alreadyPaidItemIds, setAlreadyPaidItemIds] = useState<string[]>([]);
   const toBePaid =
-    items?.reduce((acc, i) => i.itemAmount + acc, 0) - (alreadyPaid || 0);
+    items
+      ?.filter((i) => !i.isRemoved)
+      ?.reduce((acc, i) => i.itemAmount + acc, 0) - (alreadyPaid || 0);
   useEffect(() => {
-    if (noItem) {
+    const timerId = setTimeout(() => {
       mutateAsync();
-    }
-  }, [mutateAsync, noItem]);
+    }, 10);
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [mutateAsync]);
   useEffect(() => {
     if (!data) {
       return;
     }
     setTimeout(() => {
-      const items = [
-        ...data.BillingConsultationOrderLineItem,
-        ...data.BillingPatientOrderLineItem,
-      ].map((i) => ({
+      const lineItems = [
+        ...data.bill.map((o) => o.BillingConsultationOrderLineItem).flat(),
+        ...data.bill.map((o) => o.BillingPatientOrderLineItem).flat(),
+      ].flat();
+      const items = lineItems.map((i) => ({
         itemId: `${i.id}`,
         itemAmount: i.totalAmount,
         itemName: i.order.name,
+        billId: i.billId,
+        isRemoved: i.isRemoved,
       }));
+      const paidBillReceipts = data.Receipt.filter((r) => r.billId);
+      const alreadyPaidItemIds = lineItems
+        .filter((i) => paidBillReceipts.find((r) => r.billId === i.billId))
+        .map((i) => `${i.id}`);
+      setAlreadyPaidItemIds(alreadyPaidItemIds);
+      const nonPaidBill = lineItems.filter(
+        (i) => !paidBillReceipts.find((r) => r.billId === i.billId),
+      );
       setValue('items', items);
+      setValue('billId', nonPaidBill[0]?.billId);
     }, 10);
   }, [data, setValue]);
+  const completedItems =
+    items
+      ?.filter((i) => alreadyPaidItemIds.includes(i.itemId))
+      .sort((a, b) => a.itemId.localeCompare(b.itemId)) ?? [];
+  const nonCompletedItems =
+    items
+      ?.filter((i) => !alreadyPaidItemIds.includes(i.itemId))
+      .sort((a, b) => a.itemId.localeCompare(b.itemId)) ?? [];
   useEffect(() => {
     setValue('totalAmount', toBePaid);
   }, [setValue, toBePaid]);
@@ -150,12 +190,17 @@ const Items = () => {
       <div className="flex flex-col items-center justify-center ">
         <div className="w-full max-w-2xl p-4 rounded-lg">
           <div className="grid grid-cols-6 gap-4 mb-4">
-            {items?.map((item, index) => (
+            {[...completedItems, ...nonCompletedItems]?.map((item, index) => (
               <Fragment key={index}>
                 <input
                   type="text"
+                  disabled={alreadyPaidItemIds.includes(item.itemId)}
+                  readOnly={alreadyPaidItemIds.includes(item.itemId)}
                   placeholder="Item Name"
-                  className="col-span-4 p-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                  className={classNames(
+                    item.isRemoved ? ' text-gray-400' : '',
+                    'col-span-4 p-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300',
+                  )}
                   value={item.itemName}
                   onChange={(e) => {
                     const updatedItems = items?.map((i) => {
@@ -170,26 +215,48 @@ const Items = () => {
                     setValue('items', updatedItems);
                   }}
                 />
-                <input
-                  type="number"
-                  readOnly
-                  disabled
-                  placeholder="Amount"
-                  className="col-span-2 p-2 bg-gray-100 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-                  value={item.itemAmount === 0 ? '' : Number(item.itemAmount)}
-                  onChange={(e) => {
-                    const updatedItems = items?.map((i) => {
-                      if (i.itemId === item.itemId) {
-                        return {
-                          ...item,
-                          itemAmount: Number(e.target.value),
-                        };
-                      }
-                      return i;
-                    });
-                    setValue('items', updatedItems);
-                  }}
-                />
+                <div className="col-span-2 flex flex-row gap-1">
+                  <input
+                    type="number"
+                    readOnly
+                    disabled
+                    placeholder="Amount"
+                    className="p-2 bg-gray-100 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                    value={item.itemAmount === 0 ? '' : Number(item.itemAmount)}
+                    onChange={(e) => {
+                      const updatedItems = items?.map((i) => {
+                        if (i.itemId === item.itemId) {
+                          return {
+                            ...item,
+                            itemAmount: Number(e.target.value),
+                          };
+                        }
+                        return i;
+                      });
+                      setValue('items', updatedItems);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="btn-outline btn-small"
+                    disabled={alreadyPaidItemIds.includes(item.itemId)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      removeMutation({
+                        lineItemId: item.itemId,
+                        visitId,
+                        patientId,
+                        isRemoved: !item.isRemoved,
+                      });
+                    }}
+                  >
+                    {item.isRemoved ? (
+                      <PlusIcon className="h-5 w-5" />
+                    ) : (
+                      <XMarkIcon className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
               </Fragment>
             ))}
           </div>
@@ -306,6 +373,7 @@ const CreateFooter = () => {
   const { patientId, visitId } = useParams();
   ensure(patientId, 'Patient id is required');
   ensure(visitId, 'Visit id is required');
+  const amount = formProvider.watch('totalAmount');
   const { mutateAsync, isSuccess } = usePatientVisitCheckoutMutation({
     onError: (err) => {
       if (err instanceof Error) {
@@ -340,49 +408,63 @@ const CreateFooter = () => {
       >
         Cancel
       </button>
-      <button
-        type={'button'}
-        className={classNames(
-          'btn-primary capitalize',
-          formProvider.formState.isSubmitting
-            ? 'cursor-not-allowed'
-            : 'cursor-pointer',
-        )}
-        disabled={formProvider.formState.isSubmitting}
-        onClick={async () => {
-          await formProvider.handleSubmit((data) => {
-            return mutateAsync({
-              ...data,
-              visitId,
-              patientId,
+      {!amount ? (
+        <button
+          type={'button'}
+          className="btn-primary"
+          onClick={async () => {
+            navigate('..', {
+              replace: true,
             });
-          })();
-        }}
-      >
-        {formProvider.formState.isSubmitting ? (
-          <svg
-            className="mr-3 h-5 w-5 animate-spin text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V2.5"
-            />
-          </svg>
-        ) : null}
-        {isSuccess ? 'Done' : 'Make Payment'}
-      </button>
+          }}
+        >
+          Close
+        </button>
+      ) : (
+        <button
+          type={'button'}
+          className={classNames(
+            'btn-primary capitalize',
+            formProvider.formState.isSubmitting
+              ? 'cursor-not-allowed'
+              : 'cursor-pointer',
+          )}
+          disabled={formProvider.formState.isSubmitting}
+          onClick={async () => {
+            await formProvider.handleSubmit((data) => {
+              return mutateAsync({
+                ...data,
+                visitId,
+                patientId,
+              });
+            })();
+          }}
+        >
+          {formProvider.formState.isSubmitting ? (
+            <svg
+              className="mr-3 h-5 w-5 animate-spin text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V2.5"
+              />
+            </svg>
+          ) : null}
+          {isSuccess ? 'Done' : 'Make Payment'}
+        </button>
+      )}
     </div>
   );
 };

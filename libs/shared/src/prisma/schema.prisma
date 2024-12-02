@@ -318,6 +318,7 @@ model BillingPatientOrderLineItem {
   order       Order        @relation(fields: [orderId], references: [id])
   hospitalId  Int
   hospital    Hospital     @relation(fields: [hospitalId], references: [id])
+  isRemoved   Boolean
   quantity    Int
   rate        Float
   discount    Float
@@ -338,6 +339,7 @@ model BillingConsultationOrderLineItem {
   order               Order        @relation(fields: [orderId], references: [id])
   hospitalId          Int
   hospital            Hospital     @relation(fields: [hospitalId], references: [id])
+  isRemoved           Boolean
   quantity            Int
   rate                Float
   discount            Float

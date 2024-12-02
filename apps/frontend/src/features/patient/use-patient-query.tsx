@@ -95,6 +95,31 @@ export const usePatientBillingAutoGenerateMutation = (
   });
 };
 
+export const usePatientBillingRemoveLineItemMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (
+      param: VisitIdPatientId & {
+        lineItemId: string;
+        isRemoved: boolean;
+      },
+    ) =>
+      HttpService.put<VisitBill>(
+        `/v1/billing/${param.patientId}/${param.visitId}/${param.lineItemId}`,
+        {
+          isRemoved: param.isRemoved,
+        },
+      ),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        predicate(query) {
+          return query.queryKey.includes('billing');
+        },
+      });
+    },
+  });
+};
+
 export const useAllPatientQuery = (
   options?: QueryOptions<PaginatedResponse<PatientResponse>>,
 ) => {

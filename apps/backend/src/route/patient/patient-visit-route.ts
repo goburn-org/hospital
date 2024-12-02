@@ -41,11 +41,9 @@ route.post(
       const consultationOrder = await orderService.getConsultationOrder(
         data.hospitalId,
       );
-      await patientBillingService.createOutpatientBilling(
-        data.id,
-        true,
+      await patientBillingService.createOutpatientBilling(data.id, true, [
         consultationOrder,
-      );
+      ]);
       await patientReceiptService.create({
         visitId: data.id,
         paid: billing.advanceAmount,
