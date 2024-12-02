@@ -123,6 +123,15 @@ route.put(
 );
 
 route.get(
+  `${baseVersion}${baseRoute}/report`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const data = await patientReceiptService.getReport();
+    res.json(data);
+  }),
+);
+
+route.get(
   `${baseVersion}${baseRoute}/:patientId`,
   authMiddleware,
   errorHandler(async (req, res) => {

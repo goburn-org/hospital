@@ -109,7 +109,7 @@ const billingRoutes = (
       lazy={() => import('./routes/billing/edit')}
     />
     <Route
-      path={routerConfig.Receipt}
+      path={routerConfig.Report}
       lazy={() => import('./routes/billing/new-visit')}
     />
   </Route>

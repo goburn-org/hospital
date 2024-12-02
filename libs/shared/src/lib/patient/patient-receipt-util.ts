@@ -10,3 +10,9 @@ export const createPatientVisitReceiptSchema = z.object({
 export type CreatePatientVisitReceiptRequest = z.infer<
   typeof createPatientVisitReceiptSchema
 >;
+
+export interface ReceiptReport {
+  date: string;
+  cash: number;
+  card: number;
+}
