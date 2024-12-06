@@ -152,23 +152,41 @@ const Items = () => {
     }
     setTimeout(() => {
       const lineItems = [
-        ...data.bill.map((o) => o.BillingConsultationOrderLineItem).flat(),
-        ...data.bill.map((o) => o.BillingPatientOrderLineItem).flat(),
+        ...data.bill
+          .map((o) =>
+            o.BillingConsultationOrderLineItem.map((i) => ({
+              ...i,
+              tag: 'consultation' as const,
+            })),
+          )
+          .flat(),
+        ...data.bill
+          .map((o) =>
+            o.BillingPatientOrderLineItem.map((i) => ({
+              ...i,
+              tag: 'patient-order' as const,
+            })),
+          )
+          .flat(),
       ].flat();
-      const items = lineItems.map((i) => ({
-        itemId: `${i.id}`,
-        itemAmount: i.totalAmount,
-        itemName: i.order.name,
-        billId: i.billId,
-        isRemoved: i.isRemoved,
-      }));
+      const items = lineItems.map((i) => {
+        return {
+          itemId: `${i.id}`,
+          itemAmount: i.totalAmount,
+          itemName: i.order.name,
+          billId: i.billId,
+          isRemoved: i.isRemoved,
+        };
+      });
       const paidBillReceipts = data.Receipt.filter((r) => r.billId);
       const alreadyPaidItemIds = lineItems
         .filter((i) => paidBillReceipts.find((r) => r.billId === i.billId))
         .map((i) => `${i.id}`);
       setAlreadyPaidItemIds(alreadyPaidItemIds);
       const nonPaidBill = lineItems.filter(
-        (i) => !paidBillReceipts.find((r) => r.billId === i.billId),
+        (i) =>
+          !paidBillReceipts.find((r) => r.billId === i.billId) &&
+          i.tag === 'patient-order',
       );
       setValue('items', items);
       setValue('billId', nonPaidBill[0]?.billId);
@@ -216,30 +234,38 @@ const Items = () => {
                   }}
                 />
                 <div className="col-span-2 flex flex-row gap-1">
-                  <input
-                    type="number"
-                    readOnly
-                    disabled
-                    placeholder="Amount"
-                    className="p-2 bg-gray-100 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-                    value={item.itemAmount === 0 ? '' : Number(item.itemAmount)}
-                    onChange={(e) => {
-                      const updatedItems = items?.map((i) => {
-                        if (i.itemId === item.itemId) {
-                          return {
-                            ...item,
-                            itemAmount: Number(e.target.value),
-                          };
-                        }
-                        return i;
-                      });
-                      setValue('items', updatedItems);
-                    }}
-                  />
+                  {!item.isRemoved ? (
+                    <input
+                      type="number"
+                      readOnly
+                      disabled
+                      placeholder="Amount"
+                      className="p-2 bg-gray-100 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                      value={
+                        item.itemAmount === 0 ? '' : Number(item.itemAmount)
+                      }
+                      onChange={(e) => {
+                        const updatedItems = items?.map((i) => {
+                          if (i.itemId === item.itemId) {
+                            return {
+                              ...item,
+                              itemAmount: Number(e.target.value),
+                            };
+                          }
+                          return i;
+                        });
+                        setValue('items', updatedItems);
+                      }}
+                    />
+                  ) : (
+                    <p className="p-2 bg-gray-100 rounded-md focus:outline-none focus:ring focus:ring-blue-300 w-[200px]">
+                      Canceled
+                    </p>
+                  )}
                   <button
                     type="button"
                     className="btn-outline btn-small"
-                    disabled={alreadyPaidItemIds.includes(item.itemId)}
+                    // disabled={alreadyPaidItemIds.includes(item.itemId)}
                     onClick={(e) => {
                       e.preventDefault();
                       removeMutation({

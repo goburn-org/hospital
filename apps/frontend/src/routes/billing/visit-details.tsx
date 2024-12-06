@@ -1,7 +1,7 @@
 import { ArrowLeftCircleIcon } from '@heroicons/react/24/outline';
 import { ensure } from '@hospital/shared';
 import { useState } from 'react';
-import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
+import { Link, Outlet, useParams } from 'react-router-dom';
 import { Body } from '../../component/body';
 import Breadcrumbs from '../../component/breadcrumbs';
 import { Tabs } from '../../component/page-tabs';
@@ -28,8 +28,6 @@ export const Component = () => {
 
   const { data, isLoading } = usePatientByIdQuery(patientId);
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>(tabs[0]);
-  const navigte = useNavigate();
-  const isCheckout = Boolean(data?.lastVisit?.checkOutTime);
   if (isLoading) {
     return <div>Loading</div>;
   }
@@ -50,22 +48,10 @@ export const Component = () => {
         <div className="">
           <div className="flex justify-between">
             <Breadcrumbs pages={breadcrumbsPages} />
-            {isCheckout ? (
-              <Link className="btn-primary" to={`${routerConfig.Patient}`}>
-                Back
-                <ArrowLeftCircleIcon width={24} className="w-5 h-5" />
-              </Link>
-            ) : (
-              <button
-                className="btn-danger"
-                onClick={async () => {
-                  navigte(routerConfig.Checkout);
-                }}
-              >
-                Checkout
-                <ArrowLeftCircleIcon width={24} className="w-5 h-5" />
-              </button>
-            )}
+            <Link className="btn-primary" to={`${routerConfig.Patient}`}>
+              Back
+              <ArrowLeftCircleIcon width={24} className="w-5 h-5" />
+            </Link>
           </div>
           <div className="mt-2 ">
             <Tabs

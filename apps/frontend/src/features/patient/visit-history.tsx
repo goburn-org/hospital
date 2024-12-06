@@ -6,7 +6,7 @@ import { usePatientVisitHistoryQuery } from './use-patient-visit';
 export const VisitHistory = ({ patientId }: { patientId: string }) => {
   const { data: visitHistory } = usePatientVisitHistoryQuery(patientId);
   const { show, state } = useVisitDrawer();
-  const closedVisit = visitHistory?.data?.filter((visit) => visit.checkOutTime);
+  const closedVisit = visitHistory?.data;
 
   return (
     <div className="flex gap-2 items-center mb-4">
