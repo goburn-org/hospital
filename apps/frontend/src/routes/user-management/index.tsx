@@ -61,7 +61,7 @@ export const Component = () => {
   return (
     <>
       <Header />
-      <Body>
+      <Body className="py-2">
         <div className="flex flex-row gap-2 px-4 sm:px-6">
           <aside className="h-[calc(100vh-125px)] flex overflow-x-auto border-b border-r border-gray-300 py-4 lg:block lg:w-64 lg:flex-none lg:border-b-0 lg:py-20">
             <nav className="flex-none px-4 sm:px-6 lg:px-0">
