@@ -1,7 +1,7 @@
 export const ProjectName = 'Apollo Health';
 const SettingRoute = '/setting';
 const DashboardRoute = '/dashboard';
-const Inventory = '/inventory';
+const Inventory = 'inventory';
 const Billing = '/billing';
 const Patient = '/patient';
 const New = 'new';

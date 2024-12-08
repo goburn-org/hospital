@@ -7,7 +7,6 @@ import {
 import {
   Cog6ToothIcon,
   ReceiptPercentIcon,
-  ShoppingCartIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useRef, useState } from 'react';
@@ -41,12 +40,6 @@ const navigation = [
         href: `${routerConfig.Billing}/${routerConfig.Report}`,
       },
     ],
-  },
-  {
-    name: 'Inventory',
-    href: routerConfig.Inventory,
-    icon: ShoppingCartIcon,
-    current: false,
   },
 ];
 

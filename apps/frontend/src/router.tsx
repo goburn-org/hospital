@@ -5,11 +5,29 @@ import {
 } from 'react-router-dom';
 import { routerConfig } from './utils/constants';
 
+const inventoryRoutes = (
+  <Route path={routerConfig.Inventory} lazy={() => import('./routes/product')}>
+    <Route
+      path={routerConfig.New}
+      lazy={() => import('./routes/product/new')}
+    />
+    <Route
+      path={`${routerConfig.View}/:id`}
+      lazy={() => import('./routes/product/view')}
+    />
+    <Route
+      path={`${routerConfig.Edit}/:id`}
+      lazy={() => import('./routes/product/edit')}
+    />
+  </Route>
+);
+
 const settingRoutes = (
   <Route
     path={routerConfig.SettingRoute}
     lazy={() => import('./routes/user-management')}
   >
+    {inventoryRoutes}
     <Route path={routerConfig.Role} lazy={() => import('./routes/role/role')}>
       <Route path={routerConfig.New} lazy={() => import('./routes/role/new')} />
       <Route
@@ -57,23 +75,6 @@ const settingRoutes = (
         lazy={() => import('./routes/employee/edit')}
       />
     </Route>
-  </Route>
-);
-
-const inventoryRoutes = (
-  <Route path={routerConfig.Inventory} lazy={() => import('./routes/product')}>
-    <Route
-      path={routerConfig.New}
-      lazy={() => import('./routes/product/new')}
-    />
-    <Route
-      path={`${routerConfig.View}/:id`}
-      lazy={() => import('./routes/product/view')}
-    />
-    <Route
-      path={`${routerConfig.Edit}/:id`}
-      lazy={() => import('./routes/product/edit')}
-    />
   </Route>
 );
 
@@ -127,7 +128,6 @@ export const router = createBrowserRouter(
       <Route path="/login" lazy={() => import('./routes/login')} />
       <Route path="/" lazy={() => import('./routes/entry-point')}>
         {settingRoutes}
-        {inventoryRoutes}
         {patientRoutes}
         {billingRoutes}
       </Route>

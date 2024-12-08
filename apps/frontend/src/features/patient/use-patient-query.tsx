@@ -1,6 +1,5 @@
 import {
   AllPatientVisitBillingResponse,
-  BillingOrderReport,
   CreatePatientBillingRequest,
   CreatePatientInput,
   OpBillingReportQuery,
@@ -87,7 +86,7 @@ export const usePatientBillingAutoGenerateQuery = (param: VisitIdPatientId) => {
   return useQuery({
     queryKey: [...queryKey, 'billing', param.patientId, param.visitId],
     queryFn: () =>
-      HttpService.get<BillingOrderReport>(
+      HttpService.get<VisitBill>(
         `/v1/billing/${param.patientId}/${param.visitId}`,
       ),
   });
