@@ -22,12 +22,33 @@ const inventoryRoutes = (
   </Route>
 );
 
+const accountRoutes = (
+  <Route
+    path={routerConfig.Accounts}
+    lazy={() => import('./routes/bank-account')}
+  >
+    <Route
+      path={routerConfig.New}
+      lazy={() => import('./routes/bank-account/new')}
+    />
+    <Route
+      path={`${routerConfig.View}/:id`}
+      lazy={() => import('./routes/bank-account/view')}
+    />
+    <Route
+      path={`${routerConfig.Edit}/:id`}
+      lazy={() => import('./routes/bank-account/edit')}
+    />
+  </Route>
+);
+
 const settingRoutes = (
   <Route
     path={routerConfig.SettingRoute}
     lazy={() => import('./routes/user-management')}
   >
     {inventoryRoutes}
+    {accountRoutes}
     <Route path={routerConfig.Role} lazy={() => import('./routes/role/role')}>
       <Route path={routerConfig.New} lazy={() => import('./routes/role/new')} />
       <Route

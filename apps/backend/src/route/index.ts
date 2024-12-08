@@ -1,5 +1,6 @@
 import accountConfigRoute from './account-config/account-config-route';
 import authRoute from './auth/auth-route';
+import bankAccountRoute from './bank-account/bank-account-route';
 import departmentRoute from './department/department-route';
 import employeeRoute from './employee/employee-route';
 import healthRoute from './health/health-route';
@@ -28,4 +29,5 @@ export default [
   ...patientBillingRoute,
   ...patientReceiptRoute,
   ...reportRoute,
+  ...bankAccountRoute,
 ];

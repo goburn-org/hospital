@@ -1,3 +1,4 @@
+export * from './bank-account-util';
 export * from './consultation-util';
 export * from './department-util';
 export * from './employee-util';

@@ -1,4 +1,5 @@
 import {
+  BanknotesIcon,
   Cog8ToothIcon,
   IdentificationIcon,
   UserIcon,
@@ -37,6 +38,11 @@ const secondaryNavigation = [
     name: 'Inventory',
     icon: UserIcon,
     href: routerConfig.Inventory,
+  },
+  {
+    href: routerConfig.Accounts,
+    icon: BanknotesIcon,
+    name: 'Accounts',
   },
 ];
 
