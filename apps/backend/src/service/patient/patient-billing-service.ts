@@ -3,6 +3,8 @@ import {
   AvailableOrder,
   CreatePatientBillingRequest,
   HttpError,
+  OpBillingReportQuery,
+  OpBillingReportResponse,
   PaginatedResponse,
   PaginateParamsWithSort,
   VisitBill,
@@ -82,11 +84,15 @@ class PatientBillingService {
     return this.getBillingAndReceipt(visits.map((v) => v.id));
   }
 
-  async getAll(
-    param: PaginateParamsWithSort,
+  async getAllInLast24Hrs(
+    param: PaginateParamsWithSort & {
+      query?: {
+        orderIds: string[];
+      };
+    },
   ): Promise<PaginatedResponse<AllPatientVisitBillingResponse>> {
     const last24Hours = new Date();
-    const { paginate, sort } = param || {};
+    const { paginate, sort, query } = param || {};
     const authUser = useAuthUser();
     last24Hours.setHours(last24Hours.getHours() - 24);
     const visits = await dbClient.patientVisit.findMany({
@@ -96,17 +102,30 @@ class PatientBillingService {
         },
         hospitalId: authUser.hospitalId,
         isDeleted: false,
+        ...(query?.orderIds?.length
+          ? {
+              PatientOrder: {
+                OR: query.orderIds.map((o) => ({
+                  order: {
+                    some: {
+                      id: o,
+                    },
+                  },
+                })),
+              },
+            }
+          : {}),
       },
-      orderBy: sort
+      orderBy: sort?.field
         ? {
             [sort.field]: sort.order,
           }
         : undefined,
-      take: paginate ? paginate.limit : undefined,
+      take: paginate?.limit,
+      skip: paginate ? paginate.limit * (paginate.page - 1) : undefined,
       include: {
         Patient: true,
       },
-      skip: paginate ? paginate.limit * (paginate.page - 1) : undefined,
     });
     const total = await dbClient.patientVisit.count({
       where: {
@@ -133,6 +152,148 @@ class PatientBillingService {
           receipt: byVisit.find((b) => b.visitId === v.id)?.receipt ?? [],
         },
       })),
+      meta: {
+        total,
+        page: paginate?.page ?? 1,
+        limit: paginate?.limit ?? total,
+      },
+    };
+  }
+
+  async getAll(
+    param: PaginateParamsWithSort & OpBillingReportQuery,
+  ): Promise<OpBillingReportResponse> {
+    const { paginate, sort, query } = param || {};
+    console.log({ query }, 'test');
+    const authUser = useAuthUser();
+    const visits = await dbClient.patientVisit.findMany({
+      where: {
+        checkInTime:
+          query?.visitDate?.from && query?.visitDate?.to
+            ? {
+                gte: new Date(query.visitDate.from),
+                lte: new Date(query.visitDate.to),
+              }
+            : undefined,
+        hospitalId: authUser.hospitalId,
+        isDeleted: false,
+        ...(query?.orderIds?.length
+          ? {
+              PatientOrder: {
+                OR: query.orderIds.map((o) => ({
+                  order: {
+                    some: {
+                      id: o,
+                    },
+                  },
+                })),
+              },
+            }
+          : {}),
+      },
+      orderBy: sort?.field
+        ? {
+            [sort.field]: sort.order,
+          }
+        : undefined,
+      take: paginate?.limit,
+      skip: paginate ? paginate.limit * (paginate.page - 1) : undefined,
+      include: {
+        Patient: true,
+        BillingPatientOrderLineItem: {
+          include: {
+            order: true,
+          },
+        },
+        BillingConsultationOrderLineItem: {
+          include: {
+            order: true,
+          },
+        },
+        PatientOrder: {
+          include: {
+            order: true,
+          },
+        },
+      },
+    });
+    const total = await dbClient.patientVisit.count({
+      where: {
+        checkInTime:
+          query?.visitDate?.from && query?.visitDate?.to
+            ? {
+                gte: new Date(query.visitDate.from),
+                lte: new Date(query.visitDate.to),
+              }
+            : undefined,
+        hospitalId: authUser.hospitalId,
+        isDeleted: false,
+        ...(query?.orderIds?.length
+          ? {
+              PatientOrder: {
+                OR: query.orderIds.map((o) => ({
+                  order: {
+                    some: {
+                      id: o,
+                    },
+                  },
+                })),
+              },
+            }
+          : {}),
+      },
+    });
+    const byVisit = await this.getBillingAndReceipt(visits.map((v) => v.id));
+    const totalBilling = await dbClient.bill.aggregate({
+      where: {
+        Visit: {
+          checkInTime:
+            query?.visitDate?.from && query?.visitDate?.to
+              ? {
+                  gte: new Date(query.visitDate.from),
+                  lte: new Date(query.visitDate.to),
+                }
+              : undefined,
+          ...(query?.orderIds?.length
+            ? {
+                PatientOrder: {
+                  OR: query.orderIds.map((o) => ({
+                    order: {
+                      some: {
+                        id: o,
+                      },
+                    },
+                  })),
+                },
+              }
+            : {}),
+        },
+        hospitalId: authUser.hospitalId,
+      },
+      _sum: {
+        totalAmount: true,
+      },
+    });
+    return {
+      data: visits.map((v) => ({
+        patient: {
+          city: v.Patient.city,
+          lastVisit: v.checkInTime,
+          mobile: v.Patient.mobile,
+          name: v.Patient.name,
+          uhid: v.Patient.uhid,
+        },
+        BillingConsultationOrderLineItem: v.BillingConsultationOrderLineItem,
+        BillingPatientOrderLineItem: v.BillingPatientOrderLineItem,
+        PatientOrder: v.PatientOrder,
+        lastVisit: {
+          visitId: v.id,
+          billing: byVisit.find((b) => b.visitId === v.id)?.billing ?? [],
+          receipt: byVisit.find((b) => b.visitId === v.id)?.receipt ?? [],
+        },
+      })),
+      totalBilling: totalBilling._sum.totalAmount ?? 0,
+      totalVisit: total,
       meta: {
         total,
         page: paginate?.page ?? 1,

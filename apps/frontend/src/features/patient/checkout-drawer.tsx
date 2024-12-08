@@ -296,7 +296,14 @@ const Items = () => {
               <p className="font-semibold text-black">Rs. {alreadyPaid}</p>
             </div>
             <div className="flex items-center justify-end gap-2 mt-4">
-              {toBePaid ? (
+              {toBePaid < 0 ? (
+                <div className="flex items-center gap-2 bg-orange-200 px-2 py-1 rounded-sm">
+                  <p className="font-semibold text-orange-950">Refund</p>
+                  <p className="font-semibold text-orange-950">
+                    Rs. {-1 * toBePaid}
+                  </p>
+                </div>
+              ) : toBePaid ? (
                 <div className="flex items-center gap-2 bg-pink-200 px-2 py-1 rounded-sm">
                   <p className="font-semibold text-pink-950">Pending</p>
                   <p className="font-semibold text-pink-950">Rs. {toBePaid}</p>
@@ -320,12 +327,12 @@ const PaidBy = () => {
   const totalAmount = watch('totalAmount');
   useEffect(() => {
     if (mode === 'cash') {
-      setValue('cashAmount', 0);
-      setValue('cardAmount', totalAmount);
-    }
-    if (mode === 'card') {
       setValue('cashAmount', totalAmount);
       setValue('cardAmount', 0);
+    }
+    if (mode === 'card') {
+      setValue('cashAmount', 0);
+      setValue('cardAmount', totalAmount);
     }
   }, [mode, setValue, totalAmount]);
   return (

@@ -1,4 +1,3 @@
-import { XCircleIcon } from '@heroicons/react/24/outline';
 import {
   AllPatientVisitBillingResponse,
   DateLike,
@@ -11,19 +10,21 @@ import {
   useMaterialReactTable,
 } from 'material-react-table';
 import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import PageLoading from '../../component/page-loader';
-import { CustomTable } from '../../component/table';
-import Tooltip from '../../component/tooltip';
-import { classNames } from '../../utils/classNames';
-import { routerConfig, TypingSpeed } from '../../utils/constants';
-import { toPagination, toSortField } from '../../utils/sort-transform';
-import { useDebounce } from '../../utils/use-debounce';
-import { useParam } from '../../utils/use-param';
-import { useAllPatientBillingQuery } from './use-patient-query';
+import { TableLoading } from '../../../component/page-loader';
+import { CustomTable } from '../../../component/table';
+import Tooltip from '../../../component/tooltip';
+import { TypingSpeed } from '../../../utils/constants';
+import { toPagination, toSortField } from '../../../utils/sort-transform';
+import { useDebounce } from '../../../utils/use-debounce';
+import { useParam } from '../../../utils/use-param';
+import { useAllPatientBillingQuery } from '../../patient/use-patient-query';
+import ProjectStatusFilter from './op-report-filter';
+import { OpPatientReportTiles } from './op-report-tiles';
 
-export const PatientBillingTable = () => {
-  const { param, updateParam } = useParam<'q'>();
+export const PatientReport = () => {
+  const { param, updateParam } = useParam<
+    'q' | 'orderIds' | 'status' | 'visitDate'
+  >();
   const search = param.q;
   const _search = useDebounce(search, TypingSpeed);
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
@@ -31,12 +32,22 @@ export const PatientBillingTable = () => {
     pageIndex: 0,
     pageSize: 10,
   });
+  const orderIds: string[] = JSON.parse(param.orderIds || '[]');
+  const visitDate = JSON.parse(param.visitDate || '{}') as {
+    from: Date;
+    to: Date;
+    id: string;
+  };
   const { data, isLoading, isError, isRefetching } = useAllPatientBillingQuery({
     paginate: toPagination(pagination),
     sort: toSortField(sorting),
     search: _search,
+    query: {
+      orderIds,
+      visitDate,
+    },
   });
-  const navigate = useNavigate();
+
   const columns = useMemo<MRT_ColumnDef<AllPatientVisitBillingResponse>[]>(
     () => [
       {
@@ -57,29 +68,10 @@ export const PatientBillingTable = () => {
           );
         },
         Cell: ({ renderedCellValue, row }) => {
-          const billing = row.original.lastVisit.billing.reduce(
-            (acc, r) => acc + r.total,
-            0,
-          );
-          const receipt = row.original.lastVisit.receipt.reduce(
-            (acc, r) => acc + r.paid,
-            0,
-          );
-
           return (
-            <div className={classNames('flex items-center')}>
-              <Link
-                to={`${row?.original.patient.uhid}`}
-                className="px-4 text-blue-600 hover:text-blue-300 flex gap-2"
-              >
-                {renderedCellValue}
-                {billing === receipt ? null : (
-                  <p className="text-pink-500 bg-pink-100 px-2 text-xs flex items-center">
-                    UNPAID
-                  </p>
-                )}
-              </Link>
-            </div>
+            <button className="px-4 text-blue-600 hover:text-blue-300 flex gap-2">
+              {renderedCellValue}
+            </button>
           );
         },
       },
@@ -131,20 +123,6 @@ export const PatientBillingTable = () => {
         },
         header: 'Total Billing',
       },
-      {
-        id: 'action',
-        header: 'Action',
-        Cell: ({ row }) => {
-          return (
-            <Link
-              to={`${row.original.patient.uhid}/${row.original.lastVisit.visitId}`}
-              className="btn-text btn-small"
-            >
-              Billing
-            </Link>
-          );
-        },
-      },
     ],
     [data?.meta.total],
     //end
@@ -184,25 +162,22 @@ export const PatientBillingTable = () => {
       sorting,
     },
   });
-  if (isLoading) {
-    return <PageLoading />;
-  }
   return (
-    <div className="flex flex-col gap-8">
-      <CustomTable
-        table={table}
-        menu={[
-          {
-            action: (row) => {
-              navigate(
-                `${routerConfig.Close}/${row?.original.patient.uhid}/${row?.original.lastVisit.visitId}`,
-              );
-            },
-            label: 'Cancel Order',
-            icon: <XCircleIcon className="h-5 w-5" />,
-          },
-        ]}
+    <div className="flex flex-col gap-4">
+      <OpPatientReportTiles
+        isLoading={isLoading}
+        totalIncome={data?.totalBilling ?? 0}
+        totalVisit={data?.totalVisit ?? 0}
       />
+
+      {isLoading ? (
+        <TableLoading />
+      ) : (
+        <div className="mx-8 flex flex-col">
+          <ProjectStatusFilter />
+          <CustomTable table={table} menu={[]} />
+        </div>
+      )}
     </div>
   );
 };

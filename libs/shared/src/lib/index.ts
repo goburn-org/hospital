@@ -9,6 +9,7 @@ export * from './patient/patient-billing-util';
 export * from './patient/patient-order-util';
 export * from './patient/patient-prescription-util';
 export * from './patient/patient-receipt-util';
+export * from './patient/patient-report-billing-util';
 export * from './patient/patient-util';
 export * from './patient/patient-visit-util';
 export * from './patient/patient-vital-util';

@@ -8,6 +8,7 @@ import patientReceiptRoute from './patient/patient-receipt-route';
 import patientRoute from './patient/patient-route';
 import patientVisitRoute from './patient/patient-visit-route';
 import productRoute from './product/product-route';
+import reportRoute from './report/report-route';
 import route from './role/role-route';
 import superAdminRoute from './super-admin/super-admin-route';
 import utilRoute from './util/util-route';
@@ -26,4 +27,5 @@ export default [
   ...utilRoute,
   ...patientBillingRoute,
   ...patientReceiptRoute,
+  ...reportRoute,
 ];

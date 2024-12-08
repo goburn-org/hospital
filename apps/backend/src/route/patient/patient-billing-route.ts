@@ -1,6 +1,7 @@
 import {
   createPatientVisitSchema,
   ensure,
+  validateOpBillingReportQuery,
   validatePaginateParamsWithSort,
 } from '@hospital/shared';
 import { Router } from 'express';
@@ -158,10 +159,12 @@ route.get(
   authMiddleware,
   errorHandler(async (req, res) => {
     ensure(validatePaginateParamsWithSort(req.query), 'Invalid sort params');
+    ensure(validateOpBillingReportQuery(req.query), 'Invalid query params');
     const param = {
       paginate: req.query.paginate,
       sort: req.query.sort,
       search: req.query.search,
+      query: req.query.query,
     };
     const data = await patientBillingService.getAll(param);
     res.json(data);

@@ -18,6 +18,7 @@ const Checkout = 'checkout';
 const Receipt = 'receipt';
 const Report = 'report';
 const Advance = 'advance';
+const Close = 'close';
 
 export const routerConfig = {
   SettingRoute,
@@ -39,6 +40,7 @@ export const routerConfig = {
   Receipt,
   Report,
   Advance,
+  Close,
 };
 
 export const TypingSpeed = 700;

@@ -1,7 +1,9 @@
 import {
   AvailableOrder,
+  BillingOrderReport,
   CreatePatientOrderRequest,
   Maybe,
+  PaginateParamsWithSort,
   PatientOrderResponse,
 } from '@hospital/shared';
 import { logger } from '../../logger/logger-service';
@@ -64,6 +66,56 @@ class PatientOrderService {
       return [];
     }
     return res.order;
+  }
+
+  async getVisitByOrderHistory(
+    hospitalId: number,
+    options?: PaginateParamsWithSort,
+  ): Promise<BillingOrderReport> {
+    const { paginate } = options || {};
+    const res = await dbClient.billingPatientOrderLineItem.findMany({
+      where: {
+        hospitalId,
+        isRemoved: false,
+        order: {
+          name: {
+            contains: options?.search ?? '',
+            mode: 'insensitive',
+          },
+        },
+      },
+      include: {
+        order: true,
+        Visit: {
+          include: {
+            Patient: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    const total = await dbClient.billingPatientOrderLineItem.count({
+      where: {
+        hospitalId,
+        isRemoved: false,
+        order: {
+          name: {
+            contains: options?.search ?? '',
+            mode: 'insensitive',
+          },
+        },
+      },
+    });
+    return {
+      data: res,
+      meta: {
+        total,
+        page: paginate?.page ?? 1,
+        limit: paginate?.limit ?? total,
+      },
+    };
   }
 }
 

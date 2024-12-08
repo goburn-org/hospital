@@ -1,6 +1,6 @@
 import { PaymentMode, Prisma } from '@prisma/client';
 import { z } from 'zod';
-import { DateLike, Maybe } from '../ts-util';
+import { DateLike, Maybe, PaginatedResponse } from '../ts-util';
 
 export const createPatientBillingSchema = z.object({
   cashAmount: z.number(),
@@ -44,6 +44,58 @@ export type AllPatientVisitBillingResponse = {
     billing: VisitBillingAggregationByPatientId['billing'];
     receipt: VisitBillingAggregationByPatientId['receipt'];
   };
+};
+
+export type OpBillingReportResponse = PaginatedResponse<
+  AllPatientVisitBillingResponse & {
+    BillingPatientOrderLineItem: Prisma.BillingPatientOrderLineItemGetPayload<{
+      include: { order: true };
+    }>[];
+    BillingConsultationOrderLineItem: Prisma.BillingConsultationOrderLineItemGetPayload<{
+      include: { order: true };
+    }>[];
+    PatientOrder: Prisma.PatientOrderGetPayload<{
+      include: { order: true };
+    }> | null;
+  }
+> & {
+  totalBilling: number;
+  totalVisit: number;
+};
+
+export type OpBillingReportQuery = {
+  query?: {
+    orderIds?: string[];
+    visitDate?: {
+      from: DateLike;
+      to: DateLike;
+    };
+  };
+};
+
+export const validateOpBillingReportQuery = (
+  query: unknown,
+): query is OpBillingReportQuery => {
+  if (!query) {
+    return true;
+  }
+  if (typeof query !== 'object') {
+    return false;
+  }
+  const queryObj = query as OpBillingReportQuery;
+  if (queryObj.query) {
+    const { orderIds, visitDate } = queryObj.query;
+    if (orderIds && !Array.isArray(orderIds)) {
+      return false;
+    }
+    if (visitDate) {
+      const { from, to } = visitDate;
+      if (!from || !to) {
+        return false;
+      }
+    }
+  }
+  return true;
 };
 
 export type VisitBill = {

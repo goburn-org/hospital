@@ -1,7 +1,10 @@
 import {
   AllPatientVisitBillingResponse,
+  BillingOrderReport,
   CreatePatientBillingRequest,
   CreatePatientInput,
+  OpBillingReportQuery,
+  OpBillingReportResponse,
   PaginatedResponse,
   PaginateParamsWithSort,
   PatientResponse,
@@ -50,15 +53,29 @@ export const usePatientBillingQueryById = (
 };
 
 export const useAllPatientBillingQuery = (
+  queryParams: PaginateParamsWithSort & OpBillingReportQuery,
+  options?: QueryOptions<OpBillingReportResponse>,
+) => {
+  return useQuery({
+    ...(options || {}),
+    queryKey: [...queryKey, 'billing', 'all', queryParams],
+    queryFn: () =>
+      HttpService.get<OpBillingReportResponse>(`/v1/billing`, {
+        params: queryParams,
+      }),
+  });
+};
+
+export const useAllOrderBillingQuery = (
   queryParams: PaginateParamsWithSort,
   options?: QueryOptions<PaginatedResponse<AllPatientVisitBillingResponse>>,
 ) => {
   return useQuery({
     ...(options || {}),
-    queryKey: [...queryKey, 'billing', 'all', options],
+    queryKey: [...queryKey, 'report-order', 'all', options],
     queryFn: () =>
       HttpService.get<PaginatedResponse<AllPatientVisitBillingResponse>>(
-        `/v1/billing`,
+        `/v1/report/order`,
         {
           params: queryParams,
         },
@@ -70,7 +87,7 @@ export const usePatientBillingAutoGenerateQuery = (param: VisitIdPatientId) => {
   return useQuery({
     queryKey: [...queryKey, 'billing', param.patientId, param.visitId],
     queryFn: () =>
-      HttpService.get<VisitBill>(
+      HttpService.get<BillingOrderReport>(
         `/v1/billing/${param.patientId}/${param.visitId}`,
       ),
   });
