@@ -45,7 +45,7 @@ const secondaryNavigation = [
     ],
   },
   {
-    name: 'Cash/Card Balance',
+    name: 'Cash/Card Report',
     icon: BanknotesIcon,
     child: lazy(() =>
       import('../../../features/billing/out-patient/cash-card-report').then(

@@ -23,8 +23,8 @@ export const CashCardReport: React.FC = () => {
     });
   }, []);
   return (
-    <div className="max-w-4xl p-6">
-      <h2 className="text-xl font-bold mb-6 text-gray-800">Cash/Card Report</h2>
+    <div className="max-w-4xl">
+      <h2 className="text-xl font-bold text-gray-800">Cash/Card Report</h2>
       <table className="w-full border-collapse border border-gray-300">
         <thead>
           <tr>
