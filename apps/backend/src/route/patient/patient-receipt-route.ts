@@ -18,12 +18,7 @@ route.post(
       ...req.body,
       checkInTime: new Date(req.body.checkInTime),
     });
-    const data = await patientReceiptService.create({
-      isCash: body.cardAmount === 0,
-      paid: body.cardAmount + body.cashAmount,
-      visitId: visitId,
-      billId: body.billId,
-    });
+    const data = await patientReceiptService.create(visitId, body);
     res.json(data);
   }),
 );

@@ -1,7 +1,6 @@
 import {
   AllPatientVisitBillingResponse,
   AvailableOrder,
-  CreatePatientBillingRequest,
   HttpError,
   OpBillingReportQuery,
   OpBillingReportResponse,
@@ -15,23 +14,6 @@ import { useAuthUser } from '../../provider/async-context';
 import { taxCodeService } from '../tax-code-service';
 
 class PatientBillingService {
-  async upsert(visitId: string, data: CreatePatientBillingRequest) {
-    const user = useAuthUser();
-    return dbClient.visitBilling.upsert({
-      where: {
-        visitId,
-      },
-      create: {
-        visitId,
-        hospitalId: user.hospitalId,
-        ...data,
-      },
-      update: {
-        ...data,
-      },
-    });
-  }
-
   async getBillingAndReceipt(visitIds: string[]) {
     const billingPromise = dbClient.bill.findMany({
       where: {

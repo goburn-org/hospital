@@ -25,7 +25,6 @@ model Hospital {
   Order                            Order[]
   TaxCode                          TaxCode[]
   OrderGroups                      OrderGroups[]
-  VisitBilling                     VisitBilling[]
   Receipt                          Receipt[]
   Bill                             Bill[]
   BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
@@ -199,7 +198,6 @@ model PatientVisit {
   PatientOrder                     PatientOrder?
   PatientVital                     PatientVital?
   PatientPrescription              PatientPrescription?
-  VisitBilling                     VisitBilling?
   BillingPatientOrderLineItem      BillingPatientOrderLineItem[]
   BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
   Bill                             Bill[]
@@ -381,6 +379,8 @@ model Receipt {
   visitId     String
   Visit       PatientVisit @relation(fields: [visitId], references: [id])
   hospitalId  Int
+  accountId   Int?
+  account     BankAccount? @relation(fields: [accountId], references: [id])
   hospital    Hospital     @relation(fields: [hospitalId], references: [id])
   billId      String?
   Bill        Bill?        @relation(fields: [billId], references: [id])
@@ -407,21 +407,6 @@ model PatientVital {
   updatedAt   DateTime     @updatedAt
 }
 
-model VisitBilling {
-  visitId     String       @unique
-  Visit       PatientVisit @relation(fields: [visitId], references: [id])
-  items       Json?
-  cashAmount  Float
-  hospitalId  Int
-  hospital    Hospital     @relation(fields: [hospitalId], references: [id])
-  cardAmount  Float
-  totalAmount Float
-  details     String?
-  updatedBy   String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-}
-
 model PatientPrescription {
   visitId String       @unique
   Visit   PatientVisit @relation(fields: [visitId], references: [id])
@@ -434,15 +419,16 @@ model PatientPrescription {
 
 model BankAccount {
   hospitalId    Int
-  Hospital      Hospital @relation(fields: [hospitalId], references: [id])
-  id            Int      @id @default(autoincrement())
+  Hospital      Hospital  @relation(fields: [hospitalId], references: [id])
+  id            Int       @id @default(autoincrement())
   name          String
   accountNumber String
   icon          String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   updatedBy     String?
-  isActive      Boolean  @default(true)
+  isActive      Boolean   @default(true)
+  Receipt       Receipt[]
 }
 
 enum Gender {

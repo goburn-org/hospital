@@ -9,8 +9,17 @@ export const createPatientVisitSchema = z.object({
   doctorId: z.string(),
   checkInTime: z.preprocess((v) => new Date(v as string), z.date()),
   billing: z.object({
-    advanceAmount: z.number().optional().nullable(),
-    isCash: z.boolean(),
+    advanceAmount: z.number(),
+    cashAmount: z.number().nullable().optional(),
+    cardAmount: z
+      .array(
+        z.object({
+          bankAccountId: z.number(),
+          amount: z.number(),
+        }),
+      )
+      .nullable()
+      .optional(),
   }),
 });
 

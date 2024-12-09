@@ -6,10 +6,11 @@ import {
   createPatientVisitSchema,
   ensure,
 } from '@hospital/shared';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
+import { PaidBy } from '../../component/paid-by';
 import { CustomSelect } from '../../component/select';
 import {
   FormMode,
@@ -85,61 +86,16 @@ export const PatientVisitDrawer = ({
                 />
               </div>
               <div className="sm:col-span-3">
-                <PaidBy />
+                <PaidBy
+                  totalAmount={formProvider.watch('billing.advanceAmount')}
+                  id="billing"
+                />
               </div>
             </div>
             <CreateFooter />
           </form>
         </FormProvider>
       </FormModeProvider>
-    </div>
-  );
-};
-
-const PaidBy = () => {
-  const { setValue, watch } = useFormContext<CreatePatientVisitRequest>();
-  useEffect(() => {
-    setValue('billing.isCash', false);
-  }, [setValue]);
-  return (
-    <div className="flex flex-col items-start gap-2">
-      <div>
-        <div className="flex w-full items-end gap-2">
-          <p className="leading-6  font-medium text-gray-900 text-base">
-            Paid By
-          </p>
-        </div>
-      </div>
-      <div className="flex flex-row gap-x-4">
-        <div className="flex gap-x-2">
-          <input
-            type="radio"
-            id="cash"
-            name="paidBy"
-            value="cash"
-            checked={watch('billing.isCash')}
-            onChange={() => {
-              setValue('billing.isCash', true);
-            }}
-            className="h-5 w-5 text-primary"
-          />
-          <label htmlFor="cash">Cash</label>
-        </div>
-        <div className="flex items-center gap-x-2">
-          <input
-            type="radio"
-            id="card"
-            name="paidBy"
-            value="card"
-            checked={watch('billing.isCash') === false}
-            onChange={() => {
-              setValue('billing.isCash', false);
-            }}
-            className="h-5 w-5 text-primary"
-          />
-          <label htmlFor="card">Card</label>
-        </div>
-      </div>
     </div>
   );
 };

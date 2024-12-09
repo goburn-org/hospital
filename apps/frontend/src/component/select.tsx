@@ -37,6 +37,7 @@ type Props<Option extends SelectOption> = {
   error?: string;
   onRawChange?: (value: string) => void;
   clearButton?: boolean;
+  disableSearch?: boolean;
 };
 
 export const CustomSelect = <Option extends SelectOption>({
@@ -53,6 +54,7 @@ export const CustomSelect = <Option extends SelectOption>({
   error,
   onRawChange,
   clearButton,
+  disableSearch,
 }: Props<Option>) => {
   const [searchTerm, setSearchTerm] = useState('');
   const filteredOptions = options?.filter((option) =>
@@ -133,18 +135,20 @@ export const CustomSelect = <Option extends SelectOption>({
           className="absolute z-10 mt-1 w-full overflow-x-hidden min-w-[150px] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
         >
           {/* Search Input */}
-          <div className="sticky top-0 z-10 bg-white p-2">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => {
-                onRawChange?.(e.target.value);
-                setSearchTerm(e.target.value);
-              }}
-              className="w-full rounded-md border border-gray-300 py-1 px-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              placeholder="Search..."
-            />
-          </div>
+          {disableSearch ? null : (
+            <div className="sticky top-0 z-10 bg-white p-2">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => {
+                  onRawChange?.(e.target.value);
+                  setSearchTerm(e.target.value);
+                }}
+                className="w-full rounded-md border border-gray-300 py-1 px-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                placeholder="Search..."
+              />
+            </div>
+          )}
           {isLoading ? (
             <ListboxOption
               value=""
@@ -197,7 +201,7 @@ export const CustomSelect = <Option extends SelectOption>({
                 >
                   <div className="flex flex-row items-center gap-2">
                     {filteredOptions[index].icon ? (
-                      <span className="h-8 w-8">
+                      <span className="w-4" id="icon">
                         {filteredOptions[index].icon}
                       </span>
                     ) : null}

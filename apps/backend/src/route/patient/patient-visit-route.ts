@@ -1,6 +1,5 @@
 import {
   createAssessmentSchema,
-  createPatientBillingSchema,
   createPatientOrderSchema,
   createPatientVisitSchema,
   createPatientVitalSchema,
@@ -44,11 +43,11 @@ route.post(
       await patientBillingService.createOutpatientBilling(data.id, true, [
         consultationOrder,
       ]);
-      await patientReceiptService.create({
-        visitId: data.id,
-        paid: billing.advanceAmount,
-        reason: 'Advance Payment',
-        isCash: billing.isCash,
+      await patientReceiptService.create(data.id, {
+        cardAmount: billing.cardAmount || [],
+        cashAmount: billing.cashAmount || 0,
+        items: [],
+        totalAmount: billing.advanceAmount,
       });
     }
     res.json(data);
@@ -107,21 +106,6 @@ route.post(
     ensure(visitId, 'Invalid visitId params');
     const body = prescriptionDbConvertor.to(req.body);
     const data = await patientPrescriptionService.upsert(visitId, body);
-    res.json(data);
-  }),
-);
-
-route.post(
-  `${baseVersion}${baseRoute}/checkout/:patientId/:visitId`,
-  authMiddleware,
-  errorHandler(async (req, res) => {
-    const patientId = req.params.patientId;
-    ensure(patientId, 'Invalid patientId params');
-    const visitId = req.params.visitId;
-    ensure(visitId, 'Invalid visitId params');
-    const body = createPatientBillingSchema.parse(req.body);
-    await patientBillingService.upsert(visitId, body);
-    const data = await patientVisitService.checkout(visitId);
     res.json(data);
   }),
 );

@@ -10,6 +10,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
+import { PaidBy } from '../../component/paid-by';
 import {
   FormMode,
   FormModeProvider,
@@ -85,7 +86,7 @@ export const CheckoutDrawer = ({
               </div>
               <div className="sm:col-span-5 ">
                 <div className="flex justify-end w-full">
-                  <PaidBy />
+                  <PaidBy totalAmount={formProvider.watch('totalAmount')} />
                 </div>
               </div>
             </div>
@@ -321,53 +322,6 @@ const Items = () => {
   );
 };
 
-const PaidBy = () => {
-  const { setValue, watch } = useFormContext<CreatePatientBillingRequest>();
-  const [mode, setMode] = useState<'cash' | 'card'>('cash');
-  const totalAmount = watch('totalAmount');
-  useEffect(() => {
-    if (mode === 'cash') {
-      setValue('cashAmount', totalAmount);
-      setValue('cardAmount', 0);
-    }
-    if (mode === 'card') {
-      setValue('cashAmount', 0);
-      setValue('cardAmount', totalAmount);
-    }
-  }, [mode, setValue, totalAmount]);
-  return (
-    <div className="flex items-center gap-x-4 mb-12">
-      <div className="flex items-center gap-x-2">
-        <input
-          type="radio"
-          id="cash"
-          name="paidBy"
-          value="cash"
-          checked={mode === 'cash'}
-          onChange={() => {
-            setMode('cash');
-          }}
-          className="h-5 w-5 text-primary"
-        />
-        <label htmlFor="cash">Cash</label>
-      </div>
-      <div className="flex items-center gap-x-2">
-        <input
-          type="radio"
-          id="card"
-          name="paidBy"
-          value="card"
-          checked={mode === 'card'}
-          onChange={() => {
-            setMode('card');
-          }}
-          className="h-5 w-5 text-primary"
-        />
-        <label htmlFor="card">Card</label>
-      </div>
-    </div>
-  );
-};
 const ViewFooter = () => {
   const navigate = useNavigate();
   const { id } = useParams();

@@ -1,5 +1,6 @@
 import {
-  CreatePatientVisitReceiptRequest,
+  CreatePatientBillingRequest,
+  Receipt,
   ReceiptReport,
   VisitBillingAggregationByPatientId,
 } from '@hospital/shared';
@@ -8,24 +9,50 @@ import { useAuthUser } from '../../provider/async-context';
 
 class PatientReceiptService {
   async create(
-    data: CreatePatientVisitReceiptRequest,
-  ): Promise<VisitBillingAggregationByPatientId['receipt'][number]> {
+    visitId: string,
+    data: CreatePatientBillingRequest,
+  ): Promise<VisitBillingAggregationByPatientId['receipt']> {
     const user = useAuthUser();
-    const { isCash, ...rest } = data;
-    const res = await dbClient.receipt.create({
-      data: {
-        ...rest,
-        paymentMode: isCash ? 'CASH' : 'CARD',
-        hospitalId: user.hospitalId,
-        updatedBy: user.id,
-      },
-    });
-    return {
-      receiptId: res.id,
-      billId: res.billId,
-      paid: res.paid,
-      reason: res.reason,
-    };
+    const res: Receipt[] = [];
+    if (data.cashAmount) {
+      res.push(
+        await dbClient.receipt.create({
+          data: {
+            visitId,
+            paid: data.cashAmount,
+            reason: 'Cash Payment',
+            hospitalId: user.hospitalId,
+            paymentMode: 'CASH',
+            billId: data.billId,
+            items: data.items,
+            updatedBy: user.id,
+          },
+        }),
+      );
+    }
+    if (data.cardAmount.length) {
+      res.push(
+        ...(await dbClient.receipt.createManyAndReturn({
+          data: data.cardAmount.map((c, idx) => ({
+            visitId,
+            paid: c.amount,
+            reason: `Card ${idx + 1} / ${data.cardAmount.length} Payment`,
+            accountId: c.bankAccountId,
+            hospitalId: user.hospitalId,
+            paymentMode: 'CARD',
+            billId: data.billId,
+            items: data.items,
+            updatedBy: user.id,
+          })),
+        })),
+      );
+    }
+    return res.map((d) => ({
+      receiptId: d.id,
+      billId: d.billId,
+      paid: d.paid,
+      reason: d.reason,
+    }));
   }
 
   async getBill(

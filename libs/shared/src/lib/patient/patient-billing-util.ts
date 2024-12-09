@@ -4,7 +4,12 @@ import { DateLike, Maybe, PaginatedResponse } from '../ts-util';
 
 export const createPatientBillingSchema = z.object({
   cashAmount: z.number(),
-  cardAmount: z.number(),
+  cardAmount: z.array(
+    z.object({
+      bankAccountId: z.number(),
+      amount: z.number(),
+    }),
+  ),
   totalAmount: z.number(),
   billId: z.string().nullable().optional(),
   items: z.array(
