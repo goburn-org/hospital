@@ -1,5 +1,6 @@
 import {
   BanknotesIcon,
+  CalendarDaysIcon,
   IdentificationIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
@@ -54,6 +55,34 @@ const secondaryNavigation = [
         }),
       ),
     ),
+  },
+  {
+    name: 'Monthly Report',
+    icon: CalendarDaysIcon,
+    children: [
+      {
+        icon: UserIcon,
+        name: 'Monthly Report',
+        child: lazy(() =>
+          import('../../../features/billing/out-patient/monthly-report').then(
+            (i) => ({
+              default: i.MonthlyReport,
+            }),
+          ),
+        ),
+      },
+      {
+        icon: IdentificationIcon,
+        name: 'Order / Department',
+        child: lazy(() =>
+          import(
+            '../../../features/billing/out-patient/order-wise-report'
+          ).then((i) => ({
+            default: i.OrderWiseReport,
+          })),
+        ),
+      },
+    ],
   },
 ];
 
