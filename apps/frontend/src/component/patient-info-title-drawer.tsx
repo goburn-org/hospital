@@ -15,7 +15,7 @@ export const PatientInfoTitleDrawer = ({
   return (
     <div className="flex items-center justify-between w-full">
       <div className="flex flex-col items-start mb-2">
-        <h1 className="text-2xl font-semibold capitalize text-gray-700">
+        <h1 className="text-xl font-semibold capitalize text-gray-500">
           {name || 'Patient Name'}{' '}
         </h1>
         <div className="flex gap-1 items-center">

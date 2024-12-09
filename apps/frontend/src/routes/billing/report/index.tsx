@@ -113,6 +113,12 @@ export const Component = () => {
                     <button
                       type="button"
                       onClick={() => {
+                        if (item.child) {
+                          setCurrentChild(item.name);
+                        }
+                        if (item.children) {
+                          setCurrentChild(item.children[0].name);
+                        }
                         setCurrentSideBar(item.name);
                       }}
                       className={classNames(

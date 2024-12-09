@@ -5,6 +5,7 @@ import {
   CreatePatientBillingRequest,
   createPatientBillingSchema,
   ensure,
+  humanizedDate,
 } from '@hospital/shared';
 import { Fragment, useEffect, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
@@ -27,7 +28,30 @@ import {
   usePatientByIdQuery,
   usePatientVisitCheckoutMutation,
 } from './use-patient-query';
+import { usePatientVisitHistoryQuery } from './use-patient-visit';
 
+const VisitSelect = ({ patientId }: { patientId: string }) => {
+  const { data } = usePatientVisitHistoryQuery(patientId);
+  const navigate = useNavigate();
+  return (
+    <select
+      onChange={(e) => {
+        navigate(`../${patientId}/${e.target.value}`);
+      }}
+      value={useParams().visitId}
+      className="block w-fit justify-end-end px-4 py-2 bg-white border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+    >
+      <option value="" disabled selected>
+        Select Visit
+      </option>
+      {data?.data.map((option) => (
+        <option key={option.id} value={option.id}>
+          {humanizedDate(option.checkInTime)}
+        </option>
+      ))}
+    </select>
+  );
+};
 export const CheckoutDrawer = ({
   defaultValues,
   mode,
@@ -61,6 +85,7 @@ export const CheckoutDrawer = ({
           });
         }}
       />
+      <VisitSelect patientId={patientId} />
       <FormModeProvider
         mode={editable ? FormMode.Editable : FormMode.ReadOnly}
         oldId={patientId}
