@@ -47,6 +47,13 @@ const secondaryNavigation = [
   {
     name: 'Cash/Card Balance',
     icon: BanknotesIcon,
+    child: lazy(() =>
+      import('../../../features/billing/out-patient/cash-card-report').then(
+        (i) => ({
+          default: i.CashCardReport,
+        }),
+      ),
+    ),
   },
 ];
 
@@ -57,10 +64,13 @@ export const Component = () => {
   const [currentChild, setCurrentChild] = useState(
     secondaryNavigation[0].children?.[0].name,
   );
-  const Component =
-    secondaryNavigation
-      .find((n) => n.name === currentSidebar)
-      ?.children?.find((c) => c.name === currentChild)?.child ?? (() => null);
+  const selectedNav = secondaryNavigation.find(
+    (n) => n.name === currentSidebar,
+  );
+  const Component = selectedNav?.child
+    ? selectedNav.child
+    : (selectedNav?.children?.find((c) => c.name === currentChild)?.child ??
+      (() => null));
   return (
     <>
       <Header />

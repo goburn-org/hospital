@@ -1,8 +1,8 @@
 import { ReceiptReport } from '@hospital/shared';
 import React, { useEffect, useState } from 'react';
-import { HttpService } from '../../utils/http';
+import { HttpService } from '../../../utils/http';
 
-export const BillingReport: React.FC = () => {
+export const CashCardReport: React.FC = () => {
   const [data, setData] = useState<ReceiptReport[]>([]);
   useEffect(() => {
     HttpService.get<ReceiptReport[]>('/v1/billing/report').then((res) => {
