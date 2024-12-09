@@ -135,8 +135,8 @@ const getFromTo = (id: string) => {
   switch (id) {
     case 'Yesterday':
       return {
-        from: midNight(new Date(today.setDate(new Date().getDate() - 2))),
-        to: midNight(new Date().setDate(new Date().getDate() - 1)),
+        from: midNight(new Date(today.setDate(new Date().getDate() - 1))),
+        to: midNight(new Date().setDate(new Date().getDate()) - 1),
       };
     case 'Today':
       return {
@@ -155,8 +155,8 @@ const getFromTo = (id: string) => {
       };
     case 'This Week':
       return {
-        from: getWeeks().nextSunday,
-        to: getWeeks().nextToNextSunday,
+        from: getWeeks().lastSunday,
+        to: getWeeks().nextSunday,
       };
     case 'Next Week':
       return {
