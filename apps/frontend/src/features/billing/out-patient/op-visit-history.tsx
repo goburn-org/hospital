@@ -3,31 +3,15 @@ import {
   PaginatedResponse,
   PatientVisitResponse,
   Sure,
-  User,
 } from '@hospital/shared';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { DrawerSkeleton } from '../../../component/drawer-skeleton';
 import { TableLoading } from '../../../component/page-loader';
 import { PatientInfoTitleDrawer } from '../../../component/patient-info-title-drawer';
-import { HttpService } from '../../../utils/http';
+import { fetchDoctorName } from '../../employee/use-employee-query';
 import { usePatientByIdQuery } from '../../patient/use-patient-query';
 import { usePatientVisitHistoryQuery } from '../../patient/use-patient-visit';
-
-const fetchDoctorName = async (doctorId: string[]) => {
-  const res = await HttpService.get<User[]>('/v1/employee', {
-    params: {
-      empIds: doctorId,
-    },
-  });
-  return res.reduce(
-    (acc, curr) => {
-      acc[curr.id] = curr.name;
-      return acc;
-    },
-    {} as Record<string, string>,
-  );
-};
 
 const Table = ({
   data,

@@ -78,17 +78,44 @@ class PatientReceiptService {
         hospitalId: user.hospitalId,
       },
     });
-    const result: ReceiptReport[] = [];
+    const result: ReceiptReport = {
+      accountDetails: [],
+      details: [],
+      byEmp: [],
+    };
     for (const item of data) {
       const date = item.updatedAt.toISOString().split('T')[0];
       const cash = item.paymentMode === 'CASH' ? item.paid : 0;
       const card = item.paymentMode === 'CARD' ? item.paid : 0;
-      const index = result.findIndex((r) => r.date === date);
+      const cardDetails: ReceiptReport['accountDetails'][number] | null =
+        item.accountId
+          ? {
+              bankAccountId: item.accountId,
+              amount: item.paid,
+              date,
+              receiptId: item.id,
+            }
+          : null;
+      const empDetails: ReceiptReport['byEmp'][number] | null = cash
+        ? {
+            empId: item.updatedBy,
+            cashAmount: item.paid,
+            date,
+            receiptId: item.id,
+          }
+        : null;
+      if (empDetails) {
+        result.byEmp.push(empDetails);
+      }
+      if (cardDetails) {
+        result.accountDetails.push(cardDetails);
+      }
+      const index = result.details.findIndex((r) => r.date === date);
       if (index === -1) {
-        result.push({ date, cash, card });
+        result.details.push({ date, cash, card });
       } else {
-        result[index].cash += cash;
-        result[index].card += card;
+        result.details[index].cash += cash;
+        result.details[index].card += card;
       }
     }
     return result;

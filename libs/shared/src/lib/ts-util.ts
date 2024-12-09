@@ -139,3 +139,13 @@ export const humanizedDate = (rawDate: DateLike) => {
   }
   return moment(date).format('lll');
 };
+
+export const isSameDate = (date1: DateLike, date2: DateLike) => {
+  const d1 = toDate(date1);
+  const d2 = toDate(date2);
+  return (
+    d1.getDate() === d2.getDate() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getFullYear() === d2.getFullYear()
+  );
+};

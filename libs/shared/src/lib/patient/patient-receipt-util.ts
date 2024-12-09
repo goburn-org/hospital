@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { DateLike } from '../ts-util';
 
 export const createPatientVisitReceiptSchema = z.object({
   visitId: z.string(),
@@ -12,7 +13,21 @@ export type CreatePatientVisitReceiptRequest = z.infer<
 >;
 
 export interface ReceiptReport {
-  date: string;
-  cash: number;
-  card: number;
+  details: {
+    date: string;
+    cash: number;
+    card: number;
+  }[];
+  accountDetails: {
+    bankAccountId: number;
+    amount: number;
+    date: DateLike;
+    receiptId: string;
+  }[];
+  byEmp: {
+    empId: string | null;
+    cashAmount: number;
+    date: DateLike;
+    receiptId: string;
+  }[];
 }

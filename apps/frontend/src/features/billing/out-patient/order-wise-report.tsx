@@ -1,4 +1,8 @@
-import { BillingOrderReport, DateLike, humanizedDate } from '@hospital/shared';
+import {
+  AllPatientVisitBillingResponse,
+  DateLike,
+  humanizedDate,
+} from '@hospital/shared';
 import {
   MRT_ColumnDef,
   MRT_PaginationState,
@@ -30,7 +34,7 @@ export const OrderWiseReport = () => {
     search: _search,
   });
 
-  const columns = useMemo<MRT_ColumnDef<BillingOrderReport['data'][number]>[]>(
+  const columns = useMemo<MRT_ColumnDef<AllPatientVisitBillingResponse>[]>(
     () => [
       {
         accessorKey: 'order.name',

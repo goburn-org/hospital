@@ -3,6 +3,7 @@ import {
   PaginatedResponse,
   PaginateParamsWithSort,
   UpdateEmployeeInput,
+  User,
   UserWithRolesAndDepartment,
 } from '@hospital/shared';
 import {
@@ -31,6 +32,21 @@ export const useEmployeeQuery = (
         },
       ),
   });
+};
+
+export const fetchDoctorName = async (doctorId: string[]) => {
+  const res = await HttpService.get<User[]>('/v1/employee', {
+    params: {
+      empIds: doctorId,
+    },
+  });
+  return res.reduce(
+    (acc, curr) => {
+      acc[curr.id] = curr.name;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 };
 
 export const useEmployeeByIdQuery = (
