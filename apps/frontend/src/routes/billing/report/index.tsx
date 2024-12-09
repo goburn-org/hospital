@@ -4,13 +4,14 @@ import {
   UserIcon,
 } from '@heroicons/react/24/outline';
 import { lazy, Suspense, useState } from 'react';
-import PatientIcon from '../../asset/patient.svg?react';
-import { Body } from '../../component/body';
-import { Header } from '../../component/header';
-import PageLoading from '../../component/page-loader';
-import { Tabs } from '../../component/page-tabs';
-import { classNames } from '../../utils/classNames';
-import { routerConfig } from '../../utils/constants';
+import { Outlet } from 'react-router-dom';
+import PatientIcon from '../../../asset/patient.svg?react';
+import { Body } from '../../../component/body';
+import { Header } from '../../../component/header';
+import PageLoading from '../../../component/page-loader';
+import { Tabs } from '../../../component/page-tabs';
+import { classNames } from '../../../utils/classNames';
+import { routerConfig } from '../../../utils/constants';
 
 const secondaryNavigation = [
   {
@@ -23,7 +24,7 @@ const secondaryNavigation = [
         icon: UserIcon,
         name: 'Patient',
         child: lazy(() =>
-          import('../../features/billing/out-patient/patient-report').then(
+          import('../../../features/billing/out-patient/patient-report').then(
             (i) => ({
               default: i.PatientReport,
             }),
@@ -34,11 +35,11 @@ const secondaryNavigation = [
         icon: IdentificationIcon,
         name: 'Order / Department',
         child: lazy(() =>
-          import('../../features/billing/out-patient/order-wise-report').then(
-            (i) => ({
-              default: i.OrderWiseReport,
-            }),
-          ),
+          import(
+            '../../../features/billing/out-patient/order-wise-report'
+          ).then((i) => ({
+            default: i.OrderWiseReport,
+          })),
         ),
       },
     ],
@@ -126,6 +127,7 @@ export const Component = () => {
             </div>
           </div>
         </div>
+        <Outlet />
       </Body>
     </>
   );

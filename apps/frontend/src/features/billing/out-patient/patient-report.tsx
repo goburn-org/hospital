@@ -10,6 +10,7 @@ import {
   useMaterialReactTable,
 } from 'material-react-table';
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { TableLoading } from '../../../component/page-loader';
 import { CustomTable } from '../../../component/table';
 import Tooltip from '../../../component/tooltip';
@@ -68,10 +69,14 @@ export const PatientReport = () => {
           );
         },
         Cell: ({ renderedCellValue, row }) => {
+          const patientId = row.original.patient.uhid;
           return (
-            <button className="px-4 text-blue-600 hover:text-blue-300 flex gap-2">
+            <Link
+              to={patientId}
+              className="px-4 text-blue-600 hover:text-blue-300 flex gap-2"
+            >
               {renderedCellValue}
-            </button>
+            </Link>
           );
         },
       },

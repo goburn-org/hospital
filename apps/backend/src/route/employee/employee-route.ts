@@ -37,6 +37,17 @@ route.get(
   `${baseVersion}${baseRoute}`,
   authMiddleware,
   errorHandler(async (req, res) => {
+    const empIds = req.query.empIds;
+    if (empIds) {
+      ensure(Array.isArray(empIds), 'empIds must be an array');
+      ensure(empIds.length > 0, 'empIds must not be empty');
+      ensure(
+        empIds.every((id) => typeof id === 'string'),
+        'empIds must be an array of string',
+      );
+      const data = await employeeService.getByIds(empIds);
+      return res.send(data);
+    }
     const user = useAuthUser();
     ensure(validatePaginateParamsWithSort(req.query), 'Invalid sort params');
     const data = await employeeService.getAll({

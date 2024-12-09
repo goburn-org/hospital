@@ -120,6 +120,17 @@ class EmployeeService {
   getById(id: string) {
     return userService.getUserById(id);
   }
+  getByIds(id: string[]) {
+    const hospitalId = useAuthUser().hospitalId;
+    return dbClient.user.findMany({
+      where: {
+        id: {
+          in: id,
+        },
+        hospitalId,
+      },
+    });
+  }
 }
 
 export const employeeService = new EmployeeService();

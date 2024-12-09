@@ -139,7 +139,16 @@ const billingRoutes = (
     <Route
       path={`${routerConfig.Billing}/${routerConfig.Report}`}
       lazy={() => import('./routes/billing/report')}
-    />
+    >
+      <Route
+        path={`:patientId`}
+        lazy={() => import('./routes/billing/report/by-visit-id')}
+      />
+      <Route
+        path={`:patientId/:visitId`}
+        lazy={() => import('./routes/billing/edit')}
+      />
+    </Route>
   </>
 );
 

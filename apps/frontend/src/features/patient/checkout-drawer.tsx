@@ -11,6 +11,7 @@ import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PaidBy } from '../../component/paid-by';
+import { PatientInfoTitleDrawer } from '../../component/patient-info-title-drawer';
 import {
   FormMode,
   FormModeProvider,
@@ -50,30 +51,16 @@ export const CheckoutDrawer = ({
   const editable = mode !== 'view';
   return (
     <div className="w-[800px]">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col items-start mb-2">
-          <h1 className="text-2xl font-semibold capitalize text-gray-700">
-            {data?.aadharName ?? data?.name}{' '}
-          </h1>
-          <div className="flex gap-1 items-center">
-            <p className="text-gray-500">{data?.mobile}</p>
-            <span className="rounded-full bg-gray-300 h-2 w-2" />
-            <p className="text-gray-500">{data?.city}</p>
-          </div>
-        </div>
-        <button
-          type="button"
-          aria-label="Close panel"
-          className="btn-text btn-text-secondary"
-          onClick={() => {
-            navigate('../', {
-              replace: true,
-            });
-          }}
-        >
-          <XMarkIcon className="h-8 w-8" />
-        </button>
-      </div>
+      <PatientInfoTitleDrawer
+        name={data?.aadharName ?? data?.name}
+        city={data?.city}
+        mobile={data?.mobile}
+        onClose={() => {
+          navigate('..', {
+            replace: true,
+          });
+        }}
+      />
       <FormModeProvider
         mode={editable ? FormMode.Editable : FormMode.ReadOnly}
         oldId={patientId}
