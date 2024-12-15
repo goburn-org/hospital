@@ -1,13 +1,17 @@
 import {
+  AllOrderTokenResponse,
   AvailableOrder,
   BillingOrderReport,
   CreatePatientOrderRequest,
+  getToday,
+  getYesterday,
   Maybe,
   PaginateParamsWithSort,
   PatientOrderResponse,
 } from '@hospital/shared';
 import { logger } from '../../logger/logger-service';
 import { dbClient } from '../../prisma';
+import { useAuthUser } from '../../provider/async-context';
 
 class PatientOrderService {
   async upsert(
@@ -116,6 +120,53 @@ class PatientOrderService {
         limit: paginate?.limit ?? total,
       },
     };
+  }
+
+  async getTotalOrder(): Promise<AllOrderTokenResponse> {
+    const user = useAuthUser();
+    const yesterday = getYesterday();
+    const today = getToday();
+    const orders = await dbClient.patientOrder.findMany({
+      where: {
+        PatientVisit: {
+          hospitalId: user.hospitalId,
+        },
+        createdAt: {
+          gte: yesterday,
+          lt: today,
+        },
+      },
+      include: {
+        order: true,
+      },
+    });
+    const paidOrder = await dbClient.billingPatientOrderLineItem.findMany({
+      where: {
+        hospitalId: user.hospitalId,
+        isRemoved: false,
+        createdAt: {
+          gte: yesterday,
+          lt: today,
+        },
+      },
+      include: {
+        order: true,
+      },
+    });
+    const orderIds = orders.map((o) => o.order).flat();
+    const paidOrderIds = paidOrder.map((o) => o.order).flat();
+    const countByOrderId = orderIds.reduce(
+      (acc, o) => ({
+        ...acc,
+        [o.id]: {
+          orderName: o.name,
+          total: acc[o.id] ? acc[o.id].total + 1 : 1,
+          completed: paidOrderIds.filter((po) => po.id === o.id).length,
+        },
+      }),
+      {} as AllOrderTokenResponse,
+    );
+    return countByOrderId;
   }
 }
 

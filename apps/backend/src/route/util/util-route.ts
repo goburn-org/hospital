@@ -1,11 +1,11 @@
-import { AllTokensResponse } from '@hospital/shared';
 import { Router } from 'express';
 import { authMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
 import { useAuthUser } from '../../provider/async-context';
-import { employeeService } from '../../service/employee-service';
 import { orderService } from '../../service/order-service';
+import { patientOrderService } from '../../service/patient/patient-order-service';
 import { patientVisitService } from '../../service/patient/patient-visit-service';
+import { tokenService } from '../../service/token-service';
 
 const route = Router();
 const baseVersion = '/v1';
@@ -22,30 +22,20 @@ route.get(
 );
 
 route.get(
-  `${baseVersion}${baseRoute}/token`,
+  `${baseVersion}${baseRoute}/consultation/token`,
   authMiddleware,
   errorHandler(async (req, res) => {
-    const user = useAuthUser();
-    const isAdmin = user.Department.Role?.isSuperAdmin;
-    const doctors = isAdmin
-      ? await employeeService.getAllDoctor({
-          hospitalId: user.hospitalId,
-        })
-      : [user];
-    const tokens = await Promise.all(
-      doctors.map((d) => patientVisitService.getToken(d.id)),
-    );
-    const tokenMap = tokens.reduce(
-      (acc, t, idx) => ({
-        ...acc,
-        [doctors[idx].id]: {
-          ...t,
-          consultantName: doctors[idx].name,
-        },
-      }),
-      {} as AllTokensResponse,
-    );
-    res.json(tokenMap);
+    const data = await tokenService.getAll();
+    res.json(data);
+  }),
+);
+
+route.get(
+  `${baseVersion}${baseRoute}/order/token`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const data = await patientOrderService.getTotalOrder();
+    res.json(data);
   }),
 );
 

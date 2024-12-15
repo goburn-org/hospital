@@ -9,3 +9,11 @@ export type AllTokensResponse = Record<
     consultantName: string;
   }
 >;
+
+export type OrderTokenResponse = {
+  orderName: string;
+  total: number;
+  completed: number;
+};
+
+export type AllOrderTokenResponse = Record<string, OrderTokenResponse>;

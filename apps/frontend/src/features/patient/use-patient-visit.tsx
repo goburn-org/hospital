@@ -1,4 +1,5 @@
 import {
+  AllOrderTokenResponse,
   AllTokensResponse,
   AssessmentResponse,
   CreateAssessmentRequest,
@@ -168,9 +169,18 @@ export const usePatientVisitHistoryQuery = (
   });
 };
 
-export const useTokenQuery = () => {
+export const useConsultationTokenQuery = () => {
   return useQuery({
-    queryKey: ['token'],
-    queryFn: () => HttpService.get<AllTokensResponse>('/v1/util/token'),
+    queryKey: ['token', 'consultation'],
+    queryFn: () =>
+      HttpService.get<AllTokensResponse>('/v1/util/consultation/token'),
+  });
+};
+
+export const useOrderTokenQuery = () => {
+  return useQuery({
+    queryKey: ['token', 'order'],
+    queryFn: () =>
+      HttpService.get<AllOrderTokenResponse>('/v1/util/order/token'),
   });
 };

@@ -2,8 +2,8 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { Body } from '../../component/body';
 import { Header } from '../../component/header';
 import { PageSubHeader } from '../../component/page-sub-header';
+import { ConsultationTile } from '../../features/patient/consultation-tile';
 import { PatientTable } from '../../features/patient/patient-table';
-import { TokenTile } from '../../features/patient/token-tile';
 import { routerConfig } from '../../utils/constants';
 
 export const Component = () => {
@@ -23,7 +23,7 @@ export const Component = () => {
             />
             <div className="mt-8">
               <div className="flex flex-col gap-4 sm:px-6 lg:px-8">
-                <TokenTile />
+                <ConsultationTile />
                 <PatientTable />
               </div>
             </div>
