@@ -4,22 +4,26 @@ import {
   CreatePatientPrescriptionRequest,
   createPatientPrescriptionSchema,
   ensure,
+  humanizedDate,
   Maybe,
 } from '@hospital/shared';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { FormAutoCompleteInput } from '../../../component/form/form-auto-complete-input';
 import { FormInput } from '../../../component/form/form-input';
-import PageLoading from '../../../component/page-loader';
+import PageLoading, { TableLoading } from '../../../component/page-loader';
+import { CustomSelect } from '../../../component/select';
 import Tooltip, { TooltipRef } from '../../../component/tooltip';
 import { TIMER_S, useTimer } from '../../../utils/use-timer';
 import { useProductQuery } from '../../product/use-product-query';
 import {
   usePatientPrescriptionMutation,
   usePatientVisitByIdQuery,
+  usePatientVisitHistoryQuery,
 } from '../use-patient-visit';
+import { PrescriptionTable } from '../visit-drawer/prescription-table';
 import { FrequencyAdvance } from './frequency-advance';
 import { ShowPrescription } from './prescription-table';
 
@@ -334,6 +338,54 @@ const Form = ({
   );
 };
 
+const PastRecord = ({
+  patientId,
+  currentVisitId,
+}: {
+  patientId: string;
+  currentVisitId: string;
+}) => {
+  const { data: visitHistory } = usePatientVisitHistoryQuery(patientId);
+  const [visitId, setVisitId] = useState(currentVisitId);
+  const { data, isLoading } = usePatientVisitByIdQuery({ patientId, visitId });
+  const lastVisitId = visitHistory?.data.find(
+    (d) => d.id !== currentVisitId,
+  )?.id;
+  useEffect(() => {
+    if (lastVisitId) {
+      setVisitId(lastVisitId);
+    }
+  }, [lastVisitId]);
+  if (visitHistory?.data.length === 0) {
+    return null;
+  }
+  return (
+    <div className="max-w-[900px] w-[80vw]">
+      <div className="w-fit">
+        <CustomSelect
+          htmlFor="prescriptionSelectDate"
+          labelName="Select Visit"
+          onChange={(e) => {
+            setVisitId(e);
+          }}
+          options={visitHistory?.data
+            ?.filter((d) => d.id !== currentVisitId)
+            .map((d) => ({
+              label: humanizedDate(d.checkInTime),
+              id: d.id,
+            }))}
+          value={visitId}
+        />
+      </div>
+      {isLoading ? (
+        <TableLoading />
+      ) : (
+        <PrescriptionTable prescriptions={data?.PatientPrescription} />
+      )}
+    </div>
+  );
+};
+
 export const PatientPrescription = () => {
   const { patientId, visitId } = useParams();
   ensure(patientId, 'patientId is required');
@@ -347,11 +399,14 @@ export const PatientPrescription = () => {
   }
   return (
     <div className="w-[100vw] sm:w-[calc(100vw-133.8px)]">
-      <Form
-        patientId={patientId}
-        visitId={visitId}
-        defaultValue={data.PatientPrescription}
-      />
+      <div className="flex flex-col gap-4">
+        <Form
+          patientId={patientId}
+          visitId={visitId}
+          defaultValue={data.PatientPrescription}
+        />
+        <PastRecord patientId={patientId} currentVisitId={visitId} />
+      </div>
     </div>
   );
 };
