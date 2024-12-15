@@ -1,4 +1,5 @@
 import {
+  AllTokensResponse,
   AssessmentResponse,
   CreateAssessmentRequest,
   CreatePatientOrderRequest,
@@ -128,7 +129,12 @@ export const usePatientVisitMutation = (
     onSuccess: (...args) => {
       options.onSuccess?.(...args);
       queryClient.invalidateQueries({
-        queryKey: ['patient-visit'],
+        predicate: (query) => {
+          return (
+            query.queryKey[0] === 'patient-visit' ||
+            query.queryKey[0] === 'token'
+          );
+        },
       });
     },
   });
@@ -159,5 +165,12 @@ export const usePatientVisitHistoryQuery = (
         `/v1/visit/${patientId}`,
       ),
     ...options,
+  });
+};
+
+export const useTokenQuery = () => {
+  return useQuery({
+    queryKey: ['token'],
+    queryFn: () => HttpService.get<AllTokensResponse>('/v1/util/token'),
   });
 };

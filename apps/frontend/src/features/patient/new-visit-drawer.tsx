@@ -5,6 +5,7 @@ import {
   CreatePatientVisitRequest,
   createPatientVisitSchema,
   ensure,
+  TokenResponse,
 } from '@hospital/shared';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -105,10 +106,7 @@ export const PatientVisitDrawer = ({
 };
 
 const TokenWrapper = () => {
-  const [token, setToken] = useState<{
-    yourToken: number;
-    tokensCompleted: number;
-  }>();
+  const [token, setToken] = useState<TokenResponse>();
   const { watch } = useFormContext<CreatePatientVisitRequest>();
   const doctorId = watch('doctorId');
   useEffect(() => {
@@ -116,10 +114,7 @@ const TokenWrapper = () => {
       return;
     }
     const cancelToken = axios.CancelToken.source();
-    HttpService.get<{
-      yourToken: number;
-      tokensCompleted: number;
-    }>(`/v1/util/token/${doctorId}`, {
+    HttpService.get<TokenResponse>(`/v1/util/token/${doctorId}`, {
       cancelToken: cancelToken.token,
     }).then((res) => {
       setToken(res);

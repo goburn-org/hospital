@@ -3,6 +3,7 @@ import { Body } from '../../component/body';
 import { Header } from '../../component/header';
 import { PageSubHeader } from '../../component/page-sub-header';
 import { PatientTable } from '../../features/patient/patient-table';
+import { TokenTile } from '../../features/patient/token-tile';
 import { routerConfig } from '../../utils/constants';
 
 export const Component = () => {
@@ -20,13 +21,13 @@ export const Component = () => {
                 onClick: () => navigate(routerConfig.New),
               }}
             />
-            <div className="mt-8 flow-root">
-              <div className="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
-                <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                  <PatientTable />
-                </div>
+            <div className="mt-8">
+              <div className="flex flex-col gap-4 sm:px-6 lg:px-8">
+                <TokenTile />
+                <PatientTable />
               </div>
             </div>
+
             <Outlet />
           </div>
         </div>

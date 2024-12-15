@@ -154,11 +154,13 @@ const DesktopSidebar = () => {
   return (
     <>
       <div className="flex h-16 shrink-0 items-center justify-center px-2">
-        <img
-          alt="Logo"
-          src={data?.hospitalImg}
-          className="h-8 w-auto object-contain bg-white "
-        />
+        <Link to={routerConfig.DashboardRoute}>
+          <img
+            alt="Logo"
+            src={data?.hospitalImg}
+            className="h-8 w-auto object-contain bg-white "
+          />
+        </Link>
       </div>
       <nav className="flex flex-1 flex-col h-[92%]">
         <ul className="flex flex-1 flex-col gap-y-7">

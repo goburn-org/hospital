@@ -6,6 +6,7 @@ import {
   PaginatedResponse,
   PatientVisit,
   Prisma,
+  TokenResponse,
   getToday,
   getYesterday,
   patientVitalConverter,
@@ -143,7 +144,7 @@ class PatientVisitService {
     return result;
   }
 
-  async getToken(doctorId: string) {
+  async getToken(doctorId: string): Promise<TokenResponse> {
     const yesterday = getYesterday();
     const today = getToday();
     const yourTokenPromise = dbClient.patientVisit.count({

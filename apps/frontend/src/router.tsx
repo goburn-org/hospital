@@ -152,11 +152,19 @@ const billingRoutes = (
   </>
 );
 
+const dashboardRoute = (
+  <Route
+    path={routerConfig.DashboardRoute}
+    lazy={() => import('./routes/dashboard')}
+  />
+);
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route path="/login" lazy={() => import('./routes/login')} />
       <Route path="/" lazy={() => import('./routes/entry-point')}>
+        {dashboardRoute}
         {settingRoutes}
         {patientRoutes}
         {billingRoutes}
