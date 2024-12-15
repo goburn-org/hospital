@@ -85,6 +85,7 @@ class PatientReceiptService {
     };
     for (const item of data) {
       const date = item.updatedAt.toISOString().split('T')[0];
+      const createdAt = item.updatedAt;
       const cash = item.paymentMode === 'CASH' ? item.paid : 0;
       const card = item.paymentMode === 'CARD' ? item.paid : 0;
       const cardDetails: ReceiptReport['accountDetails'][number] | null =
@@ -93,6 +94,7 @@ class PatientReceiptService {
               bankAccountId: item.accountId,
               amount: item.paid,
               date,
+              createdAt,
               receiptId: item.id,
             }
           : null;
@@ -101,6 +103,7 @@ class PatientReceiptService {
             empId: item.updatedBy,
             cashAmount: item.paid,
             date,
+            createdAt,
             receiptId: item.id,
           }
         : null;

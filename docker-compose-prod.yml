@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  backend:
+    build: .
+    image: hospital_api
+    container_name: hospital
+    volumes:
+      - hims_api:/var/lib/node
+    ports:
+      - '8000:9000'
+
+volumes:
+  hims_api:

@@ -4,8 +4,8 @@ const throwErrorMessage = (message: string) => {
   throw new Error(message);
 };
 
-export const NODE_ENV = (import.meta.env.VITE_NODE_ENV ||
-  'development') as NODE_ENV;
+export const NODE_ENV =
+  window.location.hostname === 'localhost' ? 'development' : 'production';
 
 export const HOSPITAL_ID =
   parseInt(import.meta.env.VITE_HOSPITAL_ID) ||

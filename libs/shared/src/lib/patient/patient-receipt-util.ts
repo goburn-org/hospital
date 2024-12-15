@@ -22,6 +22,7 @@ export interface ReceiptReport {
     bankAccountId: number;
     amount: number;
     date: DateLike;
+    createdAt: DateLike;
     receiptId: string;
   }[];
   byEmp: {
@@ -29,5 +30,6 @@ export interface ReceiptReport {
     cashAmount: number;
     date: DateLike;
     receiptId: string;
+    createdAt: DateLike;
   }[];
 }

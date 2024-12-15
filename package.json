@@ -2,9 +2,16 @@
   "name": "@hospital/source",
   "version": "0.0.0",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "db:start": "docker compose -f docker-compose-local.yml up -d db",
     "dev:web": "yarn nx serve frontend",
+    "dev:web:build": "yarn nx build frontend",
+    "dev:web:deploy": "yarn nx build frontend && firebase deploy",
+    "dev:api:build": "yarn nx build backend",
+    "dev:api:serve": "node dist/apps/backend/main.js",
     "dev:api": "yarn nx serve backend",
     "db:push": "yarn prisma db push",
     "db:migrate": "yarn prisma migrate dev",

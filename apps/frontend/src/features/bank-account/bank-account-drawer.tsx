@@ -1,14 +1,11 @@
-import {
-  BellAlertIcon,
-  CircleStackIcon,
-  Cog6ToothIcon,
-  XMarkIcon,
-} from '@heroicons/react/20/solid';
+import { XMarkIcon } from '@heroicons/react/20/solid';
+import { BanknotesIcon, CalculatorIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { BankAccountCreate, bankAccountCreateSchema } from '@hospital/shared';
 import ReactDOMServer from 'react-dom/server';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
+import UpiIcon from '../../asset/upi-icon.svg?react';
 import { FormAutoCompleteInput } from '../../component/form/form-auto-complete-input';
 import { FormInput } from '../../component/form/form-input';
 import { IconPicker, IconPickerOption } from '../../component/icon-picker';
@@ -26,10 +23,9 @@ import { routerConfig } from '../../utils/constants';
 import { useEsc } from '../../utils/use-esc';
 
 const icons: IconPickerOption[] = [
-  { id: 'home', Icon: XMarkIcon, name: 'Home' },
-  { id: 'user', Icon: CircleStackIcon, name: 'User' },
-  { id: 'settings', Icon: Cog6ToothIcon, name: 'Settings' },
-  { id: 'notifications', Icon: BellAlertIcon, name: 'Notifications' },
+  { id: 'upi', Icon: UpiIcon, name: 'Upi' },
+  { id: 'POS', Icon: CalculatorIcon, name: 'User' },
+  { id: 'Cash', Icon: BanknotesIcon, name: 'Settings' },
 ];
 
 export const BankAccountDrawer = ({

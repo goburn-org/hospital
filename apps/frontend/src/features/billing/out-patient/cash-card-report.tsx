@@ -90,7 +90,7 @@ export const CashCardReport: React.FC = () => {
                 .map((item, index) => (
                   <tr key={index} className="even:bg-gray-50">
                     <td className="border border-gray-300 p-3">
-                      {humanizedDate(item.date)}
+                      {humanizedDate(item.createdAt)}
                     </td>
                     <td className="border border-gray-300 p-3 text-right">
                       {
@@ -134,7 +134,7 @@ export const CashCardReport: React.FC = () => {
                 .map((item, index) => (
                   <tr key={index} className="even:bg-gray-50">
                     <td className="border border-gray-300 p-3">
-                      {humanizedDate(item.date)}
+                      {humanizedDate(item.createdAt)}
                     </td>
                     <td className="border border-gray-300 p-3 text-right">
                       {item.empId ? users[item.empId] : 'N/A'}

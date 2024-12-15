@@ -340,7 +340,8 @@ class PatientBillingService {
             hospitalId: authUser.hospitalId,
             updatedBy: authUser.id,
             totalAmount:
-              o.baseAmount * taxCodes[o.taxCodeId].taxRate + o.baseAmount,
+              o.baseAmount * (taxCodes[o.taxCodeId].taxRate / 100) +
+              o.baseAmount,
           })),
         });
       const totalAmount = consultations.reduce(
@@ -364,7 +365,8 @@ class PatientBillingService {
     } else {
       const totalAmount = order.reduce(
         (acc, c) =>
-          acc + (c.baseAmount * taxCodes[c.taxCodeId].taxRate + c.baseAmount),
+          acc +
+          (c.baseAmount * (taxCodes[c.taxCodeId].taxRate / 100) + c.baseAmount),
         0,
       );
       await dbClient.bill.create({
@@ -386,7 +388,8 @@ class PatientBillingService {
                 hospitalId: authUser.hospitalId,
                 updatedBy: authUser.id,
                 totalAmount:
-                  o.baseAmount * taxCodes[o.taxCodeId].taxRate + o.baseAmount,
+                  o.baseAmount * (taxCodes[o.taxCodeId].taxRate / 100) +
+                  o.baseAmount,
               })),
             },
           },

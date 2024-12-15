@@ -5,7 +5,7 @@ import { apiTokenStorage } from '../provider/auth/auth-util';
 const baseUrl =
   NODE_ENV === 'development'
     ? 'http://localhost:9000/api'
-    : 'https://survey-100203556049.asia-northeast3.run.app/api';
+    : 'https://hims-27650986183.asia-southeast1.run.app/api';
 
 const handleError = (error: unknown) => {
   if (error instanceof AxiosError && error.response?.data.message) {
