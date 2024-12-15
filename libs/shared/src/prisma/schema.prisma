@@ -79,11 +79,22 @@ model UserLogin {
   user      User     @relation(fields: [userId], references: [id])
 }
 
+enum RoleType {
+  DOCTOR
+  NURSE
+  RECEPTIONIST
+  ADMIN
+  ACCOUNTANT
+  PHARMACIST
+  LAB_TECHNICIAN
+}
+
 model Role {
   id           Int              @id @default(autoincrement())
   roleName     String
   description  String?
   hospitalId   Int
+  roleType     RoleType
   isSuperAdmin Boolean?         @default(false)
   updatedBy    String?
   createdAt    DateTime         @default(now())
@@ -190,6 +201,8 @@ model PatientVisit {
   updatedBy                        String?
   createdAt                        DateTime                           @default(now())
   updatedAt                        DateTime                           @updatedAt
+  orderOpenedAt                    DateTime?
+  token                            Int?
   Assessment                       Assessment?
   Doctor                           User                               @relation(fields: [doctorId], references: [id])
   Hospital                         Hospital                           @relation(fields: [hospitalId], references: [id])

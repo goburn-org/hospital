@@ -6,7 +6,8 @@ import {
   createPatientVisitSchema,
   ensure,
 } from '@hospital/shared';
-import { useState } from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
@@ -18,10 +19,10 @@ import {
 } from '../../provider/form-context-provider/form-mode-provider';
 import { useOrderQuery } from '../../provider/use-order';
 import { classNames } from '../../utils/classNames';
-import { routerConfig, TypingSpeed } from '../../utils/constants';
-import { useDebounce } from '../../utils/use-debounce';
+import { routerConfig } from '../../utils/constants';
+import { HttpService } from '../../utils/http';
 import { useEsc } from '../../utils/use-esc';
-import { useEmployeeQuery } from '../employee/use-employee-query';
+import { useDoctorQuery } from '../employee/use-employee-query';
 import { usePatientVisitMutation } from './use-patient-visit';
 
 export const PatientVisitDrawer = ({
@@ -91,6 +92,9 @@ export const PatientVisitDrawer = ({
                   id="billing"
                 />
               </div>
+              <div className="sm:col-span-3">
+                <TokenWrapper />
+              </div>
             </div>
             <CreateFooter />
           </form>
@@ -100,22 +104,53 @@ export const PatientVisitDrawer = ({
   );
 };
 
+const TokenWrapper = () => {
+  const [token, setToken] = useState<{
+    yourToken: number;
+    tokensCompleted: number;
+  }>();
+  const { watch } = useFormContext<CreatePatientVisitRequest>();
+  const doctorId = watch('doctorId');
+  useEffect(() => {
+    if (!doctorId) {
+      return;
+    }
+    const cancelToken = axios.CancelToken.source();
+    HttpService.get<{
+      yourToken: number;
+      tokensCompleted: number;
+    }>(`/v1/util/token/${doctorId}`, {
+      cancelToken: cancelToken.token,
+    }).then((res) => {
+      setToken(res);
+    });
+    return () => {
+      cancelToken.cancel();
+    };
+  }, [doctorId]);
+  return (
+    <div className="flex flex-col gap-1">
+      <p className="text-sm text-gray-400">
+        <div>Your Token: {token?.yourToken}</div>
+        <div> Tokens Completed: {token?.tokensCompleted}</div>
+      </p>
+    </div>
+  );
+};
+
 const DoctorSelect = () => {
   const [search, setSearch] = useState('');
-  const searchDebounce = useDebounce(search, TypingSpeed);
   const { data: orders } = useOrderQuery();
-  const { data } = useEmployeeQuery({
-    search: searchDebounce,
-    paginate: {
-      limit: 10,
-      page: 1,
-    },
-  });
+  const { data } = useDoctorQuery();
   const res =
-    data?.data.map((item) => ({
-      label: item.name,
-      id: item.id,
-    })) ?? [];
+    data
+      ?.filter((i) => {
+        return i.name.toLowerCase().includes(search.toLowerCase());
+      })
+      ?.map((item) => ({
+        label: item.name,
+        id: item.id,
+      })) ?? [];
   const { watch, setValue } = useFormContext<CreatePatientVisitRequest>();
   const consultationOrder = orders?.find((o) =>
     o.tags.includes(CONSULTATION_ORDER_TAG),

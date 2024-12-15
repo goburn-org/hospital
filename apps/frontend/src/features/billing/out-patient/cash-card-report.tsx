@@ -22,6 +22,9 @@ export const CashCardReport: React.FC = () => {
       });
     });
   }, []);
+  const sorted = [...(data?.accountDetails ?? [])]?.sort(
+    (a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf(),
+  );
   return (
     <div className="max-w-4xl">
       <h2 className="text-xl font-bold text-gray-800">Cash/Card Report</h2>
@@ -40,28 +43,32 @@ export const CashCardReport: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {data?.details.map((item, index) => (
-            <tr key={index} className="even:bg-gray-50">
-              <td className="border border-gray-300 p-3">
-                <button
-                  type="button"
-                  className="btn-text-secondary btn-small w-full justify-end underline"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setSelectedDate(new Date(item.date));
-                  }}
-                >
-                  {item.date}
-                </button>
-              </td>
-              <td className="border border-gray-300 p-3 text-right">
-                ₹ {item.cash.toLocaleString()}
-              </td>
-              <td className="border border-gray-300 p-3 text-right">
-                ₹ {item.card.toLocaleString()}
-              </td>
-            </tr>
-          ))}
+          {[...(data?.details ?? [])]
+            ?.sort(
+              (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
+            )
+            .map((item, index) => (
+              <tr key={index} className="even:bg-gray-50">
+                <td className="border border-gray-300 p-3">
+                  <button
+                    type="button"
+                    className="btn-text-secondary btn-small w-full justify-end underline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedDate(new Date(item.date));
+                    }}
+                  >
+                    {item.date}
+                  </button>
+                </td>
+                <td className="border border-gray-300 p-3 text-right">
+                  ₹ {item.cash.toLocaleString()}
+                </td>
+                <td className="border border-gray-300 p-3 text-right">
+                  ₹ {item.card.toLocaleString()}
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
 
@@ -85,7 +92,7 @@ export const CashCardReport: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {data?.accountDetails
+              {sorted
                 .filter((item) => isSameDate(selectedDate, item.date))
                 .map((item, index) => (
                   <tr key={index} className="even:bg-gray-50">
@@ -129,7 +136,11 @@ export const CashCardReport: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {data?.byEmp
+              {[...(data?.byEmp ?? [])]
+                ?.sort(
+                  (a, b) =>
+                    new Date(b.date).valueOf() - new Date(a.date).valueOf(),
+                )
                 .filter((item) => isSameDate(selectedDate, item.date))
                 .map((item, index) => (
                   <tr key={index} className="even:bg-gray-50">

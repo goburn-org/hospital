@@ -34,6 +34,14 @@ export const useEmployeeQuery = (
   });
 };
 
+export const useDoctorQuery = (options?: QueryOptions<User[]>) => {
+  return useQuery({
+    ...(options || {}),
+    queryKey: [...queryKey, 'doctor'],
+    queryFn: () => HttpService.get<User[]>('/v1/employee/doctor'),
+  });
+};
+
 export const fetchDoctorName = async (doctorId: string[]) => {
   const res = await HttpService.get<User[]>('/v1/employee', {
     params: {

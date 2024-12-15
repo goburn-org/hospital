@@ -226,3 +226,19 @@ export const usePatientVisitCheckoutMutation = (
     },
   });
 };
+
+export const usePatientVisitOpenMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (param: VisitIdPatientId) =>
+      HttpService.post<VisitBillingAggregationByPatientId>(
+        `/v1/visit/open/${param.patientId}/${param.visitId}`,
+        {},
+      ),
+    onSuccess: (res, req) => {
+      queryClient.invalidateQueries({
+        queryKey: ['patient'],
+      });
+    },
+  });
+};

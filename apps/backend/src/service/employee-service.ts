@@ -117,6 +117,25 @@ class EmployeeService {
     };
   }
 
+  async getAllDoctor({ hospitalId }: { hospitalId: number }): Promise<User[]> {
+    return dbClient.user.findMany({
+      where: {
+        hospitalId,
+        Department: {
+          Role: {
+            roleType: 'DOCTOR',
+          },
+        },
+      },
+      include: {
+        Department: true,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+  }
+
   getById(id: string) {
     return userService.getUserById(id);
   }

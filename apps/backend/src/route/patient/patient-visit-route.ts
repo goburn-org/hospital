@@ -83,6 +83,19 @@ route.post(
 );
 
 route.post(
+  `${baseVersion}${baseRoute}/open/:patientId/:visitId`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const patientId = req.params.patientId;
+    ensure(patientId, 'Invalid patientId params');
+    const visitId = req.params.visitId;
+    ensure(visitId, 'Invalid visitId params');
+    const data = await patientVisitService.open(visitId);
+    res.json(data);
+  }),
+);
+
+route.post(
   `${baseVersion}${baseRoute}/vital/:patientId/:visitId`,
   authMiddleware,
   errorHandler(async (req, res) => {

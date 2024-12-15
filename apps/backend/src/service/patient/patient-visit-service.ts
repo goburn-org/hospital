@@ -6,6 +6,8 @@ import {
   PaginatedResponse,
   PatientVisit,
   Prisma,
+  getToday,
+  getYesterday,
   patientVitalConverter,
   prescriptionDbConvertor,
 } from '@hospital/shared';
@@ -38,15 +40,17 @@ class PatientVisitService {
     });
   }
 
-  create(
+  async create(
     uhid: string,
     data: Omit<CreatePatientVisitRequest, 'billing'>,
   ): Promise<PatientVisit> {
     const authUser = useAuthUser();
+    const { yourToken } = await this.getToken(data.doctorId);
     return dbClient.patientVisit.create({
       data: {
         ...data,
         uhid,
+        token: yourToken,
         hospitalId: authUser.hospitalId,
         updatedBy: authUser.id,
       },
@@ -137,6 +141,49 @@ class PatientVisitService {
       }));
     }
     return result;
+  }
+
+  async getToken(doctorId: string) {
+    const yesterday = getYesterday();
+    const today = getToday();
+    const yourTokenPromise = dbClient.patientVisit.count({
+      where: {
+        doctorId,
+        createdAt: {
+          gte: yesterday,
+          lt: today,
+        },
+      },
+    });
+    const tokensCompletedPromise = dbClient.patientVisit.count({
+      where: {
+        doctorId,
+        orderOpenedAt: {
+          gte: yesterday,
+          lt: today,
+        },
+      },
+    });
+    const [yourToken, tokensCompleted] = await Promise.all([
+      yourTokenPromise,
+      tokensCompletedPromise,
+    ]);
+    return {
+      yourToken: yourToken + 1,
+      tokensCompleted: tokensCompleted,
+    };
+  }
+
+  async open(visitId: string): Promise<PatientVisit> {
+    const res = await dbClient.patientVisit.update({
+      where: {
+        id: visitId,
+      },
+      data: {
+        orderOpenedAt: new Date(),
+      },
+    });
+    return res;
   }
 }
 

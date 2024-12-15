@@ -1,6 +1,8 @@
 import {
   CreatePatientInput,
   ensure,
+  getToday,
+  getYesterday,
   PaginatedResponse,
   PaginateParamsWithSort,
   PatientResponse,
@@ -46,12 +48,31 @@ class PatientService {
     params: PaginateParamsWithSort,
   ): Promise<PaginatedResponse<PatientResponse>> {
     const authUser = useAuthUser();
+    const isAdmin = authUser.Department.Role?.isSuperAdmin;
+    console.log({ isAdmin });
     const { paginate, sort } = params || {};
+    const yesterday = getYesterday();
+    const today = getToday();
+    const query = isAdmin
+      ? {
+          hospitalId: authUser.hospitalId,
+          isDeleted: false,
+        }
+      : {
+          hospitalId: authUser.hospitalId,
+          isDeleted: false,
+          PatientVisit: {
+            some: {
+              doctorId: authUser.id,
+              checkInTime: {
+                gte: yesterday,
+                lt: today,
+              },
+            },
+          },
+        };
     const data = await dbClient.patient.findMany({
-      where: {
-        hospitalId: authUser.hospitalId,
-        isDeleted: false,
-      },
+      where: query,
       orderBy: sort
         ? {
             [sort.field]: sort.order,
@@ -72,10 +93,7 @@ class PatientService {
       skip: paginate ? paginate.limit * (paginate.page - 1) : undefined,
     });
     const total = await dbClient.patient.count({
-      where: {
-        hospitalId: authUser.hospitalId,
-        isDeleted: false,
-      },
+      where: query,
     });
     const result: PatientResponse[] = [];
     for (const d of data) {

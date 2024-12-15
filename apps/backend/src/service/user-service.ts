@@ -71,7 +71,11 @@ class UserService {
         id: payload.id,
       },
       include: {
-        Department: true,
+        Department: {
+          include: {
+            Role: true,
+          },
+        },
         Hospital: true,
       },
     });
@@ -87,7 +91,11 @@ class UserService {
         id,
       },
       include: {
-        Department: true,
+        Department: {
+          include: {
+            Role: true,
+          },
+        },
         Hospital: true,
       },
     });
@@ -108,7 +116,11 @@ class UserService {
         },
       },
       include: {
-        Department: true,
+        Department: {
+          include: {
+            Role: true,
+          },
+        },
         Hospital: true,
       },
     });

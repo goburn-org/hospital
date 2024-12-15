@@ -1,9 +1,10 @@
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreateRoleInput, createRoleSchema } from '@hospital/shared';
+import { CreateRoleInput, createRoleSchema, roleTypes } from '@hospital/shared';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
+import { FormSelect } from '../../component/form/form-select';
 import {
   FormMode,
   FormModeProvider,
@@ -69,6 +70,17 @@ export const RoleDrawer = ({
                   id="roleName"
                   labelName="Role Name"
                   placeholder=" Admin"
+                />
+              </div>
+              <div className="sm:col-span-6">
+                <FormSelect<CreateRoleInput>
+                  id="roleType"
+                  labelName="Role Type"
+                  options={roleTypes.map((role) => ({
+                    label: role,
+                    id: role,
+                  }))}
+                  isLoading={false}
                 />
               </div>
               <div className="sm:col-span-6">

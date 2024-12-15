@@ -43,6 +43,7 @@ route.post(
         roleName: req.body.role.roleName,
         hospitalId: hospital.id,
         isSuperAdmin: true,
+        roleType: 'ADMIN',
       },
     });
     const department = await dbClient.department.create({
@@ -62,7 +63,11 @@ route.post(
         department: department.id,
       },
       include: {
-        Department: true,
+        Department: {
+          include: {
+            Role: true,
+          },
+        },
         Hospital: true,
       },
     });

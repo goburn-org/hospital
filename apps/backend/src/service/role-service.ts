@@ -3,6 +3,7 @@ import {
   PaginatedResponse,
   PaginateParamsWithSort,
   Role,
+  RoleType,
   UpdateRoleInput,
 } from '@hospital/shared';
 import { dbClient } from '../prisma';
@@ -18,6 +19,7 @@ class RoleService {
     return dbClient.role.create({
       data: {
         ...role,
+        roleType: role.roleType as RoleType,
         updatedBy: user.id,
       },
     });
@@ -31,6 +33,7 @@ class RoleService {
       },
       data: {
         ...role,
+        roleType: role.roleType as RoleType,
         updatedBy: user.id,
       },
     });

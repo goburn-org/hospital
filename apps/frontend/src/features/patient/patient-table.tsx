@@ -7,7 +7,7 @@ import {
   useMaterialReactTable,
 } from 'material-react-table';
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CustomTable } from '../../component/table';
 import Tooltip from '../../component/tooltip';
 import { useVisitDrawer } from '../../provider/patient-drawer-context-provider';
@@ -15,7 +15,10 @@ import { routerConfig, TypingSpeed } from '../../utils/constants';
 import { toPagination, toSortField } from '../../utils/sort-transform';
 import { useDebounce } from '../../utils/use-debounce';
 import { useParam } from '../../utils/use-param';
-import { usePatientQuery } from './use-patient-query';
+import {
+  usePatientQuery,
+  usePatientVisitOpenMutation,
+} from './use-patient-query';
 
 export const PatientTable = () => {
   const { param, updateParam } = useParam<'q'>();
@@ -32,6 +35,8 @@ export const PatientTable = () => {
     search: _search,
   });
   const { show } = useVisitDrawer();
+  const navigate = useNavigate();
+  const { mutateAsync } = usePatientVisitOpenMutation();
   const columns = useMemo<MRT_ColumnDef<PatientResponse>[]>(
     () => [
       {
@@ -109,6 +114,24 @@ export const PatientTable = () => {
               >
                 New Visit
               </Link>
+            );
+          }
+          if (row.original.lastVisit && !row.original.lastVisit.orderOpenedAt) {
+            return (
+              <button
+                onClick={async () => {
+                  await mutateAsync({
+                    patientId: row.original.uhid,
+                    visitId: row.original.lastVisit!.id,
+                  });
+                  navigate(
+                    `${row.original.uhid}/visit/${row.original.lastVisit?.id}`,
+                  );
+                }}
+                className="btn-text-tertiary btn-small"
+              >
+                Open Order
+              </button>
             );
           }
           return (

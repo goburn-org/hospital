@@ -177,7 +177,9 @@ class PatientBillingService {
         ? {
             [sort.field]: sort.order,
           }
-        : undefined,
+        : {
+            checkInTime: 'desc',
+          },
       take: paginate?.limit,
       skip: paginate ? paginate.limit * (paginate.page - 1) : undefined,
       include: {

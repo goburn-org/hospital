@@ -1,5 +1,7 @@
 import {
   ensure,
+  getToday,
+  getYesterday,
   validateOpBillingReportQuery,
   validatePaginateParamsWithSort,
 } from '@hospital/shared';
@@ -134,11 +136,23 @@ route.get(
   errorHandler(async (req, res) => {
     ensure(validatePaginateParamsWithSort(req.query), 'Invalid sort params');
     ensure(validateOpBillingReportQuery(req.query), 'Invalid query params');
+    const yesterday = getYesterday();
+    const today = getToday();
+    const query =
+      !req.query.search && !req.query.query?.visitDate
+        ? {
+            ...req.query.query,
+            visitDate: {
+              from: yesterday,
+              to: today,
+            },
+          }
+        : req.query.query;
     const param = {
       paginate: req.query.paginate,
       sort: req.query.sort,
       search: req.query.search,
-      query: req.query.query,
+      query: query,
     };
     const data = await patientBillingService.getAll(param);
     res.json(data);

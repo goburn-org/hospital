@@ -149,3 +149,17 @@ export const isSameDate = (date1: DateLike, date2: DateLike) => {
     d1.getFullYear() === d2.getFullYear()
   );
 };
+
+export const getYesterday = () => {
+  const yesterday = new Date();
+  yesterday.setHours(0, 0, 0, 0);
+  yesterday.setDate(yesterday.getDate() - 1);
+  return yesterday;
+};
+
+export const getToday = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  today.setDate(today.getDate() + 1);
+  return today;
+};
