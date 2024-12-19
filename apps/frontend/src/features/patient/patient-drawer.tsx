@@ -5,6 +5,7 @@ import { Divider } from '@mui/material';
 import { useEffect } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
+import { RadioGroup } from '../../component/checkbox';
 import { FormInput } from '../../component/form/form-input';
 import { CustomSelect } from '../../component/select';
 import {
@@ -89,7 +90,7 @@ export const PatientDrawer = ({
                   isRequired
                   id="age"
                   labelName="Age"
-                  placeholder="1996"
+                  placeholder=" 20"
                   autoComplete="off"
                   type="number"
                 />
@@ -104,31 +105,31 @@ export const PatientDrawer = ({
                 />
               </div>
               <div className="sm:col-span-2">
-                <CustomSelect
-                  isRequired
-                  labelName="Gender"
-                  htmlFor="Gender"
-                  onChange={(e) => {
-                    formProvider.setValue('gender', e, {
-                      shouldValidate: true,
-                    });
-                  }}
-                  value={formProvider.watch('gender')}
-                  error={formProvider.formState.errors.gender?.message}
+                <RadioGroup
                   options={[
                     {
-                      id: 'MALE' as const,
+                      value: 'MALE' as const,
                       label: 'Male',
                     },
                     {
-                      id: 'FEMALE' as const,
+                      value: 'FEMALE' as const,
                       label: 'Female',
                     },
                     {
-                      id: 'OTHER' as const,
+                      value: 'OTHER' as const,
                       label: 'Other',
                     },
                   ]}
+                  selectedValue={formProvider.watch('gender')}
+                  onChange={(e) => {
+                    formProvider.setValue('gender', e, {
+                      shouldDirty: true,
+                      shouldTouch: true,
+                      shouldValidate: true,
+                    });
+                  }}
+                  label="Gender"
+                  error={formProvider.formState.errors.gender?.message}
                 />
               </div>
               <div className="sm:col-span-2">

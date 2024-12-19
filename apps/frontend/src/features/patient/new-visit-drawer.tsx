@@ -47,7 +47,7 @@ export const PatientVisitDrawer = ({
     <div className="w-[800px]">
       <div className="flex items-center justify-between">
         <h1 className="mb-2 text-2xl font-semibold capitalize text-gray-400">
-          New Patient Visit
+          Orders
         </h1>
         <button
           type="button"

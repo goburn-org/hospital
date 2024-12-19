@@ -14,17 +14,21 @@ export const Radio = ({
     <span className="text-gray-700">{label}</span>
   </label>
 );
+interface Option {
+  label: string;
+  value: string;
+}
 
-export const RadioGroup = ({
+export const RadioGroup = <T extends Option>({
   options,
   selectedValue,
   onChange,
   label,
   error,
 }: {
-  options: { label: string; value: string }[];
+  options: T[];
   selectedValue: string;
-  onChange: (value: string) => void;
+  onChange: (value: T['value']) => void;
   label: string;
   error?: string;
 }) => (

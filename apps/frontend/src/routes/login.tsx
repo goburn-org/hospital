@@ -41,7 +41,6 @@ export const Component = () => {
         />
         <div className="text-center">
           <h1 className="text-3xl font-bold">Welcome to HMS</h1>
-          <p className="mt-2 text-gray-400">Built in ❤️ with CK</p>
         </div>
       </div>
 
