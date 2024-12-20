@@ -121,6 +121,10 @@ const patientRoutes = (
         lazy={() => import('./routes/patient/checkout')}
       />
     </Route>
+    <Route
+      path={`/${routerConfig.Patient}/:patientId/${routerConfig.Visit}/:visitId/${routerConfig.Edit}`}
+      lazy={() => import('./routes/patient/edit-visit')}
+    />
   </>
 );
 

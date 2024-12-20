@@ -35,6 +35,9 @@ class PatientOrderService {
         order: {
           connect: body.order?.map((o) => ({ id: o.id })),
         },
+        doctorIds: {
+          set: Object.values(body.orderToDoctor),
+        },
         orderToDoctor: body.orderToDoctor,
         remark: body.order?.reduce(
           (acc, o) => ({

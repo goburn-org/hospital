@@ -10,6 +10,7 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CustomTable } from '../../component/table';
 import Tooltip from '../../component/tooltip';
+import { useUserQuery } from '../../component/user-query';
 import { useVisitDrawer } from '../../provider/patient-drawer-context-provider';
 import { routerConfig, TypingSpeed } from '../../utils/constants';
 import { toPagination, toSortField } from '../../utils/sort-transform';
@@ -35,6 +36,7 @@ export const PatientTable = () => {
     search: _search,
   });
   const { show } = useVisitDrawer();
+  const { data: user } = useUserQuery();
   const navigate = useNavigate();
   const { mutateAsync } = usePatientVisitOpenMutation();
   const columns = useMemo<MRT_ColumnDef<PatientResponse>[]>(
@@ -88,7 +90,7 @@ export const PatientTable = () => {
         accessorFn: (row) => row.lastVisit?.checkInTime,
         header: 'Last Visit',
         filterVariant: 'date-range',
-        Cell: ({ renderedCellValue, cell }) => {
+        Cell: ({ cell }) => {
           const value = cell.getValue() as DateLike | undefined;
           if (!value) {
             return null;
@@ -113,6 +115,31 @@ export const PatientTable = () => {
                 className="btn-text btn-small"
               >
                 New Visit
+              </Link>
+            );
+          }
+
+          if (isCheckout || !row.original.lastVisit) {
+            return (
+              <Link
+                to={`${row.original.uhid}/visit/${routerConfig.New}`}
+                className="btn-text btn-small"
+              >
+                New Visit
+              </Link>
+            );
+          }
+          const designatedDocIds = Object.values(
+            row.original.lastVisit.PatientOrder?.orderToDoctor ?? {},
+          );
+          const isDesignatedDoctor = designatedDocIds.includes(user?.id ?? '');
+          if (!isDesignatedDoctor) {
+            return (
+              <Link
+                className="btn-text-tertiary btn-small"
+                to={`${row.original.uhid}/visit/${row.original.lastVisit?.id}/${routerConfig.Edit}`}
+              >
+                Add Order
               </Link>
             );
           }
@@ -145,7 +172,7 @@ export const PatientTable = () => {
         },
       },
     ],
-    [data?.meta.total],
+    [data?.meta.total, mutateAsync, navigate, user?.id],
     //end
   );
 

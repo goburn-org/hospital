@@ -11,11 +11,13 @@ import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Link, useParams } from 'react-router-dom';
 import PageLoading from '../../../component/page-loader';
+import { Rupees } from '../../../component/rupees';
 import { CustomTable } from '../../../component/table';
 import { useOrderQuery } from '../../../provider/use-order';
 import { useTaxCode } from '../../../provider/use-tax-code';
 import { routerConfig } from '../../../utils/constants';
 import { TIMER_S, useTimer } from '../../../utils/use-timer';
+import { useDoctorQuery } from '../../employee/use-employee-query';
 import {
   usePatientOrderMutation,
   usePatientVisitByIdQuery,
@@ -25,9 +27,20 @@ import { OrderCreationForm } from './patient-order';
 const OrderTable = ({ onEdit }: { onEdit: (orderId: string) => void }) => {
   const { data, isLoading } = useOrderQuery();
   const { data: taxCode } = useTaxCode();
+  const { data: doctor } = useDoctorQuery();
   const { watch } = useFormContext<CreatePatientOrderRequest>();
+  const addedOrders = watch('order') || [];
+  const orderToDoctor = watch('orderToDoctor') || [];
+  const totalAmount = useMemo(() => {
+    return addedOrders.reduce((acc, o) => {
+      const order = data?.find((r) => r.id === o.id);
+      if (!order) return acc;
+      const tax = taxCode?.find((t) => t.id === order.taxCodeId);
+      if (!tax) return acc;
+      return acc + computeFinalPrice(order.baseAmount, tax);
+    }, 0);
+  }, [addedOrders, data, taxCode]);
   const addedOrderDetails = useMemo(() => {
-    const addedOrders = watch('order') || [];
     return addedOrders.map((order) => {
       const details = data?.find((o) => o.id === order.id);
       return {
@@ -35,7 +48,7 @@ const OrderTable = ({ onEdit }: { onEdit: (orderId: string) => void }) => {
         remark: order.remark,
       };
     });
-  }, [data, watch]);
+  }, [addedOrders, data]);
   const columns = useMemo<MRT_ColumnDef<(typeof addedOrderDetails)[number]>[]>(
     () => [
       {
@@ -60,13 +73,24 @@ const OrderTable = ({ onEdit }: { onEdit: (orderId: string) => void }) => {
         header: 'Remark',
       },
       {
+        header: 'Referred To',
+        Cell: ({ row }) => {
+          if (!orderToDoctor) return null;
+          const doctorId = row?.original.id
+            ? orderToDoctor[row?.original.id]
+            : '';
+          const doctorName = doctor?.find((d) => d.id === doctorId)?.name;
+          return <div>{doctorName}</div>;
+        },
+      },
+      {
         header: 'Rate',
         Cell: ({ row }) => {
           if (!row?.original.baseAmount) return null;
           const tax = taxCode?.find((t) => t.id === row?.original.taxCodeId);
           if (!tax) return null;
           const finalAmount = computeFinalPrice(row.original.baseAmount, tax);
-          return <div>{finalAmount}</div>;
+          return <Rupees amount={finalAmount} />;
         },
       },
       {
@@ -87,7 +111,7 @@ const OrderTable = ({ onEdit }: { onEdit: (orderId: string) => void }) => {
         },
       },
     ],
-    [taxCode],
+    [doctor, onEdit, orderToDoctor, taxCode],
     //end
   );
 
@@ -106,7 +130,17 @@ const OrderTable = ({ onEdit }: { onEdit: (orderId: string) => void }) => {
       </div>
     );
   }
-  return <CustomTable table={table} menu={[]} />;
+  return (
+    <div className="flex flex-col gap-4">
+      <CustomTable table={table} menu={[]} />
+      <span className="flex justify-end gap-6 text-lg font-semibold mr-16 ">
+        <span className="text-gray-500">Total</span>
+        <span>
+          <Rupees amount={totalAmount} />
+        </span>
+      </span>
+    </div>
+  );
 };
 
 const Form = ({

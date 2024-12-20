@@ -127,6 +127,7 @@ export type VisitBill = {
     reason: Maybe<string>;
     items: any;
     paymentMode: PaymentMode;
+    accountId: Maybe<number>;
   }[];
 };
 

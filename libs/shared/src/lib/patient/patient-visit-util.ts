@@ -6,8 +6,13 @@ import { CreatePatientPrescriptionRequest } from './patient-prescription-util';
 import { CreatePatientVitalResponse } from './patient-vital-util';
 
 export const createPatientVisitSchema = z.object({
-  guardianName: z.string().min(3),
-  guardianMobile: z.string().min(10, 'Incorrect').max(10, 'Incorrect'),
+  guardianName: z.string().min(3).optional().nullable(),
+  guardianMobile: z
+    .string()
+    .min(10, 'Incorrect')
+    .max(10, 'Incorrect')
+    .optional()
+    .nullable(),
   orders: z.array(
     z.object({
       orderId: z.string(),

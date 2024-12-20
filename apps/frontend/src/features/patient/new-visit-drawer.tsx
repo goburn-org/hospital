@@ -1,4 +1,3 @@
-import { XMarkIcon } from '@heroicons/react/20/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   AvailableOrder,
@@ -18,6 +17,7 @@ import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
 import { PaidBy } from '../../component/paid-by';
+import { PatientInfoTitleDrawer } from '../../component/patient-info-title-drawer';
 import { Rupees } from '../../component/rupees';
 import { CustomSelect } from '../../component/select';
 import Tooltip from '../../component/tooltip';
@@ -28,9 +28,11 @@ import {
 import { useOrderQuery } from '../../provider/use-order';
 import { useTaxCode } from '../../provider/use-tax-code';
 import { classNames } from '../../utils/classNames';
+import { routerConfig } from '../../utils/constants';
 import { HttpService } from '../../utils/http';
 import { useEsc } from '../../utils/use-esc';
 import { useDoctorQuery } from '../employee/use-employee-query';
+import { usePatientByIdQuery } from './use-patient-query';
 import { usePatientVisitMutation } from './use-patient-visit';
 
 export const PatientVisitDrawer = ({
@@ -45,30 +47,26 @@ export const PatientVisitDrawer = ({
     resolver: zodResolver(createPatientVisitSchema),
     defaultValues,
   });
+  const { patientId } = useParams();
+  ensure(patientId, 'Patient id is required');
+  const { data: patient } = usePatientByIdQuery(patientId);
   useEsc(() => {
-    navigate('..', {
+    navigate(routerConfig.Patient, {
       replace: true,
     });
   });
   return (
     <div className="w-[800px]">
-      <div className="flex items-center justify-between">
-        <h1 className="mb-2 text-2xl font-semibold capitalize text-gray-400">
-          Orders
-        </h1>
-        <button
-          type="button"
-          aria-label="Close panel"
-          className="btn-text btn-text-secondary"
-          onClick={() => {
-            navigate('../', {
-              replace: true,
-            });
-          }}
-        >
-          <XMarkIcon className="h-8 w-8" />
-        </button>
-      </div>
+      <PatientInfoTitleDrawer
+        name={patient?.aadharName ?? patient?.name}
+        city={patient?.area}
+        mobile={patient?.mobile}
+        onClose={() => {
+          navigate(routerConfig.Patient, {
+            replace: true,
+          });
+        }}
+      />
       <FormModeProvider mode={FormMode.Editable} oldId={departmentId}>
         <FormProvider {...formProvider}>
           <form className="flex flex-col gap-12">

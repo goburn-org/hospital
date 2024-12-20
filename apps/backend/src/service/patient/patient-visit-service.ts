@@ -8,6 +8,8 @@ import {
   PatientVisitResponse,
   Prisma,
   TokenResponse,
+  getToday,
+  getYesterday,
   patientVitalConverter,
   prescriptionDbConvertor,
 } from '@hospital/shared';
@@ -192,38 +194,42 @@ class PatientVisitService {
   }
 
   async getToken(doctorId: string): Promise<TokenResponse> {
+    const yesterday = getYesterday();
+    const today = getToday();
+    const yourTokenPromise = dbClient.patientVisit.count({
+      where: {
+        PatientOrder: {
+          doctorIds: {
+            has: doctorId,
+          },
+        },
+        createdAt: {
+          gte: yesterday,
+          lt: today,
+        },
+      },
+    });
+    const tokensCompletedPromise = dbClient.patientVisit.count({
+      where: {
+        PatientOrder: {
+          doctorIds: {
+            has: doctorId,
+          },
+        },
+        orderOpenedAt: {
+          gte: yesterday,
+          lt: today,
+        },
+      },
+    });
+    const [yourToken, tokensCompleted] = await Promise.all([
+      yourTokenPromise,
+      tokensCompletedPromise,
+    ]);
     return {
-      yourToken: 0,
-      tokensCompleted: 0,
+      yourToken: yourToken + 1,
+      tokensCompleted: tokensCompleted,
     };
-    // const yesterday = getYesterday();
-    // const today = getToday();
-    // const yourTokenPromise = dbClient.patientVisit.count({
-    //   where: {
-    //     doctorId,
-    //     createdAt: {
-    //       gte: yesterday,
-    //       lt: today,
-    //     },
-    //   },
-    // });
-    // const tokensCompletedPromise = dbClient.patientVisit.count({
-    //   where: {
-    //     doctorId,
-    //     orderOpenedAt: {
-    //       gte: yesterday,
-    //       lt: today,
-    //     },
-    //   },
-    // });
-    // const [yourToken, tokensCompleted] = await Promise.all([
-    //   yourTokenPromise,
-    //   tokensCompletedPromise,
-    // ]);
-    // return {
-    //   yourToken: yourToken + 1,
-    //   tokensCompleted: tokensCompleted,
-    // };
   }
 
   async open(visitId: string): Promise<PatientVisit> {

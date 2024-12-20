@@ -50,7 +50,6 @@ class PatientService {
   ): Promise<PaginatedResponse<PatientResponse>> {
     const authUser = useAuthUser();
     const isAdmin = authUser.Department.Role?.isSuperAdmin;
-    console.log({ isAdmin });
     const { paginate, sort } = params || {};
     const yesterday = getYesterday();
     const today = getToday();
