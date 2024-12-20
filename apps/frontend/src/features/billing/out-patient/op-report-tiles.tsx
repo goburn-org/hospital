@@ -1,12 +1,5 @@
+import { Rupees } from '../../../component/rupees';
 import { Tile, TileLoader } from '../../../component/tiles';
-
-const Rupees = ({ value }: { value: number }) => {
-  return (
-    <span className="">
-      <p className="text-sm text-gray-500 inline"> &#8377;</p> {value}
-    </span>
-  );
-};
 
 export const OpPatientReportTiles = ({
   isLoading,
@@ -35,7 +28,7 @@ export const OpPatientReportTiles = ({
       />
       <Tile
         label={<span className="text-red-400">Total Income</span>}
-        value={<Rupees value={totalIncome} />}
+        value={<Rupees amount={totalIncome} />}
       />
     </div>
   );

@@ -12,3 +12,13 @@ export type TaxCodeRequest = z.infer<typeof taxCodeSchema>;
 export type TaxCodeResponse = z.infer<typeof taxCodeSchema> & {
   id: number;
 };
+
+export const computeFinalPrice = (
+  baseAmount: number,
+  taxCode: TaxCodeResponse,
+) => {
+  const res = baseAmount + baseAmount * (taxCode.taxRate / 100);
+  const roundToTwo = (num: number) =>
+    Math.round((num + Number.EPSILON) * 100) / 100;
+  return roundToTwo(res);
+};

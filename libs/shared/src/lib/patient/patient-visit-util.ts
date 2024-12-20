@@ -6,8 +6,14 @@ import { CreatePatientPrescriptionRequest } from './patient-prescription-util';
 import { CreatePatientVitalResponse } from './patient-vital-util';
 
 export const createPatientVisitSchema = z.object({
-  doctorId: z.string(),
-  checkInTime: z.preprocess((v) => new Date(v as string), z.date()),
+  guardianName: z.string().min(3),
+  guardianMobile: z.string().min(10, 'Incorrect').max(10, 'Incorrect'),
+  orders: z.array(
+    z.object({
+      orderId: z.string(),
+      doctorId: z.string().nullable().optional(),
+    }),
+  ),
   billing: z.object({
     advanceAmount: z.number(),
     cashAmount: z.number().nullable().optional(),
@@ -27,17 +33,23 @@ export type CreatePatientVisitRequest = z.infer<
   typeof createPatientVisitSchema
 >;
 
-export type PatientVisitResponse = Maybe<PatientVisit>;
+export type PatientVisitResponse = Maybe<
+  PatientVisit & {
+    PatientOrder: {
+      doctorIds: Record<string, string>;
+    } | null;
+  }
+>;
 
 export const DetailedPatientVisitGetPayload = {
   include: {
     Assessment: true,
     PatientVital: true,
     PatientPrescription: true,
-    Doctor: true,
     PatientOrder: {
       select: {
         remark: true,
+        doctorIds: true,
         order: {
           select: {
             id: true,
@@ -46,6 +58,7 @@ export const DetailedPatientVisitGetPayload = {
             consultationRequired: true,
             baseAmount: true,
             taxCodeId: true,
+            tags: true,
           },
         },
       },
@@ -65,4 +78,7 @@ export type DetailedPatientVisit = _DetailedPatientVisit & {
     updatedBy: Maybe<string>;
   }>;
   PatientPrescription: Maybe<CreatePatientPrescriptionRequest>;
+  PatientOrder: {
+    doctorIds: Record<string, string>;
+  };
 };

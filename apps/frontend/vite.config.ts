@@ -26,6 +26,7 @@ export default defineConfig({
   build: {
     outDir: '../../dist/apps/frontend',
     emptyOutDir: true,
+    sourcemap: true,
     reportCompressedSize: true,
     commonjsOptions: {
       transformMixedEsModules: true,

@@ -84,6 +84,13 @@ class PatientService {
           where: {
             isDeleted: false,
           },
+          include: {
+            PatientOrder: {
+              select: {
+                doctorIds: true,
+              },
+            },
+          },
           orderBy: {
             checkInTime: 'desc',
           },
@@ -100,7 +107,16 @@ class PatientService {
       const { PatientVisit, ...rest } = d;
       result.push({
         ...rest,
-        lastVisit: d.PatientVisit[0] ?? null,
+        lastVisit:
+          PatientVisit.length > 0
+            ? {
+                ...PatientVisit?.[0],
+                PatientOrder: {
+                  doctorIds: PatientVisit?.[0]?.PatientOrder
+                    ?.doctorIds as Record<string, string>,
+                },
+              }
+            : undefined,
         age: d.bornYear ? new Date().getFullYear() - d.bornYear : undefined,
       });
     }

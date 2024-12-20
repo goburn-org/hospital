@@ -9,7 +9,7 @@ import {
   MRT_SortingState,
   useMaterialReactTable,
 } from 'material-react-table';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { TableLoading } from '../../../component/page-loader';
 import { CustomTable } from '../../../component/table';
 import Tooltip from '../../../component/tooltip';
@@ -20,7 +20,7 @@ import { useParam } from '../../../utils/use-param';
 import { useAllOrderBillingQuery } from '../../patient/use-patient-query';
 
 export const OrderWiseReport = () => {
-  const { param, updateParam } = useParam<'q'>();
+  const { param, updateParam, resetAll } = useParam<'q'>();
   const search = param.q;
   const _search = useDebounce(search, TypingSpeed);
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
@@ -33,6 +33,10 @@ export const OrderWiseReport = () => {
     sort: toSortField(sorting),
     search: _search,
   });
+
+  useEffect(() => {
+    resetAll();
+  }, []);
 
   const columns = useMemo<MRT_ColumnDef<AllPatientVisitBillingResponse>[]>(
     () => [

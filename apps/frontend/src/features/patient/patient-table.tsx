@@ -80,8 +80,8 @@ export const PatientTable = () => {
         enableSorting: true,
       },
       {
-        accessorKey: 'city',
-        header: 'City',
+        accessorKey: 'area',
+        header: 'Area',
         enableSorting: true,
       },
       {

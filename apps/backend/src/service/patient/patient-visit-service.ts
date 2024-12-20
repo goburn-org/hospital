@@ -5,10 +5,9 @@ import {
   PaginateParamsWithSort,
   PaginatedResponse,
   PatientVisit,
+  PatientVisitResponse,
   Prisma,
   TokenResponse,
-  getToday,
-  getYesterday,
   patientVitalConverter,
   prescriptionDbConvertor,
 } from '@hospital/shared';
@@ -16,9 +15,9 @@ import { dbClient } from '../../prisma';
 import { useAuthUser } from '../../provider/async-context';
 
 class PatientVisitService {
-  getLastVisit(patientId: string): Promise<PatientVisit | null> {
+  async getLastVisit(patientId: string): Promise<PatientVisitResponse | null> {
     const authUser = useAuthUser();
-    return dbClient.patientVisit.findFirst({
+    const r = await dbClient.patientVisit.findFirst({
       where: {
         uhid: patientId,
         hospitalId: authUser.hospitalId,
@@ -27,7 +26,39 @@ class PatientVisitService {
       orderBy: {
         checkInTime: 'desc',
       },
+      include: {
+        PatientOrder: {
+          select: {
+            doctorIds: true,
+            visitId: true,
+          },
+        },
+      },
     });
+    if (!r) {
+      return null;
+    }
+    return {
+      id: r.id,
+      uhid: r.uhid,
+      guardianName: r.guardianName,
+      guardianMobile: r.guardianMobile,
+      hospitalId: r.hospitalId,
+      checkInTime: r.checkInTime,
+      checkOutTime: r.checkOutTime,
+      isDeleted: r.isDeleted,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+      updatedBy: r.updatedBy,
+      departmentId: r.departmentId,
+      orderOpenedAt: r.orderOpenedAt,
+      token: r.token,
+      PatientOrder: r.PatientOrder
+        ? {
+            doctorIds: r.PatientOrder.doctorIds as Record<string, string>,
+          }
+        : null,
+    };
   }
 
   checkout(visitId: string) {
@@ -43,15 +74,14 @@ class PatientVisitService {
 
   async create(
     uhid: string,
-    data: Omit<CreatePatientVisitRequest, 'billing'>,
+    data: Omit<CreatePatientVisitRequest, 'billing' | 'orders'>,
   ): Promise<PatientVisit> {
     const authUser = useAuthUser();
-    const { yourToken } = await this.getToken(data.doctorId);
     return dbClient.patientVisit.create({
       data: {
         ...data,
         uhid,
-        token: yourToken,
+        checkInTime: new Date(),
         hospitalId: authUser.hospitalId,
         updatedBy: authUser.id,
       },
@@ -79,6 +109,13 @@ class PatientVisitService {
           },
       take: paginate ? paginate.limit : undefined,
       skip: paginate ? paginate.limit * (paginate.page - 1) : undefined,
+      include: {
+        PatientOrder: {
+          select: {
+            doctorIds: true,
+          },
+        },
+      },
     });
     const totalPromise = dbClient.patientVisit.count({
       where: {
@@ -117,7 +154,17 @@ class PatientVisitService {
     const result: DetailedPatientVisit = {
       ...data,
       Assessment: null,
-      PatientOrder: data.PatientOrder,
+      PatientOrder: data.PatientOrder
+        ? ({
+            ...data.PatientOrder,
+            remark: data.PatientOrder?.remark as any,
+            doctorIds: data.PatientOrder?.doctorIds as Record<string, string>,
+            order: data.PatientOrder?.order.map((o) => ({
+              ...o,
+              remark: (data.PatientOrder?.remark as any)?.[o.id],
+            })),
+          } as any)
+        : null,
       PatientPrescription: null,
       PatientVital: null,
     };
@@ -135,44 +182,42 @@ class PatientVisitService {
         data.PatientPrescription.list,
       ) as any;
     }
-    if (data.PatientOrder?.order) {
-      result.PatientOrder!.order = data.PatientOrder.order.map((o) => ({
-        ...o,
-        remark: (data.PatientOrder?.remark as any)?.[o.id],
-      }));
-    }
     return result;
   }
 
   async getToken(doctorId: string): Promise<TokenResponse> {
-    const yesterday = getYesterday();
-    const today = getToday();
-    const yourTokenPromise = dbClient.patientVisit.count({
-      where: {
-        doctorId,
-        createdAt: {
-          gte: yesterday,
-          lt: today,
-        },
-      },
-    });
-    const tokensCompletedPromise = dbClient.patientVisit.count({
-      where: {
-        doctorId,
-        orderOpenedAt: {
-          gte: yesterday,
-          lt: today,
-        },
-      },
-    });
-    const [yourToken, tokensCompleted] = await Promise.all([
-      yourTokenPromise,
-      tokensCompletedPromise,
-    ]);
     return {
-      yourToken: yourToken + 1,
-      tokensCompleted: tokensCompleted,
+      yourToken: 0,
+      tokensCompleted: 0,
     };
+    // const yesterday = getYesterday();
+    // const today = getToday();
+    // const yourTokenPromise = dbClient.patientVisit.count({
+    //   where: {
+    //     doctorId,
+    //     createdAt: {
+    //       gte: yesterday,
+    //       lt: today,
+    //     },
+    //   },
+    // });
+    // const tokensCompletedPromise = dbClient.patientVisit.count({
+    //   where: {
+    //     doctorId,
+    //     orderOpenedAt: {
+    //       gte: yesterday,
+    //       lt: today,
+    //     },
+    //   },
+    // });
+    // const [yourToken, tokensCompleted] = await Promise.all([
+    //   yourTokenPromise,
+    //   tokensCompletedPromise,
+    // ]);
+    // return {
+    //   yourToken: yourToken + 1,
+    //   tokensCompleted: tokensCompleted,
+    // };
   }
 
   async open(visitId: string): Promise<PatientVisit> {

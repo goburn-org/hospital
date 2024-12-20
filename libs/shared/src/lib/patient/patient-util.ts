@@ -5,7 +5,6 @@ import { PatientVisitResponse } from './patient-visit-util';
 
 export const createPatientSchema = z.object({
   name: z.string().min(3, 'At least 3 characters'),
-  fatherName: z.string().min(3, 'At least 3 characters'),
   gender: z.enum(['MALE', 'FEMALE', 'OTHER'], {
     message: 'Invalid Gender',
   }),
@@ -25,19 +24,8 @@ export const createPatientSchema = z.object({
     .optional()
     .nullable(),
   aadharName: z.string().min(3, 'At least 3 characters').optional().nullable(),
-  bloodGroup: z
-    .string()
-    .refine(
-      (value) =>
-        ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].includes(value),
-      {
-        message: 'Invalid Blood Group',
-      },
-    )
-    .optional()
-    .nullable(),
   address: z.string().min(5, 'Address too short').optional().nullable(),
-  city: z.string().min(2, 'City name too short').optional().nullable(),
+  area: z.string().min(2, 'Area name too short').optional().nullable(),
   pincode: z
     .string()
     .regex(/^\d{6}$/, 'Invalid Pincode')

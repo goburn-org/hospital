@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  computeFinalPrice,
   CreatePatientOrderRequest,
   createPatientOrderSchema,
   ensure,
@@ -12,6 +13,7 @@ import { Link, useParams } from 'react-router-dom';
 import PageLoading from '../../../component/page-loader';
 import { CustomTable } from '../../../component/table';
 import { useOrderQuery } from '../../../provider/use-order';
+import { useTaxCode } from '../../../provider/use-tax-code';
 import { routerConfig } from '../../../utils/constants';
 import { TIMER_S, useTimer } from '../../../utils/use-timer';
 import {
@@ -22,6 +24,7 @@ import { OrderCreationForm } from './patient-order';
 
 const OrderTable = ({ onEdit }: { onEdit: (orderId: string) => void }) => {
   const { data, isLoading } = useOrderQuery();
+  const { data: taxCode } = useTaxCode();
   const { watch } = useFormContext<CreatePatientOrderRequest>();
   const addedOrders = watch('order') || [];
   const addedOrderDetails = useMemo(() => {
@@ -57,8 +60,14 @@ const OrderTable = ({ onEdit }: { onEdit: (orderId: string) => void }) => {
         header: 'Remark',
       },
       {
-        accessorKey: 'baseAmount',
         header: 'Rate',
+        Cell: ({ row }) => {
+          if (!row?.original.baseAmount) return null;
+          const tax = taxCode?.find((t) => t.id === row?.original.taxCodeId);
+          if (!tax) return null;
+          const finalAmount = computeFinalPrice(row.original.baseAmount, tax);
+          return <div>{finalAmount}</div>;
+        },
       },
       {
         header: 'Action',
@@ -78,7 +87,7 @@ const OrderTable = ({ onEdit }: { onEdit: (orderId: string) => void }) => {
         },
       },
     ],
-    [],
+    [taxCode],
     //end
   );
 
@@ -180,6 +189,7 @@ export const PatientOrder = () => {
           patientId,
           visitId,
           order: data.PatientOrder?.order ?? [],
+          doctorIds: data.PatientOrder?.doctorIds ?? {},
         }}
       />
     </div>

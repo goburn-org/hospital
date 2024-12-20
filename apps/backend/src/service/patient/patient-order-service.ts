@@ -6,6 +6,7 @@ import {
   getToday,
   getYesterday,
   Maybe,
+  OrderTokenResponse,
   PaginateParamsWithSort,
   PatientOrderResponse,
 } from '@hospital/shared';
@@ -34,6 +35,7 @@ class PatientOrderService {
         order: {
           connect: body.order?.map((o) => ({ id: o.id })),
         },
+        doctorIds: body.doctorIds,
         remark: body.order?.reduce(
           (acc, o) => ({
             ...acc,
@@ -53,6 +55,7 @@ class PatientOrderService {
       order: res.order.map((o) => ({ id: o.id, remark: remarks[o.id] })),
       patientId: res.PatientVisit.uhid,
       visitId: res.visitId,
+      doctorIds: res.doctorIds as Record<string, string>,
     };
   }
 
@@ -166,6 +169,53 @@ class PatientOrderService {
       }),
       {} as AllOrderTokenResponse,
     );
+    return countByOrderId;
+  }
+
+  async getToken(orderId: string): Promise<OrderTokenResponse> {
+    const user = useAuthUser();
+    const yesterday = getYesterday();
+    const today = getToday();
+    const orders = await dbClient.patientOrder.findMany({
+      where: {
+        PatientVisit: {
+          hospitalId: user.hospitalId,
+        },
+        createdAt: {
+          gte: yesterday,
+          lt: today,
+        },
+        order: {
+          some: {
+            id: orderId,
+          },
+        },
+      },
+      include: {
+        order: true,
+      },
+    });
+    const paidOrder = await dbClient.billingPatientOrderLineItem.findMany({
+      where: {
+        hospitalId: user.hospitalId,
+        isRemoved: false,
+        createdAt: {
+          gte: yesterday,
+          lt: today,
+        },
+        order: {
+          id: orderId,
+        },
+      },
+      include: {
+        order: true,
+      },
+    });
+    const countByOrderId = {
+      orderName: orders[0]?.order[0]?.name,
+      total: orders.length,
+      completed: paidOrder.length,
+    };
     return countByOrderId;
   }
 }

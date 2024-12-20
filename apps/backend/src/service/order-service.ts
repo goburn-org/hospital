@@ -1,4 +1,8 @@
-import { AvailableOrder, CONSULTATION_ORDER_TAG } from '@hospital/shared';
+import {
+  AvailableOrder,
+  CONSULTATION_ORDER_TAG,
+  orderConverter,
+} from '@hospital/shared';
 import { dbClient } from '../prisma';
 
 class OrderService {
@@ -11,18 +15,21 @@ class OrderService {
         department: true,
       },
     });
-    return res.map((r) => ({
-      description: r.description,
-      id: r.id,
-      name: r.name,
-      departmentId: r.department?.id,
-      departmentName: r.department?.name,
-      baseAmount: r.baseAmount,
-      consultationRequired: r.consultationRequired,
-      maxDiscount: r.maxDiscount,
-      taxCodeId: r.taxCodeId,
-      tags: r.tags,
-    }));
+    return res.map((r) => orderConverter.to(r));
+  }
+
+  async getOrdersByIds(ids: string[]): Promise<AvailableOrder[]> {
+    const res = await dbClient.order.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      include: {
+        department: true,
+      },
+    });
+    return res.map((r) => orderConverter.to(r));
   }
 
   async getConsultationOrder(hospitalId: number): Promise<AvailableOrder> {
@@ -40,18 +47,7 @@ class OrderService {
     if (!order) {
       throw new Error('Consultation order not found');
     }
-    return {
-      description: order.description,
-      id: order.id,
-      name: order.name,
-      departmentId: order.department?.id,
-      departmentName: order.department?.name,
-      baseAmount: order.baseAmount,
-      consultationRequired: order.consultationRequired,
-      maxDiscount: order.maxDiscount,
-      taxCodeId: order.taxCodeId,
-      tags: order.tags,
-    };
+    return orderConverter.to(order);
   }
 }
 

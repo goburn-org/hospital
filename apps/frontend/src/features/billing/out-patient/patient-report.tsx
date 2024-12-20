@@ -9,7 +9,7 @@ import {
   MRT_SortingState,
   useMaterialReactTable,
 } from 'material-react-table';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TableLoading } from '../../../component/page-loader';
 import { CustomTable } from '../../../component/table';
@@ -23,7 +23,7 @@ import ProjectStatusFilter from './op-report-filter';
 import { OpPatientReportTiles } from './op-report-tiles';
 
 export const PatientReport = () => {
-  const { param, updateParam } = useParam<
+  const { param, updateParam, resetAll } = useParam<
     'q' | 'orderIds' | 'status' | 'visitDate'
   >();
   const search = param.q;
@@ -48,6 +48,10 @@ export const PatientReport = () => {
       visitDate,
     },
   });
+
+  useEffect(() => {
+    resetAll();
+  }, []);
 
   const columns = useMemo<MRT_ColumnDef<AllPatientVisitBillingResponse>[]>(
     () => [

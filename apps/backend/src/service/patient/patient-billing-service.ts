@@ -1,6 +1,7 @@
 import {
   AllPatientVisitBillingResponse,
   AvailableOrder,
+  CONSULTATION_ORDER_TAG,
   HttpError,
   OpBillingReportQuery,
   OpBillingReportResponse,
@@ -122,7 +123,7 @@ class PatientBillingService {
     return {
       data: visits.map((v) => ({
         patient: {
-          city: v.Patient.city,
+          city: v.Patient.area,
           lastVisit: v.checkInTime,
           mobile: v.Patient.mobile,
           name: v.Patient.name,
@@ -261,7 +262,7 @@ class PatientBillingService {
     return {
       data: visits.map((v) => ({
         patient: {
-          city: v.Patient.city,
+          city: v.Patient.area,
           lastVisit: v.checkInTime,
           mobile: v.Patient.mobile,
           name: v.Patient.name,
@@ -319,15 +320,14 @@ class PatientBillingService {
     };
   }
 
-  async createOutpatientBilling(
-    visitId: string,
-    isConsultation: boolean,
-    order: AvailableOrder[],
-  ) {
+  async createOutpatientBilling(visitId: string, order: AvailableOrder[]) {
     const authUser = useAuthUser();
     const taxCodes = await taxCodeService.getTaxCodes([
       ...new Set(order.map((o) => o.taxCodeId)),
     ]);
+    const isConsultation = order.some((o) =>
+      o.tags.includes(CONSULTATION_ORDER_TAG),
+    );
     if (isConsultation) {
       const consultations =
         await dbClient.billingConsultationOrderLineItem.createManyAndReturn({
@@ -350,7 +350,7 @@ class PatientBillingService {
         (acc, c) => acc + c.totalAmount,
         0,
       );
-      await dbClient.bill.create({
+      return await dbClient.bill.create({
         data: {
           hospitalId: authUser.hospitalId,
           updatedBy: authUser.id,
@@ -371,7 +371,7 @@ class PatientBillingService {
           (c.baseAmount * (taxCodes[c.taxCodeId].taxRate / 100) + c.baseAmount),
         0,
       );
-      await dbClient.bill.create({
+      return await dbClient.bill.create({
         data: {
           hospitalId: authUser.hospitalId,
           updatedBy: authUser.id,

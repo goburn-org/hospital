@@ -69,7 +69,7 @@ export const PatientBillingTable = () => {
           return (
             <div className={classNames('flex items-center')}>
               <Link
-                to={`${row?.original.patient.uhid}`}
+                to={`${row.original.patient.uhid}/${row.original.lastVisit.visitId}`}
                 className="px-4 text-blue-600 hover:text-blue-300 flex gap-2"
               >
                 {renderedCellValue}

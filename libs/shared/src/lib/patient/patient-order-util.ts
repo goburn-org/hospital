@@ -13,6 +13,7 @@ export const createPatientOrderSchema = z.object({
     .optional(),
   visitId: z.string(),
   patientId: z.string(),
+  doctorIds: z.record(z.string(), z.string()), // { orderId: doctorId }
 });
 
 export type CreatePatientOrderRequest = NullOrUndefined<

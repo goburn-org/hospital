@@ -34,21 +34,34 @@ route.post(
       ...req.body,
       checkInTime: new Date(req.body.checkInTime),
     });
-    const { billing, ...rest } = body;
+    const { billing, orders, ...rest } = body;
     const data = await patientVisitService.create(patientId, rest);
-    if (billing.advanceAmount) {
-      const consultationOrder = await orderService.getConsultationOrder(
-        data.hospitalId,
+    if (orders.length) {
+      const orderList = await orderService.getOrdersByIds(
+        orders.map((o) => o.orderId),
       );
-      await patientBillingService.createOutpatientBilling(data.id, true, [
-        consultationOrder,
-      ]);
-      await patientReceiptService.create(data.id, {
-        cardAmount: billing.cardAmount || [],
-        cashAmount: billing.cashAmount || 0,
-        items: [],
-        totalAmount: billing.advanceAmount,
+      await patientOrderService.upsert(data.id, {
+        doctorIds: orders.reduce(
+          (acc, o) => ({ ...acc, [o.orderId]: o.doctorId }),
+          {},
+        ),
+        patientId,
+        visitId: data.id,
+        order: orderList,
       });
+      const bill = await patientBillingService.createOutpatientBilling(
+        data.id,
+        orderList,
+      );
+      if (billing.advanceAmount) {
+        await patientReceiptService.create(data.id, {
+          cardAmount: billing.cardAmount || [],
+          cashAmount: billing.cashAmount || 0,
+          items: [],
+          totalAmount: billing.advanceAmount,
+          billId: bill.id,
+        });
+      }
     }
     res.json(data);
   }),

@@ -73,7 +73,6 @@ route.post(
     if (ordersToBeAdded.length) {
       await patientBillingService.createOutpatientBilling(
         visitId,
-        false,
         ordersToBeAdded,
       );
     }

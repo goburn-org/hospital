@@ -51,21 +51,20 @@ model Department {
 }
 
 model User {
-  id           String         @id @default(uuid())
-  name         String
-  email        String
-  phoneNumber  String
-  hospitalId   Int
-  department   Int
-  isActive     Boolean        @default(true)
-  updatedBy    String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  PatientVisit PatientVisit[]
-  Department   Department     @relation(fields: [department], references: [id])
-  Hospital     Hospital       @relation(fields: [hospitalId], references: [id])
-  UserLogin    UserLogin?
-  DoctorCut    DoctorCut[]
+  id          String      @id @default(uuid())
+  name        String
+  email       String
+  phoneNumber String
+  hospitalId  Int
+  department  Int
+  isActive    Boolean     @default(true)
+  updatedBy   String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  Department  Department  @relation(fields: [department], references: [id])
+  Hospital    Hospital    @relation(fields: [hospitalId], references: [id])
+  UserLogin   UserLogin?
+  DoctorCut   DoctorCut[]
 
   @@unique([email, hospitalId])
 }
@@ -178,23 +177,22 @@ model Patient {
   bornYear     Int?
   aadharNumber String?
   aadharName   String?
-  bloodGroup   String?
   address      String?
-  city         String?
+  area         String?
   pincode      String?
   updatedBy    String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   isDeleted    Boolean        @default(false)
-  fatherName   String
   PatientVisit PatientVisit[]
 }
 
 model PatientVisit {
   id                               String                             @id @default(uuid())
   uhid                             String
+  guardianName                     String?
+  guardianMobile                   String?
   hospitalId                       Int
-  doctorId                         String
   checkInTime                      DateTime
   checkOutTime                     DateTime?
   isDeleted                        Boolean                            @default(false)
@@ -204,7 +202,6 @@ model PatientVisit {
   orderOpenedAt                    DateTime?
   token                            Int?
   Assessment                       Assessment?
-  Doctor                           User                               @relation(fields: [doctorId], references: [id])
   Hospital                         Hospital                           @relation(fields: [hospitalId], references: [id])
   Patient                          Patient                            @relation(fields: [uhid], references: [uhid])
   Department                       Department?                        @relation(fields: [departmentId], references: [id])
@@ -315,6 +312,7 @@ model TaxCode {
 model PatientOrder {
   visitId      String       @unique
   order        Order[]
+  doctorIds    Json?
   orderDate    DateTime
   updatedBy    String?
   remark       Json?
