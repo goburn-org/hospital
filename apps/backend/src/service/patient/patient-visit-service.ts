@@ -82,7 +82,7 @@ class PatientVisitService {
     data: Omit<CreatePatientVisitRequest, 'billing' | 'orders'>,
   ): Promise<PatientVisit> {
     const authUser = useAuthUser();
-    return dbClient.patientVisit.create({
+    const res = await dbClient.patientVisit.create({
       data: {
         ...data,
         uhid,
@@ -91,6 +91,15 @@ class PatientVisitService {
         updatedBy: authUser.id,
       },
     });
+    await dbClient.patient.update({
+      where: {
+        uhid,
+      },
+      data: {
+        lastVisitAt: res.checkInTime,
+      },
+    });
+    return res;
   }
 
   async getAll(

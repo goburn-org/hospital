@@ -27,7 +27,7 @@ export const MonthlyReport = () => {
     'q' | 'orderIds' | 'status' | 'visitDate'
   >();
   const search = param.q;
-  const _search = useDebounce(search, TypingSpeed);
+  const _search = useDebounce(search, TypingSpeed.Medium);
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,

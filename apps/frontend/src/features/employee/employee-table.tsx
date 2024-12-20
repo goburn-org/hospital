@@ -18,7 +18,7 @@ import { useEmployeeQuery } from './use-employee-query';
 export const EmployeeTable = () => {
   const { param, updateParam } = useParam<'q'>();
   const search = param.q;
-  const _search = useDebounce(search, TypingSpeed);
+  const _search = useDebounce(search, TypingSpeed.Medium);
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,

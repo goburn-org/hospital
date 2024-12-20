@@ -4,6 +4,7 @@ import { errorHandler } from '../../middleware/error-middleware';
 import { useAuthUser } from '../../provider/async-context';
 import { orderService } from '../../service/order-service';
 import { patientOrderService } from '../../service/patient/patient-order-service';
+import { patientService } from '../../service/patient/patient-service';
 import { patientVisitService } from '../../service/patient/patient-visit-service';
 import { taxCodeService } from '../../service/tax-code-service';
 import { tokenService } from '../../service/token-service';
@@ -65,6 +66,16 @@ route.get(
   authMiddleware,
   errorHandler(async (req, res) => {
     const orders = await taxCodeService.getAll();
+    res.json(orders);
+  }),
+);
+
+route.get(
+  `${baseVersion}${baseRoute}/area`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const search = req.query.q as string;
+    const orders = await patientService.getArea(search);
     res.json(orders);
   }),
 );

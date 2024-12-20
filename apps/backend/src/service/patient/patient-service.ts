@@ -45,6 +45,43 @@ class PatientService {
     };
   }
 
+  async update(
+    uhid: string,
+    data: CreatePatientInput,
+  ): Promise<PatientResponse> {
+    const { age, ...rest } = data;
+    const authUser = useAuthUser();
+    const hospital = await hospitalService.getById(authUser.hospitalId);
+    ensure(hospital, 'Hospital not found');
+    const date = Date.now();
+    const randomDigit = Math.floor(Math.random() * 100);
+    const bornYear = data.dob
+      ? new Date(data.dob).getFullYear()
+      : data.age
+        ? new Date().getFullYear() - data.age
+        : undefined;
+    const response = await dbClient.patient.update({
+      where: {
+        uhid,
+      },
+      data: {
+        ...rest,
+        dob: data.dob ? new Date(data.dob) : undefined,
+        hospitalId: authUser.hospitalId,
+        updatedBy: authUser.id,
+        bornYear: bornYear,
+        uhid: `${hospital.hospitalCode}-${date}${randomDigit}`,
+      },
+    });
+    return {
+      ...response,
+      lastVisit: null,
+      age: response.bornYear
+        ? new Date().getFullYear() - response.bornYear
+        : undefined,
+    };
+  }
+
   async getAll(
     params: PaginateParamsWithSort,
   ): Promise<PaginatedResponse<PatientResponse>> {
@@ -81,7 +118,12 @@ class PatientService {
         ? {
             [sort.field]: sort.order,
           }
-        : undefined,
+        : {
+            lastVisitAt: {
+              sort: 'desc',
+              nulls: 'last',
+            },
+          },
       take: paginate ? paginate.limit : undefined,
       include: {
         PatientVisit: {
@@ -154,6 +196,22 @@ class PatientService {
         ? new Date().getFullYear() - patient.bornYear
         : undefined,
     };
+  }
+
+  async getArea(search: string): Promise<string[]> {
+    const authUser = useAuthUser();
+    const data = await dbClient.patient.findMany({
+      where: {
+        hospitalId: authUser.hospitalId,
+        isDeleted: false,
+        area: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+      distinct: ['area'],
+    });
+    return data.map((d) => d.area).filter(Boolean) as string[];
   }
 }
 

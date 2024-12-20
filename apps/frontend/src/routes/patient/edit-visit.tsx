@@ -1,6 +1,7 @@
 import { CreatePatientVisitRequest, ensure, Sure } from '@hospital/shared';
 import { useParams } from 'react-router-dom';
 import { CustomDialog } from '../../component/custom-dialog';
+import { TableLoading } from '../../component/page-loader';
 import { PatientVisitDrawer } from '../../features/patient/new-visit-drawer';
 import { usePatientBillingAutoGenerateQuery } from '../../features/patient/use-patient-query';
 import { usePatientVisitByIdQuery } from '../../features/patient/use-patient-visit';
@@ -9,14 +10,15 @@ export const Component = () => {
   const { patientId, visitId } = useParams();
   ensure(patientId, 'id is required');
   ensure(visitId, 'id is required');
-  const { data } = usePatientVisitByIdQuery({
+  const { data, isLoading } = usePatientVisitByIdQuery({
     patientId,
     visitId,
   });
-  const { data: billing } = usePatientBillingAutoGenerateQuery({
-    patientId,
-    visitId,
-  });
+  const { data: billing, isLoading: isBillLoading } =
+    usePatientBillingAutoGenerateQuery({
+      patientId,
+      visitId,
+    });
   const advanceAmount =
     billing?.Receipt.reduce((acc, item) => acc + item.paid, 0) ?? 0;
   const cardAmount =
@@ -38,6 +40,12 @@ export const Component = () => {
   const cashAmount = billing?.Receipt.filter(
     (acc) => acc.paymentMode === 'CASH',
   ).reduce((acc, item) => acc + item.paid, 0);
+  if (isLoading || isBillLoading)
+    return (
+      <CustomDialog open={true}>
+        <TableLoading />
+      </CustomDialog>
+    );
   return (
     <CustomDialog open={true}>
       <PatientVisitDrawer
