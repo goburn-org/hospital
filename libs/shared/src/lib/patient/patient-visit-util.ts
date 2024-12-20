@@ -36,7 +36,7 @@ export type CreatePatientVisitRequest = z.infer<
 export type PatientVisitResponse = Maybe<
   PatientVisit & {
     PatientOrder: {
-      doctorIds: Record<string, string>;
+      orderToDoctor: Record<string, string>;
     } | null;
   }
 >;
@@ -49,7 +49,7 @@ export const DetailedPatientVisitGetPayload = {
     PatientOrder: {
       select: {
         remark: true,
-        doctorIds: true,
+        orderToDoctor: true,
         order: {
           select: {
             id: true,
@@ -79,6 +79,6 @@ export type DetailedPatientVisit = _DetailedPatientVisit & {
   }>;
   PatientPrescription: Maybe<CreatePatientPrescriptionRequest>;
   PatientOrder: {
-    doctorIds: Record<string, string>;
+    orderToDoctor: Record<string, string>;
   };
 };

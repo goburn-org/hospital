@@ -27,7 +27,11 @@ route.post(
     const orders = await patientOrderService.getByVisitId(visitId);
     const oldData = await patientBillingService.getBill(visitId);
     const alreadyAddedOrder =
-      (oldData?.bill?.map((o) => o.BillingPatientOrderLineItem) ?? [])
+      [
+        ...(oldData?.bill?.map((o) => o.BillingPatientOrderLineItem) ?? []),
+        ...(oldData?.bill?.map((o) => o.BillingConsultationOrderLineItem) ??
+          []),
+      ]
         .flat()
         ?.map((o) => o.order)
         .flat() ?? [];

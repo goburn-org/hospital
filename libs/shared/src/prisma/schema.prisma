@@ -310,15 +310,16 @@ model TaxCode {
 }
 
 model PatientOrder {
-  visitId      String       @unique
-  order        Order[]
-  doctorIds    Json?
-  orderDate    DateTime
-  updatedBy    String?
-  remark       Json?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  PatientVisit PatientVisit @relation(fields: [visitId], references: [id])
+  visitId       String       @unique
+  order         Order[]
+  orderToDoctor Json?
+  doctorIds     String[]
+  orderDate     DateTime
+  updatedBy     String?
+  remark        Json?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  PatientVisit  PatientVisit @relation(fields: [visitId], references: [id])
 }
 
 model BillingPatientOrderLineItem {

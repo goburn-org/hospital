@@ -29,7 +29,7 @@ class PatientVisitService {
       include: {
         PatientOrder: {
           select: {
-            doctorIds: true,
+            orderToDoctor: true,
             visitId: true,
           },
         },
@@ -55,7 +55,10 @@ class PatientVisitService {
       token: r.token,
       PatientOrder: r.PatientOrder
         ? {
-            doctorIds: r.PatientOrder.doctorIds as Record<string, string>,
+            orderToDoctor: r.PatientOrder.orderToDoctor as Record<
+              string,
+              string
+            >,
           }
         : null,
     };
@@ -112,7 +115,7 @@ class PatientVisitService {
       include: {
         PatientOrder: {
           select: {
-            doctorIds: true,
+            orderToDoctor: true,
           },
         },
       },
@@ -158,7 +161,10 @@ class PatientVisitService {
         ? ({
             ...data.PatientOrder,
             remark: data.PatientOrder?.remark as any,
-            doctorIds: data.PatientOrder?.doctorIds as Record<string, string>,
+            orderToDoctor: data.PatientOrder?.orderToDoctor as Record<
+              string,
+              string
+            >,
             order: data.PatientOrder?.order.map((o) => ({
               ...o,
               remark: (data.PatientOrder?.remark as any)?.[o.id],

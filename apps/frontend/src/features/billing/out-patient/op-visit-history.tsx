@@ -45,7 +45,7 @@ const Table = ({
               </td>
               <td className="px-4 py-2 text-gray-700">
                 <span>
-                  {Object.values(visit.PatientOrder?.doctorIds ?? {}).map(
+                  {Object.values(visit.PatientOrder?.orderToDoctor ?? {}).map(
                     (d) => (
                       <span key={d}>
                         {doctor?.find((doc) => doc.id === d)?.name}

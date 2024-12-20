@@ -77,7 +77,7 @@ export const CheckoutDrawer = ({
     <div className="w-[800px]">
       <PatientInfoTitleDrawer
         name={data?.aadharName ?? data?.name}
-        city={data?.city}
+        city={data?.area}
         mobile={data?.mobile}
         onClose={() => {
           navigate('..', {

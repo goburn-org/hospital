@@ -26,8 +26,8 @@ const OrderTable = ({ onEdit }: { onEdit: (orderId: string) => void }) => {
   const { data, isLoading } = useOrderQuery();
   const { data: taxCode } = useTaxCode();
   const { watch } = useFormContext<CreatePatientOrderRequest>();
-  const addedOrders = watch('order') || [];
   const addedOrderDetails = useMemo(() => {
+    const addedOrders = watch('order') || [];
     return addedOrders.map((order) => {
       const details = data?.find((o) => o.id === order.id);
       return {
@@ -35,7 +35,7 @@ const OrderTable = ({ onEdit }: { onEdit: (orderId: string) => void }) => {
         remark: order.remark,
       };
     });
-  }, [addedOrders, data]);
+  }, [data, watch]);
   const columns = useMemo<MRT_ColumnDef<(typeof addedOrderDetails)[number]>[]>(
     () => [
       {
@@ -189,7 +189,7 @@ export const PatientOrder = () => {
           patientId,
           visitId,
           order: data.PatientOrder?.order ?? [],
-          doctorIds: data.PatientOrder?.doctorIds ?? {},
+          orderToDoctor: data.PatientOrder?.orderToDoctor ?? {},
         }}
       />
     </div>

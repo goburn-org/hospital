@@ -41,7 +41,7 @@ route.post(
         orders.map((o) => o.orderId),
       );
       await patientOrderService.upsert(data.id, {
-        doctorIds: orders.reduce(
+        orderToDoctor: orders.reduce(
           (acc, o) => ({ ...acc, [o.orderId]: o.doctorId }),
           {},
         ),

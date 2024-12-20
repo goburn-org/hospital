@@ -35,7 +35,7 @@ class PatientOrderService {
         order: {
           connect: body.order?.map((o) => ({ id: o.id })),
         },
-        doctorIds: body.doctorIds,
+        orderToDoctor: body.orderToDoctor,
         remark: body.order?.reduce(
           (acc, o) => ({
             ...acc,
@@ -55,7 +55,7 @@ class PatientOrderService {
       order: res.order.map((o) => ({ id: o.id, remark: remarks[o.id] })),
       patientId: res.PatientVisit.uhid,
       visitId: res.visitId,
-      doctorIds: res.doctorIds as Record<string, string>,
+      orderToDoctor: res.orderToDoctor as Record<string, string>,
     };
   }
 

@@ -99,7 +99,7 @@ export const VisitDrawerDetails = ({
     o.tags.includes(CONSULTATION_ORDER_TAG),
   );
   const doctorId = consultationOrder
-    ? data.PatientOrder?.doctorIds?.[consultationOrder?.id]
+    ? data.PatientOrder?.orderToDoctor?.[consultationOrder?.id]
     : undefined;
   const { data: doctors } = useDoctorQuery();
   const doctor = doctors?.find((d) => d.id === doctorId);

@@ -6,6 +6,7 @@ import {
   PaginatedResponse,
   PaginateParamsWithSort,
   PatientResponse,
+  Prisma,
 } from '@hospital/shared';
 import { dbClient } from '../../prisma';
 import { useAuthUser } from '../../provider/async-context';
@@ -53,7 +54,7 @@ class PatientService {
     const { paginate, sort } = params || {};
     const yesterday = getYesterday();
     const today = getToday();
-    const query = isAdmin
+    const query: Prisma.PatientFindManyArgs['where'] = isAdmin
       ? {
           hospitalId: authUser.hospitalId,
           isDeleted: false,
@@ -63,7 +64,11 @@ class PatientService {
           isDeleted: false,
           PatientVisit: {
             some: {
-              doctorId: authUser.id,
+              PatientOrder: {
+                doctorIds: {
+                  has: authUser.id,
+                },
+              },
               checkInTime: {
                 gte: yesterday,
                 lt: today,
@@ -87,7 +92,7 @@ class PatientService {
           include: {
             PatientOrder: {
               select: {
-                doctorIds: true,
+                orderToDoctor: true,
               },
             },
           },
@@ -112,8 +117,8 @@ class PatientService {
             ? {
                 ...PatientVisit?.[0],
                 PatientOrder: {
-                  doctorIds: PatientVisit?.[0]?.PatientOrder
-                    ?.doctorIds as Record<string, string>,
+                  orderToDoctor: PatientVisit?.[0]?.PatientOrder
+                    ?.orderToDoctor as Record<string, string>,
                 },
               }
             : undefined,
