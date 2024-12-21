@@ -6,14 +6,16 @@ import { useEffect } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RadioGroup } from '../../component/checkbox';
+import { FormAutoCompleteInput } from '../../component/form/form-auto-complete-input';
 import { FormInput } from '../../component/form/form-input';
-import { CustomSelect } from '../../component/select';
 import {
   FormMode,
   FormModeProvider,
 } from '../../provider/form-context-provider/form-mode-provider';
+import { useAreaQuery } from '../../provider/use-area';
 import { classNames } from '../../utils/classNames';
-import { routerConfig } from '../../utils/constants';
+import { routerConfig, TypingSpeed } from '../../utils/constants';
+import { useDebounce } from '../../utils/use-debounce';
 import { useEsc } from '../../utils/use-esc';
 import {
   useCreatePatientMutation,
@@ -106,6 +108,7 @@ export const PatientDrawer = ({
               </div>
               <div className="sm:col-span-2">
                 <RadioGroup
+                  isRequired
                   options={[
                     {
                       value: 'MALE' as const,
@@ -133,13 +136,7 @@ export const PatientDrawer = ({
                 />
               </div>
               <div className="sm:col-span-2">
-                <FormInput<CreatePatientInput>
-                  isRequired
-                  id="fatherName"
-                  labelName="Father's Name"
-                  placeholder=" Dad's Name"
-                  autoComplete="off"
-                />
+                <AreaInput />
               </div>
               <div className="sm:col-span-6">
                 <Divider />
@@ -151,22 +148,6 @@ export const PatientDrawer = ({
                   placeholder=" Tablet"
                   autoComplete="off"
                   type="date"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <CustomSelect
-                  labelName="Blood Group"
-                  htmlFor="bloodGroup"
-                  onChange={(e) => {
-                    formProvider.setValue('bloodGroup', e, {
-                      shouldValidate: true,
-                    });
-                  }}
-                  value={formProvider.watch('bloodGroup')}
-                  error={formProvider.formState.errors.bloodGroup?.message}
-                  options={(
-                    ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as const
-                  ).map((e) => ({ id: e, label: e }))}
                 />
               </div>
               <div className="sm:col-span-3">
@@ -190,13 +171,7 @@ export const PatientDrawer = ({
                   autoComplete="off"
                 />
               </div>
-              <div className="sm:col-span-2">
-                <FormInput<CreatePatientInput>
-                  id="city"
-                  labelName="City"
-                  autoComplete="address-level2"
-                />
-              </div>
+
               <div className="sm:col-span-2">
                 <FormInput<CreatePatientInput>
                   id="pincode"
@@ -213,6 +188,26 @@ export const PatientDrawer = ({
         </FormProvider>
       </FormModeProvider>
     </div>
+  );
+};
+
+const AreaInput = () => {
+  const { watch } = useFormContext<CreatePatientInput>();
+  const area = watch('area');
+  const debouchedArea = useDebounce(area, TypingSpeed.Fast);
+  const { data } = useAreaQuery(debouchedArea || '');
+  return (
+    <FormAutoCompleteInput<CreatePatientInput>
+      isRequired
+      id="area"
+      labelName="Area"
+      options={
+        data?.map((d) => ({
+          label: d,
+          id: d,
+        })) || []
+      }
+    />
   );
 };
 
@@ -326,7 +321,7 @@ const CreateFooter = () => {
 };
 
 const EditFooter = () => {
-  const { id } = useParams();
+  const { patientId } = useParams();
   const navigate = useNavigate();
   const formProvider = useFormContext<CreatePatientInput>();
   const { mutateAsync } = useUpdatePatientMutation({
@@ -359,15 +354,15 @@ const EditFooter = () => {
         )}
         disabled={formProvider.formState.isSubmitting}
         onClick={async () => {
-          if (!id) {
+          if (!patientId) {
             return;
           }
-          console.log(formProvider.getValues());
+          console.log(formProvider.formState.errors);
           await formProvider.handleSubmit((data) => {
             console.log(data);
             return mutateAsync({
               ...data,
-              uhid: id,
+              uhid: patientId,
             });
           })();
         }}

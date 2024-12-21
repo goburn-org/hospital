@@ -30,6 +30,15 @@ class TaxCodeService {
       {} as Record<string, TaxCodeResponse>,
     );
   }
+
+  async getAll(): Promise<TaxCodeResponse[]> {
+    const user = useAuthUser();
+    return dbClient.taxCode.findMany({
+      where: {
+        hospitalId: user.hospitalId,
+      },
+    });
+  }
 }
 
 export const taxCodeService = new TaxCodeService();

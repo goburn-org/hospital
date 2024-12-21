@@ -1,6 +1,7 @@
 import {
   AllPatientVisitBillingResponse,
   AvailableOrder,
+  CONSULTATION_ORDER_TAG,
   HttpError,
   OpBillingReportQuery,
   OpBillingReportResponse,
@@ -122,7 +123,7 @@ class PatientBillingService {
     return {
       data: visits.map((v) => ({
         patient: {
-          city: v.Patient.city,
+          city: v.Patient.area,
           lastVisit: v.checkInTime,
           mobile: v.Patient.mobile,
           name: v.Patient.name,
@@ -261,7 +262,7 @@ class PatientBillingService {
     return {
       data: visits.map((v) => ({
         patient: {
-          city: v.Patient.city,
+          city: v.Patient.area,
           lastVisit: v.checkInTime,
           mobile: v.Patient.mobile,
           name: v.Patient.name,
@@ -319,86 +320,68 @@ class PatientBillingService {
     };
   }
 
-  async createOutpatientBilling(
-    visitId: string,
-    isConsultation: boolean,
-    order: AvailableOrder[],
-  ) {
+  async createOutpatientBilling(visitId: string, order: AvailableOrder[]) {
     const authUser = useAuthUser();
     const taxCodes = await taxCodeService.getTaxCodes([
       ...new Set(order.map((o) => o.taxCodeId)),
     ]);
-    if (isConsultation) {
-      const consultations =
-        await dbClient.billingConsultationOrderLineItem.createManyAndReturn({
-          data: order.map((o) => ({
-            discount: 0,
-            quantity: 1,
-            orderId: o.id,
-            isRemoved: false,
-            rate: o.baseAmount,
-            tax: taxCodes[o.taxCodeId].taxRate ?? 0,
-            visitId,
-            hospitalId: authUser.hospitalId,
-            updatedBy: authUser.id,
-            totalAmount:
-              o.baseAmount * (taxCodes[o.taxCodeId].taxRate / 100) +
-              o.baseAmount,
-          })),
-        });
-      const totalAmount = consultations.reduce(
-        (acc, c) => acc + c.totalAmount,
-        0,
-      );
-      await dbClient.bill.create({
-        data: {
-          hospitalId: authUser.hospitalId,
-          updatedBy: authUser.id,
-          BillingConsultationOrderLineItem: {
-            connect: consultations.map((c) => ({
-              id: c.id,
+    const consultationOrder = order.filter((o) =>
+      o.tags.includes(CONSULTATION_ORDER_TAG),
+    );
+    const nonConsultationOrder = order.filter(
+      (o) => !o.tags.includes(CONSULTATION_ORDER_TAG),
+    );
+    const totalAmount = order.reduce(
+      (acc, c) =>
+        acc +
+        (c.baseAmount * (taxCodes[c.taxCodeId].taxRate / 100) + c.baseAmount),
+      0,
+    );
+    return await dbClient.bill.create({
+      data: {
+        hospitalId: authUser.hospitalId,
+        updatedBy: authUser.id,
+        BillingConsultationOrderLineItem: {
+          createMany: {
+            data: consultationOrder.map((c) => ({
+              discount: 0,
+              quantity: 1,
+              orderId: c.id,
+              isRemoved: false,
+              rate: c.baseAmount,
+              tax: taxCodes[c.taxCodeId].taxRate ?? 0,
+              visitId,
+              hospitalId: authUser.hospitalId,
+              updatedBy: authUser.id,
+              totalAmount:
+                c.baseAmount * (taxCodes[c.taxCodeId].taxRate / 100) +
+                c.baseAmount,
             })),
           },
-          totalAmount,
-          visitId: visitId,
-          items: {},
         },
-      });
-    } else {
-      const totalAmount = order.reduce(
-        (acc, c) =>
-          acc +
-          (c.baseAmount * (taxCodes[c.taxCodeId].taxRate / 100) + c.baseAmount),
-        0,
-      );
-      await dbClient.bill.create({
-        data: {
-          hospitalId: authUser.hospitalId,
-          updatedBy: authUser.id,
-          totalAmount,
-          visitId: visitId,
-          BillingPatientOrderLineItem: {
-            createMany: {
-              data: order.map((o) => ({
-                discount: 0,
-                quantity: 1,
-                orderId: o.id,
-                rate: o.baseAmount,
-                isRemoved: false,
-                tax: taxCodes[o.taxCodeId].taxRate ?? 0,
-                visitId,
-                hospitalId: authUser.hospitalId,
-                updatedBy: authUser.id,
-                totalAmount:
-                  o.baseAmount * (taxCodes[o.taxCodeId].taxRate / 100) +
-                  o.baseAmount,
-              })),
-            },
+        BillingPatientOrderLineItem: {
+          createMany: {
+            data: nonConsultationOrder.map((o) => ({
+              discount: 0,
+              quantity: 1,
+              orderId: o.id,
+              rate: o.baseAmount,
+              isRemoved: false,
+              tax: taxCodes[o.taxCodeId].taxRate ?? 0,
+              visitId,
+              hospitalId: authUser.hospitalId,
+              updatedBy: authUser.id,
+              totalAmount:
+                o.baseAmount * (taxCodes[o.taxCodeId].taxRate / 100) +
+                o.baseAmount,
+            })),
           },
-          items: {},
         },
-      });
-    }
+        totalAmount,
+        visitId: visitId,
+        items: {},
+      },
+    });
   }
 
   async toggleLineItem(

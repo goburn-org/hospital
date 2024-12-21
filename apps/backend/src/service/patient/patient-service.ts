@@ -6,6 +6,7 @@ import {
   PaginatedResponse,
   PaginateParamsWithSort,
   PatientResponse,
+  Prisma,
 } from '@hospital/shared';
 import { dbClient } from '../../prisma';
 import { useAuthUser } from '../../provider/async-context';
@@ -44,16 +45,52 @@ class PatientService {
     };
   }
 
+  async update(
+    uhid: string,
+    data: CreatePatientInput,
+  ): Promise<PatientResponse> {
+    const { age, ...rest } = data;
+    const authUser = useAuthUser();
+    const hospital = await hospitalService.getById(authUser.hospitalId);
+    ensure(hospital, 'Hospital not found');
+    const date = Date.now();
+    const randomDigit = Math.floor(Math.random() * 100);
+    const bornYear = data.dob
+      ? new Date(data.dob).getFullYear()
+      : data.age
+        ? new Date().getFullYear() - data.age
+        : undefined;
+    const response = await dbClient.patient.update({
+      where: {
+        uhid,
+      },
+      data: {
+        ...rest,
+        dob: data.dob ? new Date(data.dob) : undefined,
+        hospitalId: authUser.hospitalId,
+        updatedBy: authUser.id,
+        bornYear: bornYear,
+        uhid: `${hospital.hospitalCode}-${date}${randomDigit}`,
+      },
+    });
+    return {
+      ...response,
+      lastVisit: null,
+      age: response.bornYear
+        ? new Date().getFullYear() - response.bornYear
+        : undefined,
+    };
+  }
+
   async getAll(
     params: PaginateParamsWithSort,
   ): Promise<PaginatedResponse<PatientResponse>> {
     const authUser = useAuthUser();
     const isAdmin = authUser.Department.Role?.isSuperAdmin;
-    console.log({ isAdmin });
     const { paginate, sort } = params || {};
     const yesterday = getYesterday();
     const today = getToday();
-    const query = isAdmin
+    const query: Prisma.PatientFindManyArgs['where'] = isAdmin
       ? {
           hospitalId: authUser.hospitalId,
           isDeleted: false,
@@ -63,7 +100,11 @@ class PatientService {
           isDeleted: false,
           PatientVisit: {
             some: {
-              doctorId: authUser.id,
+              PatientOrder: {
+                doctorIds: {
+                  has: authUser.id,
+                },
+              },
               checkInTime: {
                 gte: yesterday,
                 lt: today,
@@ -77,12 +118,24 @@ class PatientService {
         ? {
             [sort.field]: sort.order,
           }
-        : undefined,
+        : {
+            lastVisitAt: {
+              sort: 'desc',
+              nulls: 'last',
+            },
+          },
       take: paginate ? paginate.limit : undefined,
       include: {
         PatientVisit: {
           where: {
             isDeleted: false,
+          },
+          include: {
+            PatientOrder: {
+              select: {
+                orderToDoctor: true,
+              },
+            },
           },
           orderBy: {
             checkInTime: 'desc',
@@ -100,7 +153,16 @@ class PatientService {
       const { PatientVisit, ...rest } = d;
       result.push({
         ...rest,
-        lastVisit: d.PatientVisit[0] ?? null,
+        lastVisit:
+          PatientVisit.length > 0
+            ? {
+                ...PatientVisit?.[0],
+                PatientOrder: {
+                  orderToDoctor: PatientVisit?.[0]?.PatientOrder
+                    ?.orderToDoctor as Record<string, string>,
+                },
+              }
+            : undefined,
         age: d.bornYear ? new Date().getFullYear() - d.bornYear : undefined,
       });
     }
@@ -134,6 +196,22 @@ class PatientService {
         ? new Date().getFullYear() - patient.bornYear
         : undefined,
     };
+  }
+
+  async getArea(search: string): Promise<string[]> {
+    const authUser = useAuthUser();
+    const data = await dbClient.patient.findMany({
+      where: {
+        hospitalId: authUser.hospitalId,
+        isDeleted: false,
+        area: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+      distinct: ['area'],
+    });
+    return data.map((d) => d.area).filter(Boolean) as string[];
   }
 }
 

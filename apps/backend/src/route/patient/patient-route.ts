@@ -25,6 +25,20 @@ route.post(
   }),
 );
 
+route.put(
+  `${baseVersion}${baseRoute}/:id`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const patientId = req.params.id;
+    const body = createPatientSchema.parse({
+      ...req.body,
+      dob: req.body.dob ? new Date(req.body.dob) : undefined,
+    });
+    const data = await patientService.update(patientId, body);
+    res.send(data);
+  }),
+);
+
 route.get(
   `${baseVersion}${baseRoute}`,
   authMiddleware,

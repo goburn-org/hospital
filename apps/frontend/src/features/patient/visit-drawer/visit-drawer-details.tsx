@@ -1,4 +1,5 @@
 import {
+  CONSULTATION_ORDER_TAG,
   CreateAssessmentRequest,
   DetailedPatientVisit,
   humanizedDate,
@@ -6,10 +7,10 @@ import {
   TimeSeriesType,
 } from '@hospital/shared';
 import { Divider } from '@mui/material';
-import { useState } from 'react';
 import { CustomEditor } from '../../../component/editor';
 import { useOrderQuery } from '../../../provider/use-order';
 import { classNames } from '../../../utils/classNames';
+import { useDoctorQuery } from '../../employee/use-employee-query';
 import { VisitHistory } from '../visit-history';
 import { DrawerSession } from './drawer-session';
 import { PrescriptionTable } from './prescription-table';
@@ -94,35 +95,22 @@ export const VisitDrawerDetails = ({
   data: DetailedPatientVisit;
   patientId: string;
 }) => {
-  const sessions = [
-    {
-      id: 'vitals' as const,
-      title: 'Vitals',
-      data: data.PatientVital,
-    },
-    {
-      id: 'Assessment' as const,
-      title: 'Assessment',
-      data: data.Assessment,
-    },
-  ];
-  const [expandedSession, setExpandedSession] = useState(
-    sessions.map((s) => s.id),
+  const consultationOrder = data.PatientOrder?.order?.find((o) =>
+    o.tags.includes(CONSULTATION_ORDER_TAG),
   );
-
-  const toggleSession = (id: (typeof expandedSession)[number]) => {
-    setExpandedSession((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
-    );
-  };
-
+  const doctorId = consultationOrder
+    ? data.PatientOrder?.orderToDoctor?.[consultationOrder?.id]
+    : undefined;
+  const { data: doctors } = useDoctorQuery();
+  const doctor = doctors?.find((d) => d.id === doctorId);
+  console.log({ consultationOrder, doctorId, data: data.PatientOrder });
   return (
     <div className=" bg-gray-50 h-screen shadow-lg flex flex-col overflow-auto p-4 pb-[300px]">
       {/* Header */}
       <div className="flex flex-row w-full justify-center items-center gap-1 my-6">
         <div className=" flex flex-row gap-1 items-center">
           <span className="text-sm font-semibold rounded-md bg-indigo-200 px-2 py-1 text-primary">
-            {data?.Doctor?.name}
+            {doctor?.name}
           </span>
         </div>
         <div className="w-2 h-2 rounded-full bg-gray-200" />

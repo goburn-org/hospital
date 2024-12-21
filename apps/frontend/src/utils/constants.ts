@@ -45,4 +45,7 @@ export const routerConfig = {
   Close,
 };
 
-export const TypingSpeed = 700;
+export const TypingSpeed = {
+  Medium: 700,
+  Fast: 300,
+};

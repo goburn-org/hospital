@@ -25,16 +25,21 @@ export const RadioGroup = <T extends Option>({
   onChange,
   label,
   error,
+  isRequired,
 }: {
   options: T[];
   selectedValue: string;
   onChange: (value: T['value']) => void;
   label: string;
   error?: string;
+  isRequired?: boolean;
 }) => (
   <fieldset className="flex flex-wrap items-start gap-2 w-full flex-col">
     <div className="flex gap-1">
-      <legend className="text-gray-800 font-semibold mb-2">{label} </legend>
+      <legend className="text-gray-800 font-semibold mb-2">
+        {label}
+        {isRequired ? <span className="text-red-500 ml-1">*</span> : null}
+      </legend>
       {error ? <p className="text-base text-red-500">{error}</p> : null}
     </div>
 

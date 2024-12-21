@@ -25,7 +25,7 @@ import { useAllPatientBillingQuery } from './use-patient-query';
 export const PatientBillingTable = () => {
   const { param, updateParam } = useParam<'q'>();
   const search = param.q;
-  const _search = useDebounce(search, TypingSpeed);
+  const _search = useDebounce(search, TypingSpeed.Medium);
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
@@ -69,7 +69,7 @@ export const PatientBillingTable = () => {
           return (
             <div className={classNames('flex items-center')}>
               <Link
-                to={`${row?.original.patient.uhid}`}
+                to={`${row.original.patient.uhid}/${row.original.lastVisit.visitId}`}
                 className="px-4 text-blue-600 hover:text-blue-300 flex gap-2"
               >
                 {renderedCellValue}

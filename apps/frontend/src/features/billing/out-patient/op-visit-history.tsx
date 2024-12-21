@@ -4,12 +4,11 @@ import {
   PatientVisitResponse,
   Sure,
 } from '@hospital/shared';
-import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { DrawerSkeleton } from '../../../component/drawer-skeleton';
 import { TableLoading } from '../../../component/page-loader';
 import { PatientInfoTitleDrawer } from '../../../component/patient-info-title-drawer';
-import { fetchDoctorName } from '../../employee/use-employee-query';
+import { useDoctorQuery } from '../../employee/use-employee-query';
 import { usePatientByIdQuery } from '../../patient/use-patient-query';
 import { usePatientVisitHistoryQuery } from '../../patient/use-patient-visit';
 
@@ -18,16 +17,7 @@ const Table = ({
 }: {
   data?: PaginatedResponse<Sure<PatientVisitResponse>>;
 }) => {
-  const doctorIds = useMemo(
-    () => [...new Set(data?.data.map((v) => v.doctorId) ?? [])],
-    [data?.data],
-  );
-  const [users, setUsers] = useState<Record<string, string>>({});
-  useEffect(() => {
-    fetchDoctorName(doctorIds).then((res) => {
-      setUsers(res);
-    });
-  }, [doctorIds]);
+  const { data: doctor } = useDoctorQuery();
   return (
     <div className="w-full mt-9 overflow-x-auto">
       <table className="w-full border-collapse border border-gray-300">
@@ -54,7 +44,15 @@ const Table = ({
                 {humanizedDate(visit.checkInTime)}
               </td>
               <td className="px-4 py-2 text-gray-700">
-                {users[visit.doctorId]}
+                <span>
+                  {Object.values(visit.PatientOrder?.orderToDoctor ?? {}).map(
+                    (d) => (
+                      <span key={d}>
+                        {doctor?.find((doc) => doc.id === d)?.name}
+                      </span>
+                    ),
+                  )}
+                </span>
               </td>
               <td className="px-4 py-2 text-gray-700">
                 <Link
@@ -82,7 +80,7 @@ export const VisitList = ({ patientId }: { patientId: string }) => {
         title={
           <PatientInfoTitleDrawer
             name={patient?.aadharName ?? patient?.name}
-            city={patient?.city}
+            city={patient?.area}
             mobile={patient?.mobile}
             onClose={() => {
               navigate('..', {
@@ -101,7 +99,7 @@ export const VisitList = ({ patientId }: { patientId: string }) => {
       title={
         <PatientInfoTitleDrawer
           name={patient?.aadharName ?? patient?.name}
-          city={patient?.city}
+          city={patient?.area}
           mobile={patient?.mobile}
           onClose={() => {
             navigate('..', {

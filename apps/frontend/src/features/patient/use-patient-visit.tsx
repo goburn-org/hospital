@@ -131,10 +131,8 @@ export const usePatientVisitMutation = (
       options.onSuccess?.(...args);
       queryClient.invalidateQueries({
         predicate: (query) => {
-          return (
-            query.queryKey[0] === 'patient-visit' ||
-            query.queryKey[0] === 'token'
-          );
+          const keys = ['patient-visit', 'token', 'patient'];
+          return keys.some((key) => query.queryKey.includes(key));
         },
       });
     },

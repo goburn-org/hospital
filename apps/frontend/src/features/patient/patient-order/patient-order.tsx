@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreatePatientOrderRequest } from '@hospital/shared';
+import { CreatePatientOrderRequest, Maybe } from '@hospital/shared';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { z } from 'zod';
@@ -8,12 +8,14 @@ import { FormInput } from '../../../component/form/form-input';
 import { CustomSelect } from '../../../component/select';
 import { useOrderQuery } from '../../../provider/use-order';
 import { useDepartmentQuery } from '../../department/use-department-query';
+import { useDoctorQuery } from '../../employee/use-employee-query';
 
 type FormProps = {
   department: number;
   order: string;
   priority: string;
   remark: string;
+  doctorId: Maybe<string>;
 };
 
 export const OrderCreationForm = ({
@@ -34,12 +36,14 @@ export const OrderCreationForm = ({
   });
   const { data: orders } = useOrderQuery();
   const currentIds = globalForm.watch('order') || [];
+  const { data: doctor } = useDoctorQuery();
   const formProvider = useForm<FormProps>({
     resolver: zodResolver(
       z.object({
         order: z.string(),
         priority: z.string(),
         remark: z.string().optional().nullable(),
+        doctorId: z.string().optional().nullable(),
       }),
     ),
     defaultValues: {
@@ -58,6 +62,14 @@ export const OrderCreationForm = ({
   }, [currentIds, editId, formProvider, setEditId]);
   const department = formProvider.watch('department');
   const onSubmit = formProvider.handleSubmit((data) => {
+    const oldDoctorId = globalForm.getValues('orderToDoctor') || {};
+    const updatedDoctorId = data.doctorId
+      ? {
+          ...oldDoctorId,
+          [data.order]: data.doctorId,
+        }
+      : oldDoctorId;
+    globalForm.setValue('orderToDoctor', updatedDoctorId);
     if (editId) {
       globalForm.setValue(
         'order',
@@ -84,6 +96,9 @@ export const OrderCreationForm = ({
     ]);
     formProvider.reset();
   });
+  const consultationRequired = orders?.find(
+    (o) => o.id === formProvider.getValues('order'),
+  )?.consultationRequired;
   return (
     <FormProvider {...formProvider}>
       <form
@@ -122,6 +137,7 @@ export const OrderCreationForm = ({
                     shouldTouch: true,
                     shouldValidate: true,
                   });
+                  formProvider.setValue('doctorId', null);
                 }}
                 value={formProvider.watch('order')}
                 options={
@@ -138,7 +154,24 @@ export const OrderCreationForm = ({
                 isRequired
               />
             </div>
-            <div className="col-span-6">
+            {consultationRequired ? (
+              <div className="col-span-3">
+                <CustomSelect
+                  htmlFor="doctorId"
+                  labelName="Doctor"
+                  isLoading={false}
+                  options={doctor?.map((d) => ({
+                    id: d.id,
+                    label: d.name,
+                  }))}
+                  value={formProvider.watch('doctorId')}
+                  onChange={(e) => {
+                    formProvider.setValue('doctorId', e);
+                  }}
+                />
+              </div>
+            ) : null}
+            <div className="col-span-3">
               <RadioGroup
                 options={[
                   {
