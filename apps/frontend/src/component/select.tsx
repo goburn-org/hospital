@@ -137,21 +137,21 @@ export const CustomSelect = <Option extends SelectOption>({
           {/* Search Input */}
           {disableSearch ? null : (
             <div className="sticky top-0 z-10 bg-white p-2">
-           <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => {
-                onRawChange?.(e.target.value);
-                setSearchTerm(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === ' ') {
-                  e.stopPropagation(); // Stop the space key from propagating
-                }
-              }}
-              className="w-full rounded-md border border-gray-300 py-1 px-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              placeholder="Search..."
-            />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => {
+                  onRawChange?.(e.target.value);
+                  setSearchTerm(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === ' ') {
+                    e.stopPropagation(); // Stop the space key from propagating
+                  }
+                }}
+                className="w-full rounded-md border border-gray-300 py-1 px-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                placeholder="Search..."
+              />
             </div>
           )}
           {isLoading ? (
