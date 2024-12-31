@@ -33,14 +33,17 @@ import { HttpService } from '../../utils/http';
 import { useEsc } from '../../utils/use-esc';
 import { useDoctorQuery } from '../employee/use-employee-query';
 import { usePatientByIdQuery } from './use-patient-query';
-import { usePatientVisitMutation } from './use-patient-visit';
+import {
+  usePatientVisitMutation,
+  usePatientVisitUpdateMutation,
+} from './use-patient-visit';
 
 export const PatientVisitDrawer = ({
   defaultValues,
-  departmentId,
+  visitId,
 }: {
   defaultValues?: CreatePatientVisitRequest;
-  departmentId?: string;
+  visitId?: string;
 }) => {
   const navigate = useNavigate();
   const formProvider = useForm<CreatePatientVisitRequest>({
@@ -67,7 +70,7 @@ export const PatientVisitDrawer = ({
           });
         }}
       />
-      <FormModeProvider mode={FormMode.Editable} oldId={departmentId}>
+      <FormModeProvider mode={FormMode.Editable} oldId={visitId}>
         <FormProvider {...formProvider}>
           <form className="flex flex-col gap-12">
             <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -100,7 +103,7 @@ export const PatientVisitDrawer = ({
                 />
               </div>
             </div>
-            <CreateFooter />
+            {!visitId ? <CreateFooter /> : <EditFooter />}
           </form>
         </FormProvider>
       </FormModeProvider>
@@ -346,7 +349,7 @@ const CreateFooter = () => {
       });
     },
     onSuccess: (data) => {
-      navigate('..', {
+      navigate(routerConfig.Patient, {
         replace: true,
       });
     },
@@ -393,6 +396,84 @@ const CreateFooter = () => {
           </svg>
         ) : null}
         Create Order
+      </button>
+      <button
+        type="button"
+        className="btn-text btn-text-secondary"
+        onClick={() => {
+          window.history.back();
+        }}
+      >
+        Cancel
+      </button>
+    </div>
+  );
+};
+
+const EditFooter = () => {
+  const formProvider = useFormContext<CreatePatientVisitRequest>();
+  const { patientId, visitId } = useParams();
+  ensure(patientId, 'Patient id is required');
+  ensure(visitId, 'visitId is required');
+  const { mutateAsync } = usePatientVisitUpdateMutation({
+    onError: (err) => {
+      if (err instanceof Error) {
+        formProvider.setError('guardianName', {
+          message: err.message,
+        });
+      }
+      formProvider.setError('guardianName', {
+        message: String(err),
+      });
+    },
+    onSuccess: (data) => {
+      navigate(routerConfig.Patient, {
+        replace: true,
+      });
+    },
+  });
+  const navigate = useNavigate();
+  return (
+    <div className="flex mt-24 w-[95%] items-center flex-row-reverse gap-x-6">
+      <button
+        type={'button'}
+        className={classNames(
+          'btn-primary capitalize',
+          formProvider.formState.isSubmitting
+            ? 'cursor-not-allowed bg-red-400'
+            : 'cursor-pointer',
+        )}
+        disabled={formProvider.formState.isSubmitting}
+        onClick={async () => {
+          console.log(formProvider.formState.errors);
+          await formProvider.handleSubmit((data) => {
+            return mutateAsync({ ...data, patientId, visitId });
+          })();
+        }}
+      >
+        {formProvider.formState.isSubmitting ? (
+          <svg
+            className="mr-3 h-5 w-5 animate-spin text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V2.5"
+            />
+          </svg>
+        ) : null}
+        Edit Order
       </button>
       <button
         type="button"

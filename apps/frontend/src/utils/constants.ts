@@ -20,6 +20,7 @@ const Receipt = 'receipt';
 const Report = 'report';
 const Advance = 'advance';
 const Close = 'close';
+const UiConfig = 'ui-config';
 
 export const routerConfig = {
   SettingRoute,
@@ -42,6 +43,7 @@ export const routerConfig = {
   Report,
   Advance,
   Accounts,
+  UiConfig,
   Close,
 };
 

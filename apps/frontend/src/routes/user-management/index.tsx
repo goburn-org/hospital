@@ -1,4 +1,5 @@
 import {
+  AdjustmentsHorizontalIcon,
   BanknotesIcon,
   Cog8ToothIcon,
   IdentificationIcon,
@@ -43,6 +44,11 @@ const secondaryNavigation = [
     href: routerConfig.Accounts,
     icon: BanknotesIcon,
     name: 'Accounts',
+  },
+  {
+    href: routerConfig.UiConfig,
+    icon: AdjustmentsHorizontalIcon,
+    name: 'UI Config',
   },
 ];
 

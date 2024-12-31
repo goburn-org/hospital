@@ -18,6 +18,7 @@ export default defineConfig({
     port: 4300,
     host: 'localhost',
   },
+  assetsInclude: ['**/*.glb'],
   plugins: [react(), svgr(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
   // Uncomment this if you are using workers.
   // worker: {

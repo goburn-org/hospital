@@ -7,7 +7,6 @@ import {
 import {
   Cog6ToothIcon,
   ReceiptPercentIcon,
-  ReceiptRefundIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useRef, useState } from 'react';
@@ -29,14 +28,18 @@ const navigation = [
   {
     name: 'Outpatient Billing',
     href: routerConfig.Billing,
-    icon: ReceiptRefundIcon,
-    current: false,
-  },
-  {
-    name: 'Report',
-    href: `${routerConfig.Billing}/${routerConfig.Report}`,
     icon: ReceiptPercentIcon,
     current: false,
+    children: [
+      {
+        name: 'Outpatient Billing',
+        href: `${routerConfig.Billing}`,
+      },
+      {
+        name: 'Report',
+        href: `${routerConfig.Billing}/${routerConfig.Report}`,
+      },
+    ],
   },
 ];
 

@@ -49,6 +49,7 @@ export const Component = () => {
   return (
     <CustomDialog open={true}>
       <PatientVisitDrawer
+        visitId={visitId}
         defaultValues={{
           guardianName: data?.guardianName,
           guardianMobile: data?.guardianMobile,

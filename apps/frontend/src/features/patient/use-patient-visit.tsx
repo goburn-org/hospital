@@ -139,6 +139,33 @@ export const usePatientVisitMutation = (
   });
 };
 
+export const usePatientVisitUpdateMutation = (
+  options: UseMutationOptions<PatientVisit, unknown, CreatePatientVisit>,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    ...options,
+    mutationFn: (
+      param: CreatePatientVisit & {
+        visitId: string;
+      },
+    ) =>
+      HttpService.put<PatientVisit>(
+        `/v1/visit/${param.patientId}/${param.visitId}`,
+        param,
+      ),
+    onSuccess: (...args) => {
+      options.onSuccess?.(...args);
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const keys = ['patient-visit', 'token', 'patient'];
+          return keys.some((key) => query.queryKey.includes(key));
+        },
+      });
+    },
+  });
+};
+
 export const usePatientVisitByIdQuery = (
   param: VisitIdPatientId,
   options?: UseQueryOptions<DetailedPatientVisit>,

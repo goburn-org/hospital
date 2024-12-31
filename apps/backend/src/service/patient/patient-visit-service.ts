@@ -102,6 +102,27 @@ class PatientVisitService {
     return res;
   }
 
+  async update(
+    visitId: string,
+    uhid: string,
+    data: Omit<CreatePatientVisitRequest, 'billing' | 'orders'>,
+  ): Promise<PatientVisit> {
+    const authUser = useAuthUser();
+    const res = await dbClient.patientVisit.update({
+      where: {
+        id: visitId,
+      },
+      data: {
+        ...data,
+        uhid,
+        checkInTime: new Date(),
+        hospitalId: authUser.hospitalId,
+        updatedBy: authUser.id,
+      },
+    });
+    return res;
+  }
+
   async getAll(
     uhid: string,
     params?: PaginateParamsWithSort,

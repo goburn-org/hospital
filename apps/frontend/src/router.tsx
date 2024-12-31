@@ -3,6 +3,7 @@ import {
   createRoutesFromElements,
   Route,
 } from 'react-router-dom';
+import { DentalAssessment } from './features/patient/dental-assessment';
 import { routerConfig } from './utils/constants';
 
 const inventoryRoutes = (
@@ -49,6 +50,10 @@ const settingRoutes = (
   >
     {inventoryRoutes}
     {accountRoutes}
+    <Route
+      path={routerConfig.UiConfig}
+      lazy={() => import('./routes/ui-config/ui-config')}
+    />
     <Route path={routerConfig.Role} lazy={() => import('./routes/role/role')}>
       <Route path={routerConfig.New} lazy={() => import('./routes/role/new')} />
       <Route
@@ -173,6 +178,7 @@ export const router = createBrowserRouter(
         {patientRoutes}
         {billingRoutes}
       </Route>
+      <Route path="/dental-assessment" element={<DentalAssessment />} />
     </Route>,
   ),
 );
