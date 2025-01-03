@@ -11,12 +11,8 @@ Quill.register({
 });
 
 const atValues = [
-  { id: '1', value: 'Fredrik Sundqvist' },
-  { id: '2', value: 'Patrik Sjölin' },
-];
-const hashValues = [
-  { id: '3', value: 'Fredrik Sundqvist 2' },
-  { id: '4', value: 'Patrik Sjölin 2' },
+  { id: 'dengue', value: { diag1: 'High fever', diag2: 'Nausea' } },
+  { id: 'flu', value: { diag1: 'Runny nose', diag2: 'Body aches' } },
 ];
 
 const mention: Partial<MentionOption> = {
@@ -28,17 +24,34 @@ const mention: Partial<MentionOption> = {
     if (mentionChar === '.') {
       values = atValues;
     } else {
-      values = hashValues;
+      return; // If other mention chars are needed, handle them here
     }
 
-    if (searchTerm.length === 0) {
-      renderList(values, searchTerm);
-    } else {
-      const matches = [];
-      for (let i = 0; i < values.length; i++)
-        if (~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase()))
-          matches.push(values[i]);
-      renderList(matches, searchTerm);
+    // Match based on ID
+    const matches = values.filter((item) =>
+      item.id.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+
+    // Render the dropdown
+    renderList(
+      matches.map((item) => ({
+        id: item.id,
+        value: item.id, // Display the ID in dropdown
+      })),
+      searchTerm,
+    );
+  },
+  onSelect: function (item, insertItem) {
+    // Custom behavior on selecting an item
+    const selectedDisease = atValues.find((d) => d.id === item.id);
+
+    if (selectedDisease) {
+      const symptoms = Object.values(selectedDisease.value).join(', ');
+      insertItem(item); // Insert the disease name
+      const quill = this.quill;
+      const cursorPosition = quill.getSelection().index;
+      quill.insertText(cursorPosition, `${symptoms}`); // Add symptoms
+      quill.setSelection(cursorPosition + symptoms.length + 12); // Move cursor
     }
   },
 };
@@ -74,27 +87,7 @@ export const CustomEditor = ({
         readOnly: disabled,
         placeholder,
       });
-      quill.keyboard.addBinding(
-        { key: 9 }, // Keycode for Tab
-        () => {
-          console.log('here');
-          const form = document.querySelector('form'); // Assuming inside a form
-          const inputs = Array.from(
-            form?.querySelectorAll(
-              'input, textarea, button, select, [contenteditable=true]',
-            ) ?? [],
-          );
-          const currentIndex = inputs.findIndex(
-            (el) => el === document.activeElement,
-          );
 
-          if (currentIndex >= 0) {
-            const nextInput = inputs[currentIndex + 1] || inputs[0]; // Loop back to the first input if needed
-            (nextInput as any).focus?.();
-          }
-          return false; // Prevent default behavior (inserting spaces)
-        },
-      );
       quill.root.innerHTML = initialValue || '';
 
       quill.on('text-change', function () {
@@ -102,5 +95,6 @@ export const CustomEditor = ({
       });
     }
   }, [disabled, initialValue, latestCb, placeholder]);
+
   return <div className={className} ref={ref}></div>;
 };

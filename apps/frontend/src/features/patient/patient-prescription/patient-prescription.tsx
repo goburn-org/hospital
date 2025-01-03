@@ -4,7 +4,6 @@ import {
   CreatePatientPrescriptionRequest,
   createPatientPrescriptionSchema,
   ensure,
-  humanizedDate,
   Maybe,
 } from '@hospital/shared';
 import { useEffect, useRef, useState } from 'react';
@@ -13,8 +12,7 @@ import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { FormAutoCompleteInput } from '../../../component/form/form-auto-complete-input';
 import { FormInput } from '../../../component/form/form-input';
-import PageLoading, { TableLoading } from '../../../component/page-loader';
-import { CustomSelect } from '../../../component/select';
+import PageLoading from '../../../component/page-loader';
 import Tooltip, { TooltipRef } from '../../../component/tooltip';
 import { TIMER_S, useTimer } from '../../../utils/use-timer';
 import { useProductQuery } from '../../product/use-product-query';
@@ -23,7 +21,6 @@ import {
   usePatientVisitByIdQuery,
   usePatientVisitHistoryQuery,
 } from '../use-patient-visit';
-import { PrescriptionTable } from '../visit-drawer/prescription-table';
 import { FrequencyAdvance } from './frequency-advance';
 import { ShowPrescription } from './prescription-table';
 
@@ -332,33 +329,7 @@ const PastRecord = ({
   if (visitHistory?.data.length === 0) {
     return null;
   }
-  return (
-    <div className="max-w-[900px] w-[80vw]">
-      <div className="w-fit">
-        <CustomSelect
-          htmlFor="prescriptionSelectDate"
-          labelName="Select Visit"
-          onChange={(e) => {
-            setVisitId(e);
-          }}
-          options={visitHistory?.data
-            ?.filter((d) => d.id !== currentVisitId)
-            .map((d) => ({
-              label: humanizedDate(d.checkInTime),
-              id: d.id,
-            }))}
-          value={visitId}
-        />
-      </div>
-      {isLoading ? (
-        <TableLoading />
-      ) : (
-        <PrescriptionTable prescriptions={data?.PatientPrescription} />
-      )}
-    </div>
-  );
 };
-
 export const PatientPrescription = () => {
   const { patientId, visitId } = useParams();
   ensure(patientId, 'patientId is required');

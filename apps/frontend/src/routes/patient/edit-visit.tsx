@@ -59,7 +59,7 @@ export const Component = () => {
             cashAmount,
           },
           orders:
-            data?.PatientOrder.order.map((order) => ({
+            data?.PatientOrder?.order.map((order) => ({
               orderId: order.id,
               doctorId: data.PatientOrder.orderToDoctor?.[order.id] as
                 | string

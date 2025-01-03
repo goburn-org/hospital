@@ -9,12 +9,14 @@ import { PatientAssessment } from '../../features/patient/patient-assessment';
 import { PatientOrder } from '../../features/patient/patient-order';
 import { PatientPrescription } from '../../features/patient/patient-prescription/patient-prescription';
 import { PatientVitals } from '../../features/patient/patient-vitals';
+import QuickFill from '../../features/patient/quick-fill';
 import { usePatientByIdQuery } from '../../features/patient/use-patient-query';
 import { VisitHistory } from '../../features/patient/visit-history';
 import { routerConfig } from '../../utils/constants';
 
 const tabs = [
   'Vitals',
+  'Quick-fill',
   'Assessment',
   'Orders',
   'Prescription',
@@ -69,6 +71,7 @@ export const Component = () => {
             <div className="inline-block py-2 align-middle sm:px-6 lg:px-8 ">
               <VisitHistory patientId={patientId} />
               {activeTab === 'Vitals' && <PatientVitals />}
+              {activeTab === 'Quick-fill' && <QuickFill />}
               {activeTab === 'Assessment' && <PatientAssessment />}
               {activeTab === 'Orders' && <PatientOrder />}
               {activeTab === 'Prescription' && <PatientPrescription />}
