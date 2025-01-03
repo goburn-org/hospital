@@ -3,12 +3,9 @@ import { z } from 'zod';
 export const createPatientPrescriptionSchema = z.object({
   medicineName: z.string(),
   generic: z.string().nullable().optional(),
-  dosage: z.string().nullable().optional(), // 500mg
   frequency: z.string().nullable().optional(), // 1-0-1
   duration: z.string().nullable().optional(), // 30 days
-  form: z.string().nullable().optional(), // Tablet
   instruction: z.string().nullable().optional(), // Before meal
-  quantity: z.string().nullable().optional(), // 1
 });
 
 export type CreatePatientPrescriptionRequest = (z.infer<

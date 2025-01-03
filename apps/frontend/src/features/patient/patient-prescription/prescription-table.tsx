@@ -28,20 +28,8 @@ export const ShowPrescription = ({
         header: 'Duration',
       },
       {
-        accessorKey: 'dosage',
-        header: 'Dosage',
-      },
-      {
         accessorKey: 'instruction',
         header: 'Instruction',
-      },
-      {
-        accessorKey: 'quantity',
-        header: 'Quantity',
-      },
-      {
-        accessorKey: 'form',
-        header: 'Form',
       },
       {
         id: 'action',

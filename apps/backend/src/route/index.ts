@@ -9,6 +9,7 @@ import patientBillingRoute from './patient/patient-billing-route';
 import patientReceiptRoute from './patient/patient-receipt-route';
 import patientRoute from './patient/patient-route';
 import patientVisitRoute from './patient/patient-visit-route';
+import pharmacyRoute from './pharmacy/pharmacy-route';
 import productRoute from './product/product-route';
 import reportRoute from './report/report-route';
 import route from './role/role-route';
@@ -32,4 +33,5 @@ export default [
   ...reportRoute,
   ...bankAccountRoute,
   ...orderRoute,
+  ...pharmacyRoute,
 ];

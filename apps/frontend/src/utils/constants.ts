@@ -5,6 +5,7 @@ const Inventory = 'inventory';
 const Accounts = 'accounts';
 const Billing = '/billing';
 const Patient = '/patient';
+const Pharmacy = '/pharmacy';
 const New = 'new';
 const Edit = 'edit';
 const View = 'view';
@@ -45,6 +46,7 @@ export const routerConfig = {
   Accounts,
   UiConfig,
   Close,
+  Pharmacy,
 };
 
 export const TypingSpeed = {

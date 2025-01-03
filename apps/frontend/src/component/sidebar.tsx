@@ -41,6 +41,12 @@ const navigation = [
       },
     ],
   },
+  {
+    name: 'Pharmacy',
+    href: routerConfig.Pharmacy,
+    icon: ReceiptPercentIcon,
+    current: false,
+  },
 ];
 
 const MobileSidebar = ({

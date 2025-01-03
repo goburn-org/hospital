@@ -31,6 +31,9 @@ model Hospital {
   BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
   BillingPatientOrderLineItem      BillingPatientOrderLineItem[]
   BankAccount                      BankAccount[]
+  UOM                              UOM[]
+  CounterSale                      CounterSale[]
+  sku                              SKU[]
 }
 
 model Department {
@@ -144,27 +147,93 @@ model Vendor {
 }
 
 model Product {
-  id           String       @id @default(uuid())
-  name         String
-  sku          String
-  hsnCode      String
-  genericName  String?
-  brandName    String?
-  manufacturer String?
-  dosageForm   String?
-  strength     String?
-  purchaseRate Float
-  saleRate     Float
-  mrp          Float
-  maxDiscount  Float
-  hospitalId   Int
-  taxCodeId    Int
-  TaxCode      TaxCode      @relation(fields: [taxCodeId], references: [id])
-  updatedBy    String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  Hospital     Hospital     @relation(fields: [hospitalId], references: [id])
-  Department   Department[]
+  id               String        @id @default(uuid())
+  hsnCode          String
+  name             String
+  uom              Int?
+  genericName      String?
+  sku              String
+  brandName        String?
+  dosageForm       String?
+  manufacturer     String?
+  branded          Boolean       @default(false)
+  scheduleDrugType String?
+  description      String?
+  strength         String?
+  maxDiscount      Float
+  hospitalId       Int
+  taxCodeId        Int
+  active           Boolean       @default(true)
+  TaxCode          TaxCode       @relation(fields: [taxCodeId], references: [id])
+  updatedBy        String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  Hospital         Hospital      @relation(fields: [hospitalId], references: [id])
+  Department       Department[]
+  UOM              UOM?          @relation(fields: [uOMId], references: [id])
+  uOMId            Int?          @default(1)
+  CounterItem      CounterItem[]
+  SKU              SKU[]
+}
+
+model SKU {
+  id            String        @id @default(uuid())
+  productId     String
+  product       Product       @relation(fields: [productId], references: [id])
+  batchNumber   String
+  mrp           Float
+  salePrice     Float
+  purchasePrice Float
+  expiryDate    DateTime
+  hospitalId    Int
+  hospital      Hospital      @relation(fields: [hospitalId], references: [id])
+  quantity      Int
+  updatedBy     String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  CounterItem   CounterItem[]
+}
+
+model CounterSale {
+  id              String           @id @default(uuid())
+  hospitalId      Int
+  hospital        Hospital         @relation(fields: [hospitalId], references: [id])
+  updatedBy       String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  patientVisitId  String?
+  PatientVisit    PatientVisit?    @relation(fields: [patientVisitId], references: [id])
+  customerName    String
+  CounterItem     CounterItem[]
+  CounterSaleBill CounterSaleBill?
+}
+
+model CounterSaleBill {
+  counterSaleId String      @unique
+  counterSale   CounterSale @relation(fields: [counterSaleId], references: [id])
+  totalAmount   Float
+  paid          Float
+  payments      Json
+  updatedBy     String?
+  createdAt     DateTime    @default(now())
+}
+
+model CounterItem {
+  id            String      @id @default(uuid())
+  counterSaleId String
+  counterSale   CounterSale @relation(fields: [counterSaleId], references: [id])
+  skuId         String
+  sku           SKU         @relation(fields: [skuId], references: [id])
+  quantity      Int
+  rate          Float
+  discount      Float
+  tax           Float
+  totalAmount   Float
+  updatedBy     String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  Product       Product?    @relation(fields: [productId], references: [id])
+  productId     String?
 }
 
 model Patient {
@@ -214,6 +283,7 @@ model PatientVisit {
   BillingConsultationOrderLineItem BillingConsultationOrderLineItem[]
   Bill                             Bill[]
   Receipt                          Receipt[]
+  CounterSale                      CounterSale[]
 }
 
 model Assessment {
@@ -443,6 +513,18 @@ model BankAccount {
   updatedBy     String?
   isActive      Boolean   @default(true)
   Receipt       Receipt[]
+}
+
+model UOM {
+  id          Int       @id @default(autoincrement())
+  hospitalId  Int
+  hospital    Hospital  @relation(fields: [hospitalId], references: [id])
+  name        String
+  description String?
+  updatedBy   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Product     Product[]
 }
 
 enum Gender {

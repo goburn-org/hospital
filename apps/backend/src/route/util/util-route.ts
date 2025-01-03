@@ -8,6 +8,7 @@ import { patientService } from '../../service/patient/patient-service';
 import { patientVisitService } from '../../service/patient/patient-visit-service';
 import { taxCodeService } from '../../service/tax-code-service';
 import { tokenService } from '../../service/token-service';
+import { uomService } from '../../service/uom-service';
 
 const route = Router();
 const baseVersion = '/v1';
@@ -76,6 +77,15 @@ route.get(
   errorHandler(async (req, res) => {
     const search = req.query.q as string;
     const orders = await patientService.getArea(search);
+    res.json(orders);
+  }),
+);
+
+route.get(
+  `${baseVersion}${baseRoute}/uom`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const orders = await uomService.getAll();
     res.json(orders);
   }),
 );

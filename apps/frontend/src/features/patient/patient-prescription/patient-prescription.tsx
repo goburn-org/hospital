@@ -142,7 +142,6 @@ const Form = ({
                         return;
                       }
                       formProvider.setValue('generic', product?.genericName);
-                      formProvider.setValue('form', product?.dosageForm);
                       document.getElementById('dosage')?.focus();
                     }}
                   />
@@ -154,15 +153,6 @@ const Form = ({
                     labelName="Generic"
                     type="text"
                     placeholder="Paracetamol"
-                  />
-                </div>
-                <div className="col-span-6 2xl:col-span-2">
-                  <FormInput<CreatePatientPrescriptionForm>
-                    autoComplete="off"
-                    id="dosage"
-                    labelName="Dosage"
-                    type="text"
-                    placeholder="500mg"
                   />
                 </div>
                 <div className="col-span-6 2xl:col-span-2">
@@ -241,15 +231,6 @@ const Form = ({
                   />
                 </div>
                 <div className="col-span-3 2xl:col-span-2">
-                  <FormInput<CreatePatientPrescriptionForm>
-                    autoComplete="off"
-                    id="form"
-                    labelName="Form"
-                    type="text"
-                    placeholder="Tablet"
-                  />
-                </div>
-                <div className="col-span-3 2xl:col-span-2">
                   <div className="flex flex-col gap-1">
                     <FormInput<CreatePatientPrescriptionForm>
                       autoComplete="off"
@@ -283,15 +264,6 @@ const Form = ({
                       ))}
                     </div>
                   </div>
-                </div>
-                <div className="col-span-3 2xl:col-span-2">
-                  <FormInput<CreatePatientPrescriptionForm>
-                    autoComplete="off"
-                    id="quantity"
-                    labelName="Quantity"
-                    type="text"
-                    placeholder="1"
-                  />
                 </div>
               </div>
               <div className="flex justify-between mt-8">

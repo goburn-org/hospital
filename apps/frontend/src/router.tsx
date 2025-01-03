@@ -168,6 +168,23 @@ const dashboardRoute = (
   />
 );
 
+const pharmacyRoutes = (
+  <Route path={routerConfig.Pharmacy} lazy={() => import('./routes/pharmacy')}>
+    <Route
+      path={routerConfig.New}
+      lazy={() => import('./routes/pharmacy/new')}
+    />
+    <Route
+      path={`${routerConfig.View}/:id`}
+      lazy={() => import('./routes/pharmacy/view')}
+    />
+    <Route
+      path={`${routerConfig.Edit}/:id`}
+      lazy={() => import('./routes/pharmacy/edit')}
+    />
+  </Route>
+);
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
@@ -177,6 +194,7 @@ export const router = createBrowserRouter(
         {settingRoutes}
         {patientRoutes}
         {billingRoutes}
+        {pharmacyRoutes}
       </Route>
       <Route path="/dental-assessment" element={<DentalAssessment />} />
     </Route>,

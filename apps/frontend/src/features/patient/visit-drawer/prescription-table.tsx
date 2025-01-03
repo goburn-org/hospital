@@ -16,10 +16,7 @@ export const PrescriptionTable = ({
             <th className="p-2 border border-gray-300">Drug</th>
             <th className="p-2 border border-gray-300">Frequency</th>
             <th className="p-2 border border-gray-300">Duration</th>
-            <th className="p-2 border border-gray-300">Dosage</th>
             <th className="p-2 border border-gray-300">Instruction</th>
-            <th className="p-2 border border-gray-300">Quantity</th>
-            <th className="p-2 border border-gray-300">Form</th>
           </tr>
         </thead>
         <tbody>
@@ -30,10 +27,7 @@ export const PrescriptionTable = ({
               </td>
               <td className="p-2 border border-gray-300">{item.frequency}</td>
               <td className="p-2 border border-gray-300">{item.duration}</td>
-              <td className="p-2 border border-gray-300">{item.dosage}</td>
               <td className="p-2 border border-gray-300">{item.instruction}</td>
-              <td className="p-2 border border-gray-300">{item.quantity}</td>
-              <td className="p-2 border border-gray-300">{item.form}</td>
             </tr>
           ))}
         </tbody>

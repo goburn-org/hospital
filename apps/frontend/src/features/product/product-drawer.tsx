@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateProductInput, createProductSchema } from '@hospital/shared';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
+import { FormCheckbox } from '../../component/form/form-checkbox';
 import { FormInput } from '../../component/form/form-input';
 import { CustomSelect, SelectOption } from '../../component/select';
 import {
@@ -18,6 +19,7 @@ import {
   useCreateProductMutation,
   useUpdateProductMutation,
 } from './use-product-query';
+import { useUomQuery } from './use-uom-query';
 
 export const ProductDrawer = ({
   defaultValues,
@@ -69,36 +71,28 @@ export const ProductDrawer = ({
                 <FormInput<CreateProductInput>
                   isRequired
                   autoComplete="off"
+                  id="hsnCode"
+                  labelName="HSN"
+                  placeholder=" 123456"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <FormInput<CreateProductInput>
+                  isRequired
                   id="name"
-                  labelName="Product Name"
-                  placeholder=" Pracitomol 650"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  id="dosageForm"
-                  labelName="Dosage Form"
-                  placeholder=" Tablet"
-                  autoComplete="off"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  id="strength"
-                  labelName="Strength"
-                  placeholder="650"
-                  autoComplete="off"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  id="brandName"
-                  labelName="Brand Name"
+                  labelName="	Item name"
                   placeholder=" Crocin"
                   autoComplete="off"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <UOM />
+              </div>
+              <div className="sm:col-span-2">
+                <FormCheckbox<CreateProductInput>
+                  isRequired
+                  id="branded"
+                  labelName="Branded"
                 />
               </div>
               <div className="sm:col-span-2">
@@ -137,37 +131,6 @@ export const ProductDrawer = ({
                   autoComplete="off"
                 />
               </div>
-
-              <div className="sm:col-span-2">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  id="purchaseRate"
-                  labelName="Purchase Rate"
-                  placeholder=" 0.85"
-                  type="number"
-                  autoComplete="off"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  id="saleRate"
-                  labelName="Sale Rate"
-                  placeholder=" 2"
-                  type="number"
-                  autoComplete="off"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  id="mrp"
-                  labelName="MRP"
-                  placeholder=" 2"
-                  type="number"
-                  autoComplete="off"
-                />
-              </div>
               <div className="sm:col-span-3">
                 <FormInput<CreateProductInput>
                   isRequired
@@ -192,6 +155,30 @@ export const ProductDrawer = ({
   );
 };
 
+const UOM = () => {
+  const { data } = useUomQuery();
+  const { watch, setValue } = useFormContext<CreateProductInput>();
+  const isReadOnly = useFormMode() === FormMode.ReadOnly;
+  return (
+    <CustomSelect
+      isRequired
+      disabled={isReadOnly}
+      htmlFor="uom"
+      labelName="UOM"
+      options={
+        data?.map((d) => ({
+          id: d.id,
+          label: d.name,
+        })) || []
+      }
+      value={watch('uom')}
+      onChange={function (value) {
+        setValue('uom', value);
+      }}
+    />
+  );
+};
+
 const DepartmentSelect = () => {
   const { data, isLoading } = useAllDepartmentQuery();
   const { watch, setValue } = useFormContext<CreateProductInput>();
@@ -202,7 +189,7 @@ const DepartmentSelect = () => {
       isRequired
       disabled={isReadOnly}
       isLoading={isLoading}
-      htmlFor="departmentId"
+      htmlFor="chargeHead"
       labelName="Department"
       options={data?.data.map(
         (d): SelectOption => ({
@@ -210,9 +197,9 @@ const DepartmentSelect = () => {
           label: d.name,
         }),
       )}
-      value={watch('departmentIds')}
+      value={watch('chargeHead')}
       onChange={function (value) {
-        setValue('departmentIds', value as number[]);
+        setValue('chargeHead', value as number[]);
       }}
     />
   );
@@ -293,7 +280,7 @@ const CreateFooter = () => {
         )}
         disabled={formProvider.formState.isSubmitting}
         onClick={async () => {
-          console.log(formProvider.getValues());
+          console.log(formProvider.formState.errors);
           await formProvider.handleSubmit((data) => {
             return mutateAsync(data);
           })();
@@ -364,7 +351,7 @@ const EditFooter = () => {
           if (!id) {
             return;
           }
-          console.log(formProvider.getValues());
+          console.log(formProvider.formState.errors);
           await formProvider.handleSubmit((data) => {
             console.log(data);
             return mutateAsync({

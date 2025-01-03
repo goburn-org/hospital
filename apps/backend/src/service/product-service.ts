@@ -13,23 +13,19 @@ class ProductService {
     const authUser = useAuthUser();
     return dbClient.product.create({
       data: {
-        brandName: data.brandName,
+        branded: data.branded,
         genericName: data.genericName,
         dosageForm: data.dosageForm,
         hsnCode: data.hsnCode,
         manufacturer: data.manufacturer,
         maxDiscount: data.maxDiscount,
-        mrp: data.mrp,
         name: data.name,
-        purchaseRate: data.purchaseRate,
-        saleRate: data.saleRate,
         sku: data.sku,
-        strength: data.strength,
         hospitalId: authUser.hospitalId,
         updatedBy: authUser.id,
         taxCodeId: data.taxCodeId,
         Department: {
-          connect: data.departmentIds.map((departmentId) => ({
+          connect: data.chargeHead.map((departmentId) => ({
             id: departmentId,
           })),
         },
@@ -41,7 +37,7 @@ class ProductService {
   }
 
   async update(data: UpdateProductInput): Promise<ProductResponse> {
-    const { departmentIds, id, ...rest } = data;
+    const { chargeHead, id, ...rest } = data;
     return dbClient.product.update({
       where: {
         id,
@@ -50,7 +46,7 @@ class ProductService {
         ...rest,
         updatedBy: useAuthUser().id,
         Department: {
-          set: departmentIds.map((departmentId) => ({
+          set: chargeHead.map((departmentId) => ({
             id: departmentId,
           })),
         },

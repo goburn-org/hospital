@@ -2,19 +2,23 @@ import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 export const createProductSchema = z.object({
-  name: z.string().min(3, 'Atlesat 3 characters'),
-  sku: z.string().min(3, 'Atlesat 3 characters'),
   hsnCode: z.string().min(3, 'Atlesat 3 characters'),
+  name: z.string().min(3, 'Atlesat 3 characters'),
+  uom: z.number().optional().nullable(),
   genericName: z.string().nullable().optional(),
-  brandName: z.string().min(3, 'Atlesat 3 characters').nullable().optional(),
-  manufacturer: z.string().min(3, 'Atlesat 3 characters').nullable().optional(),
-  strength: z.string().min(3, 'Atlesat 3 characters').nullable().optional(),
+  sku: z.string().min(3, 'Atlesat 3 characters'),
   dosageForm: z.string().min(3, 'Atlesat 3 characters').nullable().optional(),
-  purchaseRate: z.number(),
-  saleRate: z.number(),
-  mrp: z.number(),
+  chargeHead: z.array(z.number()),
+  manufacturer: z.string().min(3, 'Atlesat 3 characters').nullable().optional(),
+  branded: z.boolean(),
+  scheduleDrugType: z
+    .string()
+    .min(3, 'Atlesat 3 characters')
+    .nullable()
+    .optional(),
+  description: z.string().min(3, 'Atlesat 3 characters').nullable().optional(),
+  active: z.boolean().default(true),
   maxDiscount: z.number(),
-  departmentIds: z.array(z.number()),
   taxCodeId: z.number(),
 });
 
