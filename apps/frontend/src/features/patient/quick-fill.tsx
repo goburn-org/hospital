@@ -1,4 +1,4 @@
-import { CheckIcon } from '@heroicons/react/24/outline';
+import { CheckIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   CreateAssessmentRequest,
@@ -8,7 +8,6 @@ import {
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { FaCog } from 'react-icons/fa';
 import { FormEditor } from '../../component/form/form-editor';
 import { FormInput } from '../../component/form/form-input';
 import { TIMER_S, useTimer } from '../../utils/use-timer';
@@ -58,7 +57,7 @@ const Form = ({
       return;
     }
     if (!complaintValue.trim()) {
-      toast.error('Complaint value cannot be empty.');
+      toast.success(`Template saved as "${templateName}"`);
       return;
     }
 
@@ -67,21 +66,6 @@ const Form = ({
       { name: templateName, value: complaintValue },
     ]);
     toast.success(`Template saved as "${templateName}"`);
-  };
-
-  const handleComplaintChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const rawValue = e.target.value;
-
-    // Remove prefixes like .flu, .dengue, etc.
-    const cleanedValue = rawValue
-      .split(',') // Split by commas
-      .map((item) => item.replace(/^\.\w+\s*/, '').trim()) // Remove prefix and trim spaces
-      .filter((item, index, arr) => item && arr.indexOf(item) === index) // Remove duplicates and empty values
-      .join(', '); // Join back into a single string
-
-    setComplaintValue(cleanedValue); // Update the state
   };
 
   const handleTemplateSelection = (templateValue: string) => {
@@ -114,13 +98,10 @@ const Form = ({
               labelName="Complaints"
               id="complaint"
               twoColumn
-              value={complaintValue} // Bind value to the cleaned state
-              onChange={handleComplaintChange} // Ensure onChange updates complaint value
             />
 
-            <FaCog
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-              size={17}
+            <Cog6ToothIcon
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer w-6 h-6"
               onClick={handleAddTemplate}
             />
           </div>
