@@ -1,6 +1,8 @@
 import {
   CounterSaleResponse,
+  CreateGrnRequest,
   CreateIntentRequest,
+  GrnResponse,
   IntentResponse,
   PaginatedResponse,
   PaginateParamsWithSort,
@@ -50,6 +52,38 @@ export const useIntentMutation = () => {
       queryClient.invalidateQueries({
         predicate: (query) => query.queryKey[0] === 'intent',
       });
+    },
+  });
+};
+
+export const useGrnQuery = () => {
+  return useQuery({
+    queryKey: ['grn'],
+    queryFn: () => {
+      return HttpService.get<GrnResponse[]>('/v1/grn');
+    },
+  });
+};
+
+export const useGrnMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreateGrnRequest) => {
+      return HttpService.post<GrnResponse>('/v1/grn', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey[0] === 'grn',
+      });
+    },
+  });
+};
+
+export const useGrnByIdQuery = (id: string) => {
+  return useQuery({
+    queryKey: ['grn', id],
+    queryFn: () => {
+      return HttpService.get<GrnResponse>(`/v1/grn/${id}`);
     },
   });
 };

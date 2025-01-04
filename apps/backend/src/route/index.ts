@@ -3,6 +3,7 @@ import authRoute from './auth/auth-route';
 import bankAccountRoute from './bank-account/bank-account-route';
 import departmentRoute from './department/department-route';
 import employeeRoute from './employee/employee-route';
+import grnRoute from './grn/grn-route';
 import healthRoute from './health/health-route';
 import intentRoute from './intent/intent-route';
 import orderRoute from './order/order-route';
@@ -36,4 +37,5 @@ export default [
   ...orderRoute,
   ...pharmacyRoute,
   ...intentRoute,
+  ...grnRoute,
 ];

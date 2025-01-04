@@ -190,7 +190,7 @@ const grnRoutes = (
     <Route path={routerConfig.New} lazy={() => import('./routes/grn/new')} />
     <Route
       path={`${routerConfig.View}/:id`}
-      lazy={() => import('./routes/pharmacy/view')}
+      lazy={() => import('./routes/grn/view')}
     />
     <Route
       path={`${routerConfig.Edit}/:id`}
@@ -202,6 +202,10 @@ const grnRoutes = (
 const intentRoutes = (
   <Route path={routerConfig.Intent} lazy={() => import('./routes/intent')}>
     <Route path={routerConfig.New} lazy={() => import('./routes/intent/new')} />
+    <Route
+      path={routerConfig.View}
+      lazy={() => import('./routes/intent/new')}
+    />
   </Route>
 );
 

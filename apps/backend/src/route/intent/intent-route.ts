@@ -2,7 +2,7 @@ import { createIntentSchema } from '@hospital/shared';
 import { Router } from 'express';
 import { authMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
-import { intentService } from '../../service/intent/intent-service';
+import { intentService } from '../../service/pharmacy/intent-service';
 
 const route = Router();
 const baseVersion = '/v1';

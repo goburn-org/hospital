@@ -35,6 +35,7 @@ model Hospital {
   CounterSale                      CounterSale[]
   sku                              SKU[]
   Intent                           Intent[]
+  GRN                              GRN[]
 }
 
 model Department {
@@ -145,6 +146,7 @@ model Vendor {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   Hospital    Hospital @relation(fields: [hospitalId], references: [id])
+  GRN         GRN[]
 }
 
 model Product {
@@ -193,6 +195,19 @@ model SKU {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   CounterItem   CounterItem[]
+}
+
+model GRN {
+  id         String   @id @default(uuid())
+  hospitalId Int
+  hospital   Hospital @relation(fields: [hospitalId], references: [id])
+  updatedBy  String?
+  createdBy  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  json       Json
+  Vendor     Vendor?  @relation(fields: [vendorId], references: [id])
+  vendorId   String?
 }
 
 model Intent {
