@@ -1,4 +1,4 @@
-import { CheckBadgeIcon, XMarkIcon } from '@heroicons/react/20/solid';
+import { XMarkIcon } from '@heroicons/react/20/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   CreateGrnLineItemRequest,
@@ -11,101 +11,10 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { FormAutoCompleteInput } from '../../component/form/form-auto-complete-input';
 import { FormInput } from '../../component/form/form-input';
-import { classNames } from '../../utils/classNames';
+import { FormTab, FormTabs } from '../../component/form/form-tabs';
 import { useEsc } from '../../utils/use-esc';
 import { useProductQuery } from '../product/use-product-query';
 import { useGrnMutation, useIntentQuery } from './use-pharmacy-query';
-
-type Tab = {
-  name: string;
-  current: boolean;
-  completed: boolean;
-  inProgress: boolean;
-};
-
-const MobileTabs = ({
-  tabs,
-  setCurrentTab,
-}: {
-  tabs: Tab[];
-  setCurrentTab: (tabs: Tab) => void;
-}) => {
-  return (
-    <div className="sm:hidden">
-      <label htmlFor="tabs" className="sr-only">
-        Select a tab
-      </label>
-      {/* Use an "onChange" listener to redirect the user to the selected tab URL. */}
-      <select
-        id="tabs"
-        name="tabs"
-        defaultValue={tabs.find((tab) => tab.current)!.name}
-        onChange={(e) => {
-          const selectedTab = tabs.find((tab) => tab.name === e.target.value);
-          if (selectedTab) {
-            setCurrentTab(selectedTab);
-          }
-        }}
-        className="block w-full rounded-md border-gray-300 focus:border-primary focus:ring-primary"
-      >
-        {tabs.map((tab) => (
-          <option key={tab.name}>{tab.name}</option>
-        ))}
-      </select>
-    </div>
-  );
-};
-
-const DesktopTabs = ({
-  tabs,
-  setCurrentTab,
-}: {
-  tabs: Tab[];
-  setCurrentTab: (tabs: Tab) => void;
-}) => {
-  return (
-    <div className="hidden sm:block">
-      <nav
-        aria-label="Tabs"
-        className="isolate flex divide-x divide-gray-200 rounded-lg shadow"
-      >
-        {tabs.map((tab, tabIdx) => (
-          <button
-            key={tab.name}
-            onClick={() => {
-              setCurrentTab(tab);
-            }}
-            aria-current={tab.current ? 'page' : undefined}
-            className={classNames(
-              tab.completed || tab.current || tab.inProgress
-                ? 'cursor-pointer'
-                : 'cursor-not-allowed',
-              tab.current ? 'text-gray-900' : 'text-gray-500',
-              tab.completed ? 'text-green-500' : '',
-              tabIdx === 0 ? 'rounded-l-lg' : '',
-              tabIdx === tabs.length - 1 ? 'rounded-r-lg' : '',
-              'group relative min-w-0 flex-1 overflow-hidden bg-white py-4 text-center text-sm font-medium hover:bg-gray-50 hover:text-gray-700 focus:z-10',
-            )}
-          >
-            <div className="align-center flex justify-center gap-2">
-              {tab.completed ? (
-                <CheckBadgeIcon className="h-5 w-5" color="green" />
-              ) : null}
-              <span>{tab.name}</span>
-            </div>
-            <span
-              aria-hidden="true"
-              className={classNames(
-                tab.current ? 'bg-primary' : 'bg-transparent',
-                'absolute inset-x-0 bottom-0 h-0.5',
-              )}
-            />
-          </button>
-        ))}
-      </nav>
-    </div>
-  );
-};
 
 export const GrnDrawer = ({
   defaultValues,
@@ -121,7 +30,7 @@ export const GrnDrawer = ({
   const { mutateAsync } = useGrnMutation();
   const [intentId, setIntentId] = useState<string>();
   const [productSearch, setProductSearch] = useState('');
-  const [tabs, setTabs] = useState<Tab[]>([
+  const [tabs, setTabs] = useState<FormTab[]>([
     {
       name: 'Select Intent' as const,
       current: true,
@@ -158,7 +67,7 @@ export const GrnDrawer = ({
     },
   });
   const activeIndex = tabs.findIndex((tab) => tab.current);
-  const setCurrentTab = async (tab: Tab) => {
+  const setCurrentTab = async (tab: FormTab) => {
     setTabs((t) =>
       t.map((t) => ({
         ...t,
@@ -192,10 +101,7 @@ export const GrnDrawer = ({
           <XMarkIcon className="h-8 w-8" />
         </button>
       </div>
-      <div>
-        <MobileTabs tabs={tabs} setCurrentTab={setCurrentTab} />
-        <DesktopTabs tabs={tabs} setCurrentTab={setCurrentTab} />
-      </div>
+      <FormTabs tabs={tabs} setCurrentTab={setCurrentTab} />
       {activeIndex === 0 ? (
         <Table
           setSelected={(id) => {

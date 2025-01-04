@@ -141,6 +141,7 @@ const Form = ({
                       if (!product) {
                         return;
                       }
+                      formProvider.setValue('medicineId', product.id);
                       formProvider.setValue('generic', product?.genericName);
                       document.getElementById('dosage')?.focus();
                     }}

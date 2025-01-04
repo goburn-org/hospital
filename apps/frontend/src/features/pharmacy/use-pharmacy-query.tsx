@@ -1,4 +1,5 @@
 import {
+  CounterSaleAvailabilityInput,
   CounterSaleResponse,
   CreateGrnRequest,
   CreateIntentRequest,
@@ -6,19 +7,12 @@ import {
   IntentResponse,
   PaginatedResponse,
   PaginateParamsWithSort,
-  PatientResponse,
 } from '@hospital/shared';
-import {
-  QueryOptions,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { HttpService } from '../../utils/http';
 
 export const usePatientPrescriptionQuery = (
   queryParams: PaginateParamsWithSort,
-  options?: QueryOptions<PaginatedResponse<PatientResponse>>,
 ) => {
   return useQuery({
     queryKey: ['pharmacy', queryParams],
@@ -38,6 +32,23 @@ export const useIntentQuery = () => {
     queryKey: ['intent'],
     queryFn: () => {
       return HttpService.get<IntentResponse[]>('/v1/intent');
+    },
+  });
+};
+
+export const usePatientPrescriptionMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CounterSaleAvailabilityInput) => {
+      return HttpService.post<CounterSaleAvailabilityInput>(
+        '/v1/pharmacy',
+        data,
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey[0] === 'pharmacy',
+      });
     },
   });
 };

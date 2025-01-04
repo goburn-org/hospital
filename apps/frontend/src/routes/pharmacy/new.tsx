@@ -1,10 +1,10 @@
 import { CustomDialog } from '../../component/custom-dialog';
-import { PatientDrawer } from '../../features/patient/patient-drawer';
+import { CounterSaleDrawer } from '../../features/pharmacy/counter-sale-drawer';
 
 export const Component = () => {
   return (
     <CustomDialog open={true}>
-      <PatientDrawer mode="create" />
+      <CounterSaleDrawer mode="create" />
     </CustomDialog>
   );
 };

@@ -1,4 +1,8 @@
-import { ensure, validatePaginateParamsWithSort } from '@hospital/shared';
+import {
+  counterSaleAvailabilityInput,
+  ensure,
+  validatePaginateParamsWithSort,
+} from '@hospital/shared';
 import { Router } from 'express';
 import { authMiddleware } from '../../middleware/auth-middleware';
 import { errorHandler } from '../../middleware/error-middleware';
@@ -30,6 +34,16 @@ route.get(
   authMiddleware,
   errorHandler(async (req, res) => {
     const data = await productService.getById(req.params.id);
+    return res.send(data);
+  }),
+);
+
+route.post(
+  `${baseVersion}${baseRoute}/availability`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const items = counterSaleAvailabilityInput.parse(req.body.items);
+    const data = await pharmacyService.getAvailability(items);
     return res.send(data);
   }),
 );

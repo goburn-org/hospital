@@ -12,6 +12,7 @@ import {
   PatientOrderResponse,
   PatientVisit,
   PatientVisitResponse,
+  PatientVisitWithPrescription,
   Sure,
 } from '@hospital/shared';
 import {
@@ -191,6 +192,16 @@ export const usePatientVisitHistoryQuery = (
         `/v1/visit/${patientId}`,
       ),
     ...options,
+  });
+};
+
+export const useAllVisitLast24Hours = () => {
+  return useQuery({
+    queryKey: ['patient-visit', 'last-24-hours'],
+    queryFn: () =>
+      HttpService.get<PatientVisitWithPrescription[]>(
+        `/v1/visit/last-24-hours`,
+      ),
   });
 };
 

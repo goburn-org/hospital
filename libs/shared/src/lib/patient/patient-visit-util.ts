@@ -87,3 +87,13 @@ export type DetailedPatientVisit = _DetailedPatientVisit & {
     orderToDoctor: Record<string, string>;
   };
 };
+
+export type PatientVisitWithPrescription = Prisma.PatientVisitGetPayload<{
+  include: {
+    PatientPrescription: true;
+  };
+}> & {
+  PatientPrescription: {
+    list: CreatePatientPrescriptionRequest;
+  };
+};

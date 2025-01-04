@@ -24,6 +24,15 @@ const route = Router();
 const baseVersion = '/v1';
 const baseRoute = '/visit';
 
+route.get(
+  `${baseVersion}${baseRoute}/last-24-hours`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const data = await patientVisitService.getLast24HoursVisit();
+    res.send(data);
+  }),
+);
+
 route.post(
   `${baseVersion}${baseRoute}/:patientId`,
   authMiddleware,

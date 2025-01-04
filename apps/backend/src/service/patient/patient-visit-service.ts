@@ -6,6 +6,7 @@ import {
   PaginatedResponse,
   PatientVisit,
   PatientVisitResponse,
+  PatientVisitWithPrescription,
   Prisma,
   TokenResponse,
   getToday,
@@ -272,6 +273,31 @@ class PatientVisitService {
       },
     });
     return res;
+  }
+
+  async getLast24HoursVisit(): Promise<PatientVisitWithPrescription[]> {
+    const yesterday = getYesterday();
+    const today = getToday();
+    const user = useAuthUser();
+    const hospitalId = user.hospitalId;
+    return dbClient.patientVisit.findMany({
+      where: {
+        AND: [
+          {
+            hospitalId,
+          },
+          {
+            checkInTime: {
+              gte: yesterday,
+              lt: today,
+            },
+          },
+        ],
+      },
+      include: {
+        PatientPrescription: true,
+      },
+    }) as any;
   }
 }
 

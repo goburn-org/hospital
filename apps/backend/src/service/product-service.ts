@@ -145,6 +145,19 @@ class ProductService {
       },
     });
   }
+
+  getIds(ids: string[]): Promise<ProductResponse[]> {
+    return dbClient.product.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      include: {
+        Department: true,
+      },
+    });
+  }
 }
 
 export const productService = new ProductService();

@@ -17,22 +17,6 @@ export const createGrnSchema = z.object({
 export type CreateGrnRequest = z.infer<typeof createGrnSchema>;
 export type CreateGrnLineItemRequest = z.infer<typeof createGrnLineItemSchema>;
 
-/**
- * model GRN {
-  id         String   @id @default(uuid())
-  hospitalId Int
-  hospital   Hospital @relation(fields: [hospitalId], references: [id])
-  updatedBy  String?
-  createdBy  String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  json       Json
-  Vendor     Vendor?  @relation(fields: [vendorId], references: [id])
-  vendorId   String?
-}
-
- */
-
 export type GrnResponse = {
   id: string;
   hospitalId: number;
