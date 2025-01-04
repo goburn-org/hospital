@@ -8,7 +8,7 @@ import {
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { FaCog } from 'react-icons/fa'; // Import gear icon from react-icons
+import { FaCog } from 'react-icons/fa';
 import { FormEditor } from '../../component/form/form-editor';
 import { FormInput } from '../../component/form/form-input';
 import { TIMER_S, useTimer } from '../../utils/use-timer';
@@ -26,7 +26,7 @@ const Form = ({
 }) => {
   const [saved, setSaved] = useState(false);
   const { mutateAsync, isPending } = usePatientAssessmentMutation();
-  const [start] = useTimer(TIMER_S); // Ensure TIMER_S is defined in your code
+  const [start] = useTimer(TIMER_S);
   const [templates, setTemplates] = useState<{ name: string; value: string }[]>(
     [],
   );
@@ -52,13 +52,16 @@ const Form = ({
   };
 
   const handleAddTemplate = () => {
-    const templateName = prompt('Enter a name for this template:'); // Ask user for template name
+    const templateName = prompt('Enter a name for this template:');
     if (!templateName) {
       toast.error('Template name cannot be empty.');
       return;
     }
+    if (!complaintValue.trim()) {
+      toast.error('Complaint value cannot be empty.');
+      return;
+    }
 
-    // Save the template with its name and complaint value
     setTemplates((prev) => [
       ...prev,
       { name: templateName, value: complaintValue },
@@ -66,12 +69,37 @@ const Form = ({
     toast.success(`Template saved as "${templateName}"`);
   };
 
-  const handleTemplateSelection = (templateValue: string) => {
-    setComplaintValue(templateValue);
+  const handleComplaintChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const rawValue = e.target.value;
+
+    // Remove prefixes like .flu, .dengue, etc.
+    const cleanedValue = rawValue
+      .split(',') // Split by commas
+      .map((item) => item.replace(/^\.\w+\s*/, '').trim()) // Remove prefix and trim spaces
+      .filter((item, index, arr) => item && arr.indexOf(item) === index) // Remove duplicates and empty values
+      .join(', '); // Join back into a single string
+
+    setComplaintValue(cleanedValue); // Update the state
   };
 
-  const handleComplaintChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setComplaintValue(e.target.value);
+  const handleTemplateSelection = (templateValue: string) => {
+    // Clean template value by removing prefix
+    const symptomValue = templateValue.replace(/^\.\w+\s*/, '');
+
+    setComplaintValue((prevValue) => {
+      const updatedValue = prevValue
+        ? `${prevValue}, ${symptomValue}` // Append the cleaned value
+        : symptomValue;
+
+      // Ensure the final value has no duplicates or extra spaces
+      return updatedValue
+        .split(',') // Split into individual complaints
+        .map((item) => item.trim()) // Trim spaces
+        .filter((item, index, arr) => item && arr.indexOf(item) === index) // Remove duplicates
+        .join(', '); // Rejoin into a single string
+    });
   };
 
   return (
@@ -86,16 +114,28 @@ const Form = ({
               labelName="Complaints"
               id="complaint"
               twoColumn
-              value={complaintValue}
-              onChange={handleComplaintChange} // Controlled input
+              value={complaintValue} // Bind value to the cleaned state
+              onChange={handleComplaintChange} // Ensure onChange updates complaint value
             />
-            {/* Gear Icon */}
+
             <FaCog
               className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
               size={17}
               onClick={handleAddTemplate}
             />
           </div>
+          {/* Template dropdown */}
+          {templates.map((template, index) => (
+            <button
+              key={index}
+              type="button"
+              className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+              onClick={() => handleTemplateSelection(template.value)} // Call template selection
+            >
+              {template.value.replace(/^\.\w+\s*/, '')}{' '}
+              {/* Display cleaned value */}
+            </button>
+          ))}
         </div>
       </form>
       <PatientPrescription />
