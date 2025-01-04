@@ -41,17 +41,29 @@ const mention: Partial<MentionOption> = {
       searchTerm,
     );
   },
+
   onSelect: function (item, insertItem) {
-    // Custom behavior on selecting an item
     const selectedDisease = atValues.find((d) => d.id === item.id);
 
     if (selectedDisease) {
       const symptoms = Object.values(selectedDisease.value).join(', ');
-      insertItem(item); // Insert the disease name
       const quill = this.quill;
+
+      // Get the current cursor position
       const cursorPosition = quill.getSelection().index;
-      quill.insertText(cursorPosition, `${symptoms}`); // Add symptoms
-      quill.setSelection(cursorPosition + symptoms.length + 12); // Move cursor
+
+      // Remove the mention prefix (e.g., `.flu`) and replace it with symptoms
+      quill.deleteText(cursorPosition - item.id.length - 1, item.id.length + 1); // Remove the prefix and ID
+      quill.insertText(cursorPosition - item.id.length - 1, `${symptoms}`); // Insert symptoms
+      quill.insertText(
+        cursorPosition - item.id.length - 1 + symptoms.length,
+        ' ',
+      ); // Add a trailing space
+
+      // Move the cursor to the end of the inserted text
+      quill.setSelection(
+        cursorPosition - item.id.length - 1 + symptoms.length + 1,
+      );
     }
   },
 };
