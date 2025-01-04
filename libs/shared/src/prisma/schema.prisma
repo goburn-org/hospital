@@ -34,6 +34,7 @@ model Hospital {
   UOM                              UOM[]
   CounterSale                      CounterSale[]
   sku                              SKU[]
+  Intent                           Intent[]
 }
 
 model Department {
@@ -192,6 +193,17 @@ model SKU {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   CounterItem   CounterItem[]
+}
+
+model Intent {
+  id         String   @id @default(uuid())
+  json       Json
+  createdBy  String
+  hospitalId Int
+  status     String
+  hospital   Hospital @relation(fields: [hospitalId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model CounterSale {

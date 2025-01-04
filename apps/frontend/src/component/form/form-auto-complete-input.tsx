@@ -25,6 +25,7 @@ export const FormAutoCompleteInput = <T extends FieldValues = FieldValues>({
   defaultValue,
   options,
   onEnter,
+  onSearch,
 }: {
   labelName: string;
   placeholder?: string;
@@ -36,6 +37,7 @@ export const FormAutoCompleteInput = <T extends FieldValues = FieldValues>({
   defaultValue?: PathValue<T, Path<T>>;
   options?: { label: string; id: string | number }[];
   onEnter?: (id: string | number) => void;
+  onSearch?: (search: string) => void;
 }) => {
   const { setValue, formState, control } = useFormContext<T>();
   const isReadOnly = useFormMode() === FormMode.ReadOnly;
@@ -147,6 +149,7 @@ export const FormAutoCompleteInput = <T extends FieldValues = FieldValues>({
                     }
                   }}
                   onChange={(e) => {
+                    onSearch?.(e.target.value);
                     setSearch(e.target.value);
                     setShowOptions(true);
                     setValue(id, e.target.value as PathValue<T, Path<T>>, {

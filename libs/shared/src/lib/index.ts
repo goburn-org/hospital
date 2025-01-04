@@ -15,6 +15,7 @@ export * from './patient/patient-util';
 export * from './patient/patient-visit-util';
 export * from './patient/patient-vital-util';
 export * from './pharmacy/counter-sale-util';
+export * from './pharmacy/intent-util';
 export * from './product-util';
 export * from './role-util';
 export * from './tax-code-util';

@@ -5,6 +5,7 @@ import {
   TransitionChild,
 } from '@headlessui/react';
 import {
+  BuildingStorefrontIcon,
   Cog6ToothIcon,
   ReceiptPercentIcon,
   XMarkIcon,
@@ -44,8 +45,22 @@ const navigation = [
   {
     name: 'Pharmacy',
     href: routerConfig.Pharmacy,
-    icon: ReceiptPercentIcon,
+    icon: BuildingStorefrontIcon,
     current: false,
+    children: [
+      {
+        name: 'Counter Bill',
+        href: routerConfig.Pharmacy,
+      },
+      {
+        name: 'Goods Received Notes',
+        href: routerConfig.Grn,
+      },
+      {
+        name: 'Intent',
+        href: routerConfig.Intent,
+      },
+    ],
   },
 ];
 

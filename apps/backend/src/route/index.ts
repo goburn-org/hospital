@@ -4,6 +4,7 @@ import bankAccountRoute from './bank-account/bank-account-route';
 import departmentRoute from './department/department-route';
 import employeeRoute from './employee/employee-route';
 import healthRoute from './health/health-route';
+import intentRoute from './intent/intent-route';
 import orderRoute from './order/order-route';
 import patientBillingRoute from './patient/patient-billing-route';
 import patientReceiptRoute from './patient/patient-receipt-route';
@@ -34,4 +35,5 @@ export default [
   ...bankAccountRoute,
   ...orderRoute,
   ...pharmacyRoute,
+  ...intentRoute,
 ];

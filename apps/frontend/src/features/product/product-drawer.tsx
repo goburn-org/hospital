@@ -1,7 +1,12 @@
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateProductInput, createProductSchema } from '@hospital/shared';
-import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import {
+  FormProvider,
+  useForm,
+  useFormContext,
+  UseFormReturn,
+} from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormCheckbox } from '../../component/form/form-checkbox';
 import { FormInput } from '../../component/form/form-input';
@@ -60,98 +65,110 @@ export const ProductDrawer = ({
           <XMarkIcon className="h-8 w-8" />
         </button>
       </div>
-      <FormModeProvider
-        mode={editable ? FormMode.Editable : FormMode.ReadOnly}
-        oldId={departmentId}
-      >
-        <FormProvider {...formProvider}>
-          <form className="flex max-h-[90vh] flex-col gap-12">
-            <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div className="sm:col-span-2">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  autoComplete="off"
-                  id="hsnCode"
-                  labelName="HSN"
-                  placeholder=" 123456"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  id="name"
-                  labelName="	Item name"
-                  placeholder=" Crocin"
-                  autoComplete="off"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <UOM />
-              </div>
-              <div className="sm:col-span-2">
-                <FormCheckbox<CreateProductInput>
-                  isRequired
-                  id="branded"
-                  labelName="Branded"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  id="genericName"
-                  labelName="Generic Name"
-                  placeholder=" Paracetamol"
-                  autoComplete="off"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  id="manufacturer"
-                  labelName="Manufacturer"
-                  placeholder=" Tablet"
-                  autoComplete="off"
-                />
-              </div>
-              <div className="sm:col-span-3">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  id="hsnCode"
-                  labelName="Hsn Code"
-                  placeholder=" 123456"
-                  autoComplete="off"
-                />
-              </div>
-              <div className="sm:col-span-3">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  id="sku"
-                  labelName="SKU Code"
-                  placeholder=" 123456"
-                  autoComplete="off"
-                />
-              </div>
-              <div className="sm:col-span-3">
-                <FormInput<CreateProductInput>
-                  isRequired
-                  id="maxDiscount"
-                  labelName="Max Discount"
-                  placeholder=" 20"
-                  type="number"
-                  autoComplete="off"
-                />
-              </div>
-              <div className="sm:col-span-3">
-                <DepartmentSelect />
-              </div>
-            </div>
-            {mode === 'view' ? <ViewFooter /> : null}
-            {mode === 'create' ? <CreateFooter /> : null}
-            {mode === 'edit' ? <EditFooter /> : null}
-          </form>
-        </FormProvider>
-      </FormModeProvider>
+      <Page1
+        departmentId={departmentId}
+        editable={editable}
+        formProvider={formProvider}
+        mode={mode}
+      />
     </div>
+  );
+};
+
+const Page1 = ({
+  editable,
+  departmentId,
+  formProvider,
+  mode,
+}: {
+  editable: boolean;
+  departmentId?: string;
+  formProvider: UseFormReturn<CreateProductInput>;
+  mode: 'create' | 'edit' | 'view';
+}) => {
+  return (
+    <FormModeProvider
+      mode={editable ? FormMode.Editable : FormMode.ReadOnly}
+      oldId={departmentId}
+    >
+      <FormProvider {...formProvider}>
+        <form className="flex max-h-[90vh] flex-col gap-12">
+          <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div className="sm:col-span-2">
+              <FormInput<CreateProductInput>
+                isRequired
+                autoComplete="off"
+                id="hsnCode"
+                labelName="HSN"
+                placeholder=" 123456"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <FormInput<CreateProductInput>
+                isRequired
+                id="name"
+                labelName="	Item name"
+                placeholder=" Crocin"
+                autoComplete="off"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <UOM />
+            </div>
+            <div className="sm:col-span-2">
+              <FormCheckbox<CreateProductInput>
+                isRequired
+                id="branded"
+                labelName="Branded"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <FormInput<CreateProductInput>
+                isRequired
+                id="genericName"
+                labelName="Generic Name"
+                placeholder=" Paracetamol"
+                autoComplete="off"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <FormInput<CreateProductInput>
+                isRequired
+                id="manufacturer"
+                labelName="Manufacturer"
+                placeholder=" Tablet"
+                autoComplete="off"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <FormInput<CreateProductInput>
+                isRequired
+                id="sku"
+                labelName="SKU Code"
+                placeholder=" 123456"
+                autoComplete="off"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <FormInput<CreateProductInput>
+                isRequired
+                id="maxDiscount"
+                labelName="Max Discount"
+                placeholder=" 20"
+                type="number"
+                autoComplete="off"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <DepartmentSelect />
+            </div>
+          </div>
+          {mode === 'view' ? <ViewFooter /> : null}
+          {mode === 'create' ? <CreateFooter /> : null}
+          {mode === 'edit' ? <EditFooter /> : null}
+        </form>
+      </FormProvider>
+    </FormModeProvider>
   );
 };
 

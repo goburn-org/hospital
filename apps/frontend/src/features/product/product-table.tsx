@@ -61,11 +61,6 @@ export const ProductTable = () => {
         },
       },
       {
-        accessorKey: 'brandName',
-        header: 'Brand Name',
-        enableSorting: true,
-      },
-      {
         accessorKey: 'genericName',
         header: 'Generic Name',
         enableSorting: true,
@@ -73,11 +68,6 @@ export const ProductTable = () => {
       {
         accessorKey: 'manufacturer',
         header: 'Manufacturer',
-        enableSorting: true,
-      },
-      {
-        accessorKey: 'strength',
-        header: 'Strength',
         enableSorting: true,
       },
     ],

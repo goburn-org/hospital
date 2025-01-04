@@ -185,6 +185,26 @@ const pharmacyRoutes = (
   </Route>
 );
 
+const grnRoutes = (
+  <Route path={routerConfig.Grn} lazy={() => import('./routes/grn')}>
+    <Route path={routerConfig.New} lazy={() => import('./routes/grn/new')} />
+    <Route
+      path={`${routerConfig.View}/:id`}
+      lazy={() => import('./routes/pharmacy/view')}
+    />
+    <Route
+      path={`${routerConfig.Edit}/:id`}
+      lazy={() => import('./routes/pharmacy/edit')}
+    />
+  </Route>
+);
+
+const intentRoutes = (
+  <Route path={routerConfig.Intent} lazy={() => import('./routes/intent')}>
+    <Route path={routerConfig.New} lazy={() => import('./routes/intent/new')} />
+  </Route>
+);
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
@@ -195,6 +215,8 @@ export const router = createBrowserRouter(
         {patientRoutes}
         {billingRoutes}
         {pharmacyRoutes}
+        {grnRoutes}
+        {intentRoutes}
       </Route>
       <Route path="/dental-assessment" element={<DentalAssessment />} />
     </Route>,
