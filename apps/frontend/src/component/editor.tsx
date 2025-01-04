@@ -11,12 +11,8 @@ Quill.register({
 });
 
 const atValues = [
-  { id: '1', value: 'Fredrik Sundqvist' },
-  { id: '2', value: 'Patrik Sjölin' },
-];
-const hashValues = [
-  { id: '3', value: 'Fredrik Sundqvist 2' },
-  { id: '4', value: 'Patrik Sjölin 2' },
+  { id: 'dengue', value: { diag1: 'High fever', diag2: 'Nausea' } },
+  { id: 'flu', value: { diag1: 'Runny nose', diag2: 'Body aches' } },
 ];
 
 const mention: Partial<MentionOption> = {
@@ -28,17 +24,46 @@ const mention: Partial<MentionOption> = {
     if (mentionChar === '.') {
       values = atValues;
     } else {
-      values = hashValues;
+      return; // If other mention chars are needed, handle them here
     }
 
-    if (searchTerm.length === 0) {
-      renderList(values, searchTerm);
-    } else {
-      const matches = [];
-      for (let i = 0; i < values.length; i++)
-        if (~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase()))
-          matches.push(values[i]);
-      renderList(matches, searchTerm);
+    // Match based on ID
+    const matches = values.filter((item) =>
+      item.id.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+
+    // Render the dropdown
+    renderList(
+      matches.map((item) => ({
+        id: item.id,
+        value: item.id, // Display the ID in dropdown
+      })),
+      searchTerm,
+    );
+  },
+
+  onSelect: function (item, insertItem) {
+    const selectedDisease = atValues.find((d) => d.id === item.id);
+
+    if (selectedDisease) {
+      const symptoms = Object.values(selectedDisease.value).join(', ');
+      const quill = this.quill;
+
+      // Get the current cursor position
+      const cursorPosition = quill.getSelection().index;
+
+      // Remove the mention prefix (e.g., `.flu`) and replace it with symptoms
+      quill.deleteText(cursorPosition - item.id.length - 1, item.id.length + 1); // Remove the prefix and ID
+      quill.insertText(cursorPosition - item.id.length - 1, `${symptoms}`); // Insert symptoms
+      quill.insertText(
+        cursorPosition - item.id.length - 1 + symptoms.length,
+        ' ',
+      ); // Add a trailing space
+
+      // Move the cursor to the end of the inserted text
+      quill.setSelection(
+        cursorPosition - item.id.length - 1 + symptoms.length + 1,
+      );
     }
   },
 };
@@ -74,27 +99,7 @@ export const CustomEditor = ({
         readOnly: disabled,
         placeholder,
       });
-      quill.keyboard.addBinding(
-        { key: 9 }, // Keycode for Tab
-        () => {
-          console.log('here');
-          const form = document.querySelector('form'); // Assuming inside a form
-          const inputs = Array.from(
-            form?.querySelectorAll(
-              'input, textarea, button, select, [contenteditable=true]',
-            ) ?? [],
-          );
-          const currentIndex = inputs.findIndex(
-            (el) => el === document.activeElement,
-          );
 
-          if (currentIndex >= 0) {
-            const nextInput = inputs[currentIndex + 1] || inputs[0]; // Loop back to the first input if needed
-            (nextInput as any).focus?.();
-          }
-          return false; // Prevent default behavior (inserting spaces)
-        },
-      );
       quill.root.innerHTML = initialValue || '';
 
       quill.on('text-change', function () {
@@ -102,5 +107,6 @@ export const CustomEditor = ({
       });
     }
   }, [disabled, initialValue, latestCb, placeholder]);
+
   return <div className={className} ref={ref}></div>;
 };
