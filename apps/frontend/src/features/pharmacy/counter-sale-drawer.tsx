@@ -34,7 +34,10 @@ export const CounterSaleDrawer = ({
     resolver: zodResolver(counterSaleAvailabilityLineItemInput),
   });
   const { mutateAsync } = usePatientPrescriptionMutation();
-  const [selectedId, setSelectedId] = useState<string>();
+  const [visitDetails, setVisitDetails] = useState<{
+    visitId: string;
+    customerName: string;
+  }>();
   const [productSearch, setProductSearch] = useState('');
   const { data } = useProductQuery({
     search: productSearch,
@@ -47,7 +50,7 @@ export const CounterSaleDrawer = ({
     {
       name: 'Visit' as const,
       current: true,
-      completed: !!selectedId,
+      completed: !!visitDetails,
       inProgress: true,
     },
     {
@@ -144,8 +147,11 @@ export const CounterSaleDrawer = ({
       <FormTabs tabs={tabs} setCurrentTab={setCurrentTab} />
       {activeIndex === 0 ? (
         <Table
-          setSelected={async ({ id, items }) => {
-            setSelectedId(id);
+          setSelected={async ({ items, customerName, visitId }) => {
+            setVisitDetails({
+              visitId,
+              customerName,
+            });
             console.log(items);
             await findAvailableStock(items);
             setCurrentTab(tabs[1]);
@@ -207,11 +213,19 @@ export const CounterSaleDrawer = ({
                 type="button"
                 onClick={async (e) => {
                   e.preventDefault();
-                  // await mutateAsync(items);
-                  const res = await HttpService.post(
-                    'v1/pharmacy/availability',
-                    { items },
-                  );
+                  const res = await mutateAsync({
+                    items: items
+                      .filter((i) => 'batchNumber' in i)
+                      .map((i) => ({
+                        productId: i.productId,
+                        saleQuantity: i.availableQuantity,
+                        batchNumber: i.batchNumber,
+                      })),
+                    cardAmount: [],
+                    customerName: visitDetails?.customerName ?? '',
+                    patientVisitId: visitDetails?.visitId ?? '',
+                    cashAmount: 100,
+                  });
                   console.log(res);
                   toast.success('GRN created successfully');
                   // navigate('../', {
@@ -300,24 +314,27 @@ const Table = ({
 }: {
   setSelected: ({
     items,
-    id,
+    visitId,
+    customerName,
   }: {
     items: CounterSaleAvailabilityInput;
-    id: string;
+    visitId: string;
+    customerName: string;
   }) => void;
 }) => {
   const { data } = useAllVisitLast24Hours();
   if (data === undefined) return null;
-  const onSelection = async (id: string) => {
-    const prescription = data.find((d) => d.id === id);
-    const items = prescription?.PatientPrescription?.list?.map((p) => ({
+  const onSelection = async (visitId: string) => {
+    const visit = data.find((d) => d.id === visitId);
+    const items = visit?.PatientPrescription?.list?.map((p) => ({
       productId: p.medicineId,
       quantity: 1,
     }));
     if (items) {
       setSelected({
-        id,
+        visitId,
         items,
+        customerName: visit?.Patient.name ?? '',
       });
     }
   };

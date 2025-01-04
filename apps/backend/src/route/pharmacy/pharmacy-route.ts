@@ -1,5 +1,6 @@
 import {
   counterSaleAvailabilityInput,
+  createCounterSaleBilInput,
   ensure,
   validatePaginateParamsWithSort,
 } from '@hospital/shared';
@@ -44,6 +45,16 @@ route.post(
   errorHandler(async (req, res) => {
     const items = counterSaleAvailabilityInput.parse(req.body.items);
     const data = await pharmacyService.getAvailability(items);
+    return res.send(data);
+  }),
+);
+
+route.post(
+  `${baseVersion}${baseRoute}`,
+  authMiddleware,
+  errorHandler(async (req, res) => {
+    const items = createCounterSaleBilInput.parse(req.body);
+    const data = await pharmacyService.createCounterSale(items);
     return res.send(data);
   }),
 );

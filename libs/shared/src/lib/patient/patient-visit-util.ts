@@ -91,6 +91,7 @@ export type DetailedPatientVisit = _DetailedPatientVisit & {
 export type PatientVisitWithPrescription = Prisma.PatientVisitGetPayload<{
   include: {
     PatientPrescription: true;
+    Patient: true;
   };
 }> & {
   PatientPrescription: {

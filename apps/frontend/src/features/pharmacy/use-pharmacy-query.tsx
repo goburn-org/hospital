@@ -1,6 +1,6 @@
 import {
-  CounterSaleAvailabilityInput,
   CounterSaleResponse,
+  CreateCounterSaleBilInput,
   CreateGrnRequest,
   CreateIntentRequest,
   GrnResponse,
@@ -39,11 +39,8 @@ export const useIntentQuery = () => {
 export const usePatientPrescriptionMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CounterSaleAvailabilityInput) => {
-      return HttpService.post<CounterSaleAvailabilityInput>(
-        '/v1/pharmacy',
-        data,
-      );
+    mutationFn: (data: CreateCounterSaleBilInput) => {
+      return HttpService.post<CreateCounterSaleBilInput>('/v1/pharmacy', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

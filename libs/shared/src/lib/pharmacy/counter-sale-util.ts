@@ -30,6 +30,29 @@ type AvailableLineItem = {
   availableQuantity: number;
 };
 
+export const createCounterSaleBilInput = z.object({
+  customerName: z.string(),
+  patientVisitId: z.string(),
+  cashAmount: z.number(),
+  cardAmount: z.array(
+    z.object({
+      bankAccountId: z.number(),
+      amount: z.number(),
+    }),
+  ),
+  items: z.array(
+    z.object({
+      productId: z.string(),
+      saleQuantity: z.number(),
+      batchNumber: z.string(),
+    }),
+  ),
+});
+
+export type CreateCounterSaleBilInput = z.infer<
+  typeof createCounterSaleBilInput
+>;
+
 export type CounterSaleLineItem = UnAvailableLineItem | AvailableLineItem;
 
 export const counterSaleAvailabilityInput = z.array(

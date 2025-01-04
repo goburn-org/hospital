@@ -296,6 +296,7 @@ class PatientVisitService {
       },
       include: {
         PatientPrescription: true,
+        Patient: true,
       },
     }) as any;
   }

@@ -186,6 +186,8 @@ model SKU {
   batchNumber   String
   mrp           Float
   salePrice     Float
+  taxCodeId     Int           @default(1)
+  taxCode       TaxCode       @relation(fields: [taxCodeId], references: [id])
   purchasePrice Float
   expiryDate    DateTime
   hospitalId    Int
@@ -405,6 +407,7 @@ model TaxCode {
   updatedAt   DateTime  @updatedAt
   Order       Order[]
   Product     Product[]
+  SKU         SKU[]
 }
 
 model PatientOrder {
