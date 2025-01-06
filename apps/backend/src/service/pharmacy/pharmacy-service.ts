@@ -231,16 +231,18 @@ class PharmacyService {
         customerName: data.customerName,
         hospitalId,
         updatedBy: user.id,
-        CounterSaleBill: {
-          create: {
-            paid: customerPaidAmount,
-            payments: {
-              cardAmount: data.cardAmount,
-              cashAmount: data.cashAmount,
-            },
-            totalAmount,
-          },
-        },
+        CounterSaleBill: totalAmount
+          ? {
+              create: {
+                paid: customerPaidAmount,
+                payments: {
+                  cardAmount: data.cardAmount,
+                  cashAmount: data.cashAmount,
+                },
+                totalAmount,
+              },
+            }
+          : undefined,
         CounterItem: {
           createMany: { data: counterItems },
         },

@@ -5,6 +5,7 @@ import {
   CounterSaleAvailabilityInput,
   CounterSaleAvailabilityLineItemInput,
   counterSaleAvailabilityLineItemInput,
+  CounterSaleBillPayment,
   CounterSaleLineItem,
   StockAvailabilityResponse,
 } from '@hospital/shared';
@@ -14,6 +15,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { FormInput } from '../../component/form/form-input';
 import { FormTab, FormTabs } from '../../component/form/form-tabs';
+import { PaidBy } from '../../component/paid-by';
 import { CustomSelect } from '../../component/select';
 import { classNames } from '../../utils/classNames';
 import { HttpService } from '../../utils/http';
@@ -196,11 +198,11 @@ export const CounterSaleDrawer = ({
                   type="number"
                 />
               </div>
-            </div>
-            <div className="flex justify-end">
-              <button type="submit" className="btn-text btn-text-small">
-                Add
-              </button>
+              <div className="sm:col-span-2 flex items-end">
+                <button type="submit" className="btn-text btn-text-small">
+                  Add
+                </button>
+              </div>
             </div>
             <PrescriptionTable
               items={items}
@@ -208,6 +210,21 @@ export const CounterSaleDrawer = ({
                 setItems((i) => i.filter((item) => item.productId !== id));
               }}
             />
+            <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+              <div className="sm:col-span-2">
+                <FormInput<CounterSaleBillPayment>
+                  isRequired
+                  id="paid"
+                  labelName="Paid Amount"
+                  placeholder=" 20"
+                  autoComplete="off"
+                  type="number"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <PaidBy totalAmount={200} />
+              </div>
+            </div>
             <div className="flex justify-end mt-10">
               <button
                 type="button"

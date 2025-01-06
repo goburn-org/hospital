@@ -64,7 +64,7 @@ export const PharmacyWorkListTable = () => {
         Cell: ({ row }) => {
           return (
             <Link
-              to={`${routerConfig.Billing}/${row.original.id}`}
+              to={`${routerConfig.Pharmacy}/${routerConfig.View}/${row.original.id}`}
               className="btn-text-tertiary btn-small"
             >
               Action

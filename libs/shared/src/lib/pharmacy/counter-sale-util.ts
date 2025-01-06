@@ -13,6 +13,19 @@ export const counterSaleAvailabilityLineItemInput = z.object({
   quantity: z.number(),
 });
 
+export const counterSaleBillPayment = z.object({
+  paid: z.number(),
+  cashAmount: z.number(),
+  cardAmount: z.array(
+    z.object({
+      bankAccountId: z.number(),
+      amount: z.number(),
+    }),
+  ),
+});
+
+export type CounterSaleBillPayment = z.infer<typeof counterSaleBillPayment>;
+
 type UnAvailableLineItem = {
   productId: string;
   productName: string;

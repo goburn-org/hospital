@@ -196,7 +196,6 @@ export const Header = () => {
             aria-hidden="true"
             className="2xl:h-6 2xl:w-px 2xl:bg-gray-900/10"
           />
-
           {/* Profile dropdown */}
           {/* eslint-disable-next-line no-constant-condition */}
           {false ? (
